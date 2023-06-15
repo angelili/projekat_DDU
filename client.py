@@ -66,14 +66,12 @@ def main() -> None:
     """Load data, start CifarClient."""
 
     fedl_no_proxy=True
-
-
     if fedl_no_proxy:
       os.environ["http_proxy"] = ""
       os.environ["https_proxy"] = ""
     # Load data
     trainloader, testloader, _, num_examples = cifar.load_data()
-
+    DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     # Load model
     model = cifar.Net().to(DEVICE).train()
 
