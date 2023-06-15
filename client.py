@@ -50,7 +50,7 @@ class CifarClient(fl.client.NumPyClient):
     ) -> Tuple[List[np.ndarray], int, Dict]:
         # Set model parameters, train model, return updated model parameters
         self.set_parameters(parameters)
-        net, local_model=cifar.train(net=net, trainloader=trainloader, epochs=2, device=DEVICE, eta=0.005, lambda_reg=15)
+        net, local_model=cifar.train(net=self.model, trainloader=trainloader, epochs=2, device=DEVICE, eta=0.005, lambda_reg=15)
         return self.get_parameters(config={}), self.num_examples["trainset"], {}
 
     def evaluate(
