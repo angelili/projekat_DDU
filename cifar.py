@@ -158,7 +158,6 @@ def train(
             epoch_acc = correct / total
             print(f"Epoch {epoch+1}: train loss {epoch_loss}, accuracy {epoch_acc}")     
 
-    return net, local_model
 
 def test(
     net: Net,
