@@ -15,7 +15,7 @@ import torchvision
 import cifar
 
 
-
+DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 # Flower Client
 class CifarClient(fl.client.NumPyClient):
@@ -71,7 +71,7 @@ def main() -> None:
       os.environ["https_proxy"] = ""
     # Load data
     trainloader, testloader, _, num_examples = cifar.load_data()
-    DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    
     # Load model
     model = cifar.Net().to(DEVICE).train()
 
