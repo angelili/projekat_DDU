@@ -159,28 +159,17 @@ def train(
             print(f"Epoch {epoch+1}: train loss {epoch_loss}, accuracy {epoch_acc}")     
 
 
-def test(
+def test_global(
     net: Net,
-    local_model: Net,
     testloader: torch.utils.data.DataLoader,
     device: torch.device,  # pylint: disable=no-member
 ) -> Tuple[float, float]:
     """Validate the network on the entire test set."""
     # Define loss and metrics
     criterion = nn.CrossEntropyLoss()
-    correct_person, correct_global, loss_person, loss_global =  0, 0, 0.0, 0.0
+    correct_global, loss_global =  0, 0.0
     
-    # Evaluate the personalized network
-    net.to(device)
-    net.eval()
-    with torch.no_grad():
-        for data in testloader:
-            images, labels = data[0].to(device), data[1].to(device)
-            outputs = net(images)
-            loss_global += criterion(outputs, labels).item()
-            _, predicted_global = torch.max(outputs.data, 1)  # pylint: disable=no-member
-            correct_global += (predicted_global == labels).sum().item()
-    accuracy_global = correct_global / len(testloader.dataset)
+   
    
   
     # Evaluate the network which will participate in the global
@@ -195,7 +184,31 @@ def test(
             correct_person += (predicted_person == labels).sum().item()
     accuracy_person = correct_person / len(testloader.dataset)
 
-    return loss_global, accuracy_global, loss_person, accuracy_person
+    return loss_global, accuracy_global
+    
+    def test_local(
+    local_model: Net,
+    testloader: torch.utils.data.DataLoader,
+    device: torch.device,  # pylint: disable=no-member
+) -> Tuple[float, float]:
+    """Validate the network on the entire test set."""
+    # Define loss and metrics
+    criterion = nn.CrossEntropyLoss()
+   
+    correct_person, loss_person=0, 0.0 
+    # Evaluate the personalized network
+    net.to(device)
+    net.eval()
+    with torch.no_grad():
+        for data in testloader:
+            images, labels = data[0].to(device), data[1].to(device)
+            outputs = net(images)
+            loss_global += criterion(outputs, labels).item()
+            _, predicted_global = torch.max(outputs.data, 1)  # pylint: disable=no-member
+            correct_global += (predicted_global == labels).sum().item()
+    accuracy_global = correct_global / len(testloader.dataset)
+    
+    return loss_person, accuracy_person
 
 
 def main():
@@ -208,7 +221,8 @@ def main():
     print("Start training")
     net, local_model = train(net=net, trainloader=trainloader, epochs=2, device=DEVICE, eta=0.005, lambda_reg=15)
     print("Evaluate model")
-    loss_global, accuracy_global, loss_person, accuracy_person= test(net=net, local_model= local_model, testloader=testloader, device=DEVICE)
+    loss_global, accuracy_global= test_global(net=net, testloader=testloader, device=DEVICE)
+    loss_person, accuracy_person= test_local(local_model=local_model, testloader=testloader, device=DEVICE)
     print("Loss_personalized: ", loss_person)
     print("Accuracy_personalized: ", accuracy_person)
     print("Loss_global: ", loss_global)
