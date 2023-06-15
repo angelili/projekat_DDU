@@ -148,16 +148,16 @@ def train(
                     break
             # print statistics
           
-            if i % 100 == 99:  # print every 100 mini-batches
-                print("[%d, %5d] loss: %.3f" % (epoch + 1, i + 1, loss / 2000))
-            with torch.no_grad():
-                for param, global_param in zip(local_model.parameters(), net.parameters()):
-                    global_param.data=global_param.data-eta*lambda_reg*(global_param.data-param.data)
-          
-            epoch_loss /= len(trainloader.dataset)
-            epoch_acc = correct / total
-            print(f"Epoch {epoch+1}: train loss {epoch_loss}, accuracy {epoch_acc}")     
-
+        if i % 100 == 99:  # print every 100 mini-batches
+            print("[%d, %5d] loss: %.3f" % (epoch + 1, i + 1, loss / 2000))
+        with torch.no_grad():
+            for param, global_param in zip(local_model.parameters(), net.parameters()):
+                global_param.data=global_param.data-eta*lambda_reg*(global_param.data-param.data)
+      
+        epoch_loss /= len(trainloader.dataset)
+        epoch_acc = correct / total
+        print(f"Epoch {epoch+1}: train loss {epoch_loss}, accuracy {epoch_acc}")     
+    return net, local_model
 
 def test_global(
     net: Net,
@@ -168,47 +168,47 @@ def test_global(
     # Define loss and metrics
     criterion = nn.CrossEntropyLoss()
     correct_global, loss_global =  0, 0.0
-    
-   
-   
-  
     # Evaluate the network which will participate in the global
-    local_model.to(device)
-    local_model.eval()
-    with torch.no_grad():
-        for data in testloader:
-            images, labels = data[0].to(device), data[1].to(device)
-            outputs = local_model(images)
-            loss_person += criterion(outputs, labels).item()
-            _, predicted_person = torch.max(outputs.data, 1)  # pylint: disable=no-member
-            correct_person += (predicted_person == labels).sum().item()
-    accuracy_person = correct_person / len(testloader.dataset)
-
-    return loss_global, accuracy_global
-    
-    def test_local(
-    local_model: Net,
-    testloader: torch.utils.data.DataLoader,
-    device: torch.device,  # pylint: disable=no-member
-) -> Tuple[float, float]:
-    """Validate the network on the entire test set."""
-    # Define loss and metrics
-    criterion = nn.CrossEntropyLoss()
-   
-    correct_person, loss_person=0, 0.0 
-    # Evaluate the personalized network
     net.to(device)
     net.eval()
     with torch.no_grad():
-        for data in testloader:
-            images, labels = data[0].to(device), data[1].to(device)
-            outputs = net(images)
-            loss_global += criterion(outputs, labels).item()
-            _, predicted_global = torch.max(outputs.data, 1)  # pylint: disable=no-member
-            correct_global += (predicted_global == labels).sum().item()
+      for data in testloader:
+          images, labels = data[0].to(device), data[1].to(device)
+          outputs = net(images)
+          loss_global += criterion(outputs, labels).item()
+          _, predicted_global = torch.max(outputs.data, 1)  # pylint: disable=no-member
+          correct_global += (predicted_global == labels).sum().item()
     accuracy_global = correct_global / len(testloader.dataset)
     
-    return loss_person, accuracy_person
+
+    return loss_global, accuracy_global
+
+
+def test_local(
+  local_model: Net,
+  testloader: torch.utils.data.DataLoader,
+  device: torch.device,  # pylint: disable=no-member
+  ) -> Tuple[float, float]:
+  """Validate the network on the entire test set."""
+  # Define loss and metrics
+  criterion = nn.CrossEntropyLoss()
+
+  correct_person, loss_person=0, 0.0 
+  # Evaluate the personalized network
+  
+  local_model.to(device)
+  local_model.eval()
+  with torch.no_grad():
+    for data in testloader:
+        images, labels = data[0].to(device), data[1].to(device)
+        outputs = local_model(images)
+        loss_person += criterion(outputs, labels).item()
+        _, predicted_person = torch.max(outputs.data, 1)  # pylint: disable=no-member
+        correct_person += (predicted_person == labels).sum().item()
+  accuracy_person = correct_person / len(testloader.dataset)
+
+  
+  return loss_person, accuracy_person
 
 
 def main():
@@ -230,4 +230,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
