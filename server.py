@@ -11,7 +11,7 @@ from typing import Callable, Optional, Tuple, Dict, Union, List
 from torchvision.datasets import MNIST
 import torchvision.transforms as transforms
 from torch import Tensor
-import cifar
+import mnist
 
 def get_evaluate_fn(
     testset: torchvision.datasets.MNIST,
@@ -34,7 +34,7 @@ def get_evaluate_fn(
        
 
         testloader = torch.utils.data.DataLoader(testset, batch_size=50)
-        loss, accuracy = cifar.test_global(model, testloader, device)
+        loss, accuracy = mnist.test_global(model, testloader, device)
 
         # return statistics
         return loss, {"accuracy": accuracy}
