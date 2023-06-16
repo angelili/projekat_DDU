@@ -46,7 +46,8 @@ class CifarClient(fl.client.NumPyClient):
         self.model.load_state_dict(state_dict, strict=True)
 
     def fit(self, parameters, config):
-        set_parameters(self.net, parameters)
+        self.set_parameters(parameters)
+
         local_model=copy.deepcopy(self.net).to(DEVICE)
         local_model.train()
         for r in range(R):
