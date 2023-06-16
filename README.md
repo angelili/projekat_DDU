@@ -37,3 +37,4 @@ Be patient for the FL to get initial parameters and start, however if it stalls,
 If the jobs are completed in a very short time cca 14sec, they did not connect with the server. Resubimission via sbatch is needed.
 NOTE: the ideally function train from cifar would be used for the client, that is the idea of flower framework, however due to the specific nature of this algorithm with 2 models at one client, this is not the case here.
 However, if you do not have the appropriate resources and time, feel free to check the simulation provided, one only has to have a Google Colab account. The simulation is done on the CIFAR dataset.
+https://colab.research.google.com/drive/1QRlVAP6umqLYvGCGhwDAbLttBDZyJI4S?usp=sharing
