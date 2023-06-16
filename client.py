@@ -48,7 +48,7 @@ class CifarClient(fl.client.NumPyClient):
     def fit(self, parameters, config):
         self.set_parameters(parameters)
 
-        local_model=copy.deepcopy(self.net).to(DEVICE)
+        local_model=copy.deepcopy(self.model).to(DEVICE)
         local_model.train()
         for r in range(R):
             correct, total, epoch_loss = 0, 0, 0.0
@@ -56,7 +56,7 @@ class CifarClient(fl.client.NumPyClient):
             optimizer = torch.optim.SGD(local_model.parameters(), lr=learning_rate)
             for batch_idx, (data, target) in enumerate(self.trainloader):
                 optimizer.zero_grad()
-                objective, loss, output, target = objective_function(local_model, self.net, lambda_reg, data.to(DEVICE), target.to(DEVICE))
+                objective, loss, output, target = objective_function(local_model, self.model, lambda_reg, data.to(DEVICE), target.to(DEVICE))
                 #objective.requires_grad = True
                 objective.backward()
                 optimizer.step()
@@ -71,7 +71,7 @@ class CifarClient(fl.client.NumPyClient):
                       break
             # Compute Moreau envelope of local model
             with torch.no_grad():
-              for param, global_param in zip(local_model.parameters(), self.net.parameters()):
+              for param, global_param in zip(local_model.parameters(), self.model.parameters()):
                   global_param.data=global_param.data-eta*lambda_reg*(global_param.data-param.data)
 
             epoch_loss /= len(self.trainloader.dataset)
