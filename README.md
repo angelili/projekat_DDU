@@ -20,7 +20,7 @@ and why does FL arise as a better solution in some cases.
 You can simply start the centralized training as described in the tutorial by running cifar.py:
 It loads the dataset(MNIST in this case), trains a convolutional neural network (CNN) on the training set, and evaluates the trained model on the test set.
 ```
-python3 cifar.py
+python3 mnist.py
 ```
 The results are not good as one would wish. The dataset is small even with the augmentation, and overfits. By using FL, one can leverage a larger and more diverse dataset distributed across multiple devices or users, which helps in reducing overfitting.
 
