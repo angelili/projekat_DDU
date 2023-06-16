@@ -50,7 +50,7 @@ class CifarClient(fl.client.NumPyClient):
 
         local_model=copy.deepcopy(self.model).to(DEVICE)
         local_model.train()
-        for r in range(R):
+        for r in range(2):
             correct, total, epoch_loss = 0, 0, 0.0
             # Local update on client 
             optimizer = torch.optim.SGD(local_model.parameters(), lr=learning_rate)
