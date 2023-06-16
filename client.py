@@ -96,7 +96,7 @@ def main() -> None:
       os.environ["http_proxy"] = ""
       os.environ["https_proxy"] = ""
     # Load data
-    trainloader, testloader, _, num_examples = cifar.load_data()
+    trainloader, testloader, _, num_examples = mnist.load_data()
     
     # Load model
     model = mnist.Net().to(DEVICE).train()
