@@ -19,7 +19,7 @@ DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 # Flower Client
 class CifarClient(fl.client.NumPyClient):
-    """Flower client implementing CIFAR-10 image classification using
+    """Flower client implementing mnist image classification using
     PyTorch."""
 
     def __init__(
@@ -51,7 +51,7 @@ class CifarClient(fl.client.NumPyClient):
         local_model.train()
         for r in range(R):
             correct, total, epoch_loss = 0, 0, 0.0
-            # Local update on client i
+            # Local update on client 
             optimizer = torch.optim.SGD(local_model.parameters(), lr=learning_rate)
             for batch_idx, (data, target) in enumerate(self.trainloader):
                 optimizer.zero_grad()
@@ -99,7 +99,7 @@ def main() -> None:
     trainloader, testloader, _, num_examples = cifar.load_data()
     
     # Load model
-    model = cifar.Net().to(DEVICE).train()
+    model = mnist.Net().to(DEVICE).train()
 
 
     # Start client
