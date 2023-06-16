@@ -35,3 +35,4 @@ Assuming that we have a distributed system and that the server is running and wa
 ```
 Be patient for the FL to get initial parameters and start, however if it stalls, check the submitted clientjobs via squeue.
 If the jobs are completed in a very short time cca 14sec, they did not connect with the server. Resubimission via sbatch is needed.
+However, if you do not have the appropriate resources and time, feel free to check the simulation provided, one only has to have a Google Colab account.
