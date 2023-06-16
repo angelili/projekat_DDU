@@ -45,13 +45,39 @@ class CifarClient(fl.client.NumPyClient):
         state_dict = OrderedDict({k: torch.tensor(v) for k, v in params_dict})
         self.model.load_state_dict(state_dict, strict=True)
 
-    def fit(
-        self, parameters: List[np.ndarray], config: Dict[str, str]
-    ) -> Tuple[List[np.ndarray], int, Dict]:
-        # Set model parameters, train model, return updated model parameters
-        self.set_parameters(parameters)
-        cifar.train(net=self.model, trainloader=self.trainloader, epochs=2, device=DEVICE, eta=0.005, lambda_reg=15)
-        return self.get_parameters(config={}), self.num_examples["trainset"], {}
+    def fit(self, parameters, config):
+        set_parameters(self.net, parameters)
+        local_model=copy.deepcopy(self.net).to(DEVICE)
+        local_model.train()
+        for r in range(R):
+            correct, total, epoch_loss = 0, 0, 0.0
+            # Local update on client i
+            optimizer = torch.optim.SGD(local_model.parameters(), lr=learning_rate)
+            for batch_idx, (data, target) in enumerate(self.trainloader):
+                optimizer.zero_grad()
+                objective, loss, output, target = objective_function(local_model, self.net, lambda_reg, data.to(DEVICE), target.to(DEVICE))
+                #objective.requires_grad = True
+                objective.backward()
+                optimizer.step()
+                # Metrics
+
+                epoch_loss += loss
+                total += target.size(0)
+                correct += (torch.max(output.data, 1)[1] == target).sum().item()
+
+                # Check if the gradient norm is below a threshold
+                if gradient_norm_stop_callback(threshold=1e-5)(optimizer):
+                      break
+            # Compute Moreau envelope of local model
+            with torch.no_grad():
+              for param, global_param in zip(local_model.parameters(), self.net.parameters()):
+                  global_param.data=global_param.data-eta*lambda_reg*(global_param.data-param.data)
+
+            epoch_loss /= len(self.trainloader.dataset)
+            epoch_acc = correct / total
+            print(f"Epoch {r+1}: train loss {epoch_loss}, accuracy {epoch_acc}")
+
+        return get_parameters(self.net), len(self.trainloader), {}
 
     def evaluate(
         self, parameters: List[np.ndarray], config: Dict[str, str]
