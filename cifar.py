@@ -27,9 +27,9 @@ def gradient_norm_stop_callback(threshold=1e-5):
     def callback_function(optimizer):
         gradient_norm = 0.0
         for group in optimizer.param_groups:
-            
+
             for param in group['params']:
-                
+
                 if isinstance(param.grad, torch.Tensor):
                     gradient_norm += torch.norm(param.grad)**2
         gradient_norm = gradient_norm.sqrt().item()
@@ -43,15 +43,15 @@ def gradient_norm_stop_callback(threshold=1e-5):
 def objective_function(local_model, global_model, lambda_reg, data, target):
     output = local_model(data)
     loss = F.cross_entropy(output, target)
-  
+
     local_params = torch.cat([param.view(-1) for param in local_model.parameters()])
     global_params = torch.cat([param.view(-1) for param in global_model.parameters()])
-   
+
     proba=torch.norm(local_params - global_params)**2
 
     proba_leaf = torch.tensor(proba, requires_grad=True)
     objective = loss + (lambda_reg/2) * proba_leaf
-   
+
     return objective, loss, output, target
 # pylint: disable=unsubscriptable-object
 class Net(nn.Module):
@@ -102,11 +102,11 @@ def load_data() -> (
 
     testloader = torch.utils.data.DataLoader(testset, batch_size=16, shuffle=False, sampler=sampler)
     num_examples = {"trainset": len(trainset), "testset": len(testset)}
-    
+
     return trainloader, testloader, testset, num_examples
 
 
-#training the personalized network which, infacts trains the one that goes to the global 
+#training the personalized network which, infacts trains the one that goes to the global
 def train(
     net: Net,
     trainloader: torch.utils.data.DataLoader,
@@ -118,7 +118,7 @@ def train(
     """Train the network."""
     # Define loss and optimizer
     criterion = nn.CrossEntropyLoss()
-  
+
 
     print(f"Training {epochs} epoch(s) w/ {len(trainloader)} batches each")
 
@@ -129,7 +129,7 @@ def train(
     local_model.train()
     for epoch in range(epochs):
         optimizer = torch.optim.SGD(local_model.parameters(), lr=0.001, momentum=0.9)# loop over the dataset multiple times
-        correct, total, epoch_loss = 0, 0, 0.0   
+        correct, total, epoch_loss = 0, 0, 0.0
         for i, data in enumerate(trainloader, 0):
             images, labels = data[0].to(device), data[1].to(device)
             optimizer.zero_grad()
@@ -138,26 +138,24 @@ def train(
             objective.backward()
             optimizer.step()
             # forward + backward + optimize
-         
+
             epoch_loss += loss
             total += target.size(0)
             correct += (torch.max(output.data, 1)[1] == target).sum().item()
-                          
+
             # Check if the gradient norm is below a threshold
             if gradient_norm_stop_callback(threshold=1e-5)(optimizer):
                     break
-            # print statistics
-          
-        if i % 100 == 99:  # print every 100 mini-batches
-            print("[%d, %5d] loss: %.3f" % (epoch + 1, i + 1, loss / 2000))
+           
         with torch.no_grad():
             for param, global_param in zip(local_model.parameters(), net.parameters()):
                 global_param.data=global_param.data-eta*lambda_reg*(global_param.data-param.data)
-      
+
         epoch_loss /= len(trainloader.dataset)
         epoch_acc = correct / total
-        print(f"Epoch {epoch+1}: train loss {epoch_loss}, accuracy {epoch_acc}")     
- 
+        print(f"Epoch {epoch+1}: train loss {epoch_loss}, accuracy {epoch_acc}")
+    return net, local_model
+
 def test_global(
     net: Net,
     testloader: torch.utils.data.DataLoader,
@@ -178,11 +176,36 @@ def test_global(
           _, predicted_global = torch.max(outputs.data, 1)  # pylint: disable=no-member
           correct_global += (predicted_global == labels).sum().item()
     accuracy_global = correct_global / len(testloader.dataset)
-    
+
 
     return loss_global, accuracy_global
 
 
+def test_local(
+  local_model: Net,
+  testloader: torch.utils.data.DataLoader,
+  device: torch.device,  # pylint: disable=no-member
+  ) -> Tuple[float, float]:
+  """Validate the network on the entire test set."""
+  # Define loss and metrics
+  criterion = nn.CrossEntropyLoss()
+
+  correct_person, loss_person=0, 0.0
+  # Evaluate the personalized network
+
+  local_model.to(device)
+  local_model.eval()
+  with torch.no_grad():
+    for data in testloader:
+        images, labels = data[0].to(device), data[1].to(device)
+        outputs = local_model(images)
+        loss_person += criterion(outputs, labels).item()
+        _, predicted_person = torch.max(outputs.data, 1)  # pylint: disable=no-member
+        correct_person += (predicted_person == labels).sum().item()
+  accuracy_person = correct_person / len(testloader.dataset)
+
+
+  return loss_person, accuracy_person
 
 
 def main():
@@ -191,12 +214,14 @@ def main():
     print("Load data")
     trainloader, testloader, _, _ = load_data()
     net = Net().to(DEVICE)
- 
+
     print("Start training")
-    train(net=net, trainloader=trainloader, epochs=2, device=DEVICE, eta=0.005, lambda_reg=15)
+    net, local_model = train(net=net, trainloader=trainloader, epochs=2, device=DEVICE, eta=0.005, lambda_reg=15)
     print("Evaluate model")
     loss_global, accuracy_global= test_global(net=net, testloader=testloader, device=DEVICE)
-   
+    loss_person, accuracy_person= test_local(local_model=local_model, testloader=testloader, device=DEVICE)
+    print("Loss_personalized: ", loss_person)
+    print("Accuracy_personalized: ", accuracy_person)
     print("Loss_global: ", loss_global)
     print("Accuracy_global: ", accuracy_global)
 
