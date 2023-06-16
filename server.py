@@ -53,7 +53,7 @@ if __name__ == "__main__":
     if fedl_no_proxy:
       os.environ["http_proxy"] = ""
       os.environ["https_proxy"] = ""
-    _, _, testset, _ =cifar.load_data()
+    _, _, testset, _ =mnist.load_data()
     strategy = fl.server.strategy.FedAvg(
         fraction_fit=0.1,
         fraction_evaluate=0.1,
