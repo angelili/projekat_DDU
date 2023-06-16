@@ -16,7 +16,7 @@ import mnist
 
 
 DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
- def objective_function(local_model, global_model, lambda_reg, data, target):
+def objective_function(local_model, global_model, lambda_reg, data, target):
     output = local_model(data)
     loss = F.cross_entropy(output, target)
 
