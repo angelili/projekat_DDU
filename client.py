@@ -124,7 +124,7 @@ class CifarClient(fl.client.NumPyClient):
             epoch_acc = correct / total
             print(f"Epoch {r+1}: train loss {epoch_loss}, accuracy {epoch_acc}")
 
-        return get_parameters(self.net), len(self.trainloader), {}
+        return self.get_parameters(self.model), len(self.trainloader), {}
 
     def evaluate(
         self, parameters: List[np.ndarray], config: Dict[str, str]
