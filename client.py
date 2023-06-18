@@ -1,4 +1,4 @@
-"""Flower client example using PyTorch for CIFAR-10 image classification."""
+"""Flower client example using PyTorch for MNIST image classification."""
 
 
 import os
