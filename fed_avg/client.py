@@ -59,7 +59,8 @@ class MnistClient(fl.client.NumPyClient):
         # Set model parameters, train model, return updated model parameters
         self.set_parameters(parameters)
         mnist.train(self.model, self.trainloader, epochs=1, device=DEVICE)
-        return self.get_parameters(config={}), self.num_examples["trainset"], {}
+        loss, accuracy = test(net=self.model, testloader=self.testloader, device=DEVICE)
+        return self.get_parameters(config={}), self.num_examples["trainset"], {"Accuracy: ", accuracy}
 
     def evaluate(
         self, parameters: List[np.ndarray], config: Dict[str, str]
@@ -85,8 +86,6 @@ def main() -> None:
     # Load model
     model = mnist.Net().to(DEVICE).train()
 
-    # Perform a single forward pass to properly initialize BatchNorm
-    _ = model(next(iter(trainloader))[0].to(DEVICE))
 
     # Start client
     client = MnistClient(model, trainloader, testloader, num_examples)
