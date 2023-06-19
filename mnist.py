@@ -201,7 +201,7 @@ def load_data() -> (
         testset_2 = torch.utils.data.ConcatDataset([subset_dataset_class, subset_dataset_other])
 
         # Create the DataLoader with the specified subsets
-        testloader = torch.utils.data.DataLoader(testset_2, batch_size=32, shuffle=True)
+        testloader = torch.utils.data.DataLoader(testset_2, batch_size=16, shuffle=True)
         num_examples = {"trainset": len(trainset_2), "testset": len(testset_2)}
 
         return trainloader, testloader, testset, num_examples
@@ -221,9 +221,9 @@ def load_data() -> (
     sampler_test = torch.utils.data.SubsetRandomSampler(indices_test)
 
     testloader = torch.utils.data.DataLoader(testset, batch_size=16, shuffle=False, sampler=sampler_test)
-  
+    num_examples = {"trainset": len(trainset_2), "testset": len(testset_2)}
 
-    return trainloader, testloader, testset
+    return trainloader, testloader, testset, num_examples
 
 
 #training the personalized network which, infacts trains the one that goes to the global
