@@ -1,3 +1,4 @@
+from torchvision.datasets.utils import T
 
 from typing import Tuple, Dict
 
@@ -12,7 +13,7 @@ import copy
 import random
 
 DATA_ROOT = "./dataset"
-
+Dominant_class=True
 
 
 def gradient_norm_stop_callback(threshold=1e-5):
@@ -54,6 +55,19 @@ def objective_function(local_model, global_model, lambda_reg, data, target):
 
     return objective, loss, output, target
 # pylint: disable=unsubscriptable-object
+#check if one class is dominant forexample
+def partition_check(dataset):
+      class_counts = torch.zeros(10)  # Assuming there are 10 classes in the dataset
+    
+      for _, label in dataset:
+          class_counts[label] += 1
+    
+      total_samples = len(dataset)
+    
+      for class_idx, count in enumerate(class_counts):
+          percentage = (count / total_samples) * 100
+          print(f"Class {class_idx}: {count} samples, {percentage:.2f}%")
+          
 class Net(nn.Module):
     """Simple CNN adapted from 'PyTorch: A 60 Minute Blitz'."""
 
@@ -87,7 +101,119 @@ def load_data() -> (
     transform = transforms.Compose(
         [transforms.ToTensor(), transforms.Normalize((0.1307), (0.3081))]
     )
+    # Load the MNIST dataset
     trainset = MNIST(DATA_ROOT, train=True, download=True, transform=transform)
+    
+    testset = MNIST(DATA_ROOT, train=False, download=True, transform=transform)
+
+    if Dominant_class==True:
+        # Define the class to include 80% of samples from it in our trainset
+        class_to_include = random.randint(0, 9)  # Change this to the desired class
+
+        # Get the indices of samples belonging to the specified class
+        class_indices = torch.where(trainset.targets == class_to_include)[0]
+
+        # Convert to np.array
+        class_indices=class_indices.numpy()
+
+        # Calculate the number of samples to include from the specified class
+        num_samples_class = int(len(class_indices) * 0.8)
+
+        # Shuffle the set of samples from the specified class
+        np.random.shuffle(class_indices)
+
+        # Select the first `num_samples_class` elements
+        subset_indices_class = class_indices[:num_samples_class]
+
+        # Convert back to tensor
+        subset_indices_class=torch.from_numpy(subset_indices_class)
+
+        # Create a Subset of the original dataset using the selected subset indices from the specified class
+        subset_dataset_class = torch.utils.data.Subset(trainset, subset_indices_class)
+
+        # Calculate the number of samples to include from other classes
+        num_samples_other = int(len(trainset) * 0.2)
+
+        # Get the indices of samples from other classes
+        other_indices = torch.where(trainset.targets != class_to_include)[0]
+
+        # Convert to np.array
+        other_indices=other_indices.numpy()
+
+        # Shuffle the set of samples from other classes
+        np.random.shuffle(other_indices)
+
+        # Select the first `num_samples_others` elements
+        subset_indices_other = other_indices[:num_samples_class]
+
+        # Convert back to tensor
+        subset_indices_other=torch.from_numpy(subset_indices_other)
+
+        # Create a Subset of the original dataset using the selected subset indices from other classes
+        subset_dataset_other = torch.utils.data.Subset(trainset, subset_indices_other)
+
+        # Concatenate the subsets from the specified class and other classes
+        subset_dataset = torch.utils.data.ConcatDataset([subset_dataset_class, subset_dataset_other])
+
+        # Create the DataLoader with the specified subsets
+        trainloader = torch.utils.data.DataLoader(subset_dataset, batch_size=32, shuffle=True)
+
+
+
+
+        # Define the class to include 80% of samples
+        class_to_include = random.randint(0, 9)  # Change this to the desired class
+
+        # Get the indices of samples belonging to the specified class
+        class_indices = torch.where(testset.targets == class_to_include)[0]
+
+        # Convert to np.array
+        class_indices=class_indices.numpy()
+
+        # Calculate the number of samples to include from the specified class
+        num_samples_class = int(len(class_indices) * 0.8)
+
+        # Shuffle the set of samples from the specified class
+        np.random.shuffle(class_indices)
+
+        # Select the first `num_samples_class` elements
+        subset_indices_class = class_indices[:num_samples_class]
+
+        # Convert back to tensor
+        subset_indices_class=torch.from_numpy(subset_indices_class)
+
+        # Create a Subset of the original dataset using the selected subset indices from the specified class
+        subset_dataset_class = torch.utils.data.Subset(testset, subset_indices_class)
+
+        # Calculate the number of samples to include from other classes
+        num_samples_other = int(len(testset) * 0.2)
+
+        # Get the indices of samples from other classes
+        other_indices = torch.where(testset.targets != class_to_include)[0]
+
+        # Convert to np.array
+        other_indices=other_indices.numpy()
+
+        # Shuffle the set of samples from other classes
+        np.random.shuffle(other_indices)
+
+        # Select the first `num_samples_others` elements
+        subset_indices_other = other_indices[:num_samples_class]
+
+        # Convert back to tensor
+        subset_indices_other=torch.from_numpy(subset_indices_other)
+
+        # Create a Subset of the original dataset using the selected subset indices from other classes
+        subset_dataset_other = torch.utils.data.Subset(testset, subset_indices_other)
+
+        # Concatenate the subsets from the specified class and other classes
+        subset_dataset = torch.utils.data.ConcatDataset([subset_dataset_class, subset_dataset_other])
+
+        # Create the DataLoader with the specified subsets
+        testloader = torch.utils.data.DataLoader(subset_dataset, batch_size=32, shuffle=True)
+        num_examples = {"trainset": len(trainset), "testset": len(testset)}
+
+        return trainloader, testloader, testset, num_examples
 
     sample_size=500
     indices = random.sample(range(len(trainset)), sample_size)
@@ -154,6 +280,7 @@ def train(
         epoch_loss /= len(trainloader.dataset)
         epoch_acc = correct / total
         print(f"Epoch {epoch+1}: train loss {epoch_loss}, accuracy {epoch_acc}")
+        
     return net, local_model
 
 def test_global(
