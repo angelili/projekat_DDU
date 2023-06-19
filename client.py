@@ -125,7 +125,7 @@ class MnistClient(fl.client.NumPyClient):
             print(f"Epoch {r+1}: train loss {epoch_loss}, accuracy {epoch_acc}")
         loss_global, accuracy_global= mnist.test_global(net=self.model, testloader=self.testloader, device=DEVICE)
         loss_person, accuracy_person= mnist.test_local(local_model=local_model, testloader=self.testloader, device=DEVICE)
-        return self.get_parameters(self.model), len(self.trainloader), {"Loss_personalized:", loss_person , "Accuracy_personalized: ", accuracy_person}
+        return self.get_parameters(self.model), len(self.trainloader), {"Accuracy_global: ", accuracy_global, "Accuracy_personalized: ", accuracy_person}
 
     def evaluate(
         self, parameters: List[np.ndarray], config: Dict[str, str]
