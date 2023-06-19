@@ -54,7 +54,7 @@ if __name__ == "__main__":
       os.environ["http_proxy"] = ""
       os.environ["https_proxy"] = ""
     _, _, testset, _ =mnist.load_data()
-    strategy = fl.server.strategy.FedMAvg(
+    strategy = fl.server.strategy.FedAvgM(
         fraction_fit=0.1,
         fraction_evaluate=0.1,
         min_fit_clients=5,
