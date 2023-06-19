@@ -217,9 +217,6 @@ def load_data() -> (
     sampler_train= torch.utils.data.SubsetRandomSampler(indices_train)
 
     trainloader = torch.utils.data.DataLoader(trainset, batch_size=16, shuffle=False, sampler=sampler_train)
-    print(len(trainloader))
-    print('dugi',sample_size_train)
-    print('kraci', sample_size_test)
     indices_test = random.sample(range(len(testset)), sample_size_test)
     sampler_test = torch.utils.data.SubsetRandomSampler(indices_test)
 
