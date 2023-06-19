@@ -1,5 +1,6 @@
-# projekat_DDU
+## projekat_DDU
 Implementation of Personalized FL w Moreau Envelopes in Flower
+
 https://slideslive.com/38937057/personalized-federated-learning-with-moreau-envelopes?ref=recommended
 ![pdfml](https://github.com/angelili/projekat_DDU/assets/99340194/04844532-e97e-4510-a09d-595ac8f2135e)
 ```
