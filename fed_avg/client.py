@@ -83,7 +83,7 @@ def main() -> None:
     trainloader, testloader, _, num_examples = mnist.load_data()
 
     # Load model
-    model = cifar.Net().to(DEVICE).train()
+    model = mnist.Net().to(DEVICE).train()
 
     # Perform a single forward pass to properly initialize BatchNorm
     _ = model(next(iter(trainloader))[0].to(DEVICE))
