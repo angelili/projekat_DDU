@@ -11,6 +11,7 @@ from torch import Tensor
 from torchvision.datasets import MNIST
 import random
 import torch
+import numpy as np
 
 
 DATA_ROOT = "./dataset"
