@@ -57,8 +57,8 @@ if __name__ == "__main__":
     strategy = fl.server.strategy.FedAvg(
         fraction_fit=0.1,
         fraction_evaluate=0.1,
-        min_fit_clients=5,
-        min_evaluate_clients=5,
+        min_fit_clients=3,
+        min_evaluate_clients=3,
         evaluate_fn=get_evaluate_fn(testset),  #centralised evaluation of global model
         evaluate_metrics_aggregation_fn=weighted_average
     )
