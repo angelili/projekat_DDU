@@ -221,7 +221,7 @@ def load_data() -> (
     sampler_test = torch.utils.data.SubsetRandomSampler(indices_test)
 
     testloader = torch.utils.data.DataLoader(testset, batch_size=16, shuffle=False, sampler=sampler_test)
-    num_examples = {"trainset": len(trainset_2), "testset": len(testset_2)}
+    num_examples = {"trainset": sample_size_train, "testset": sample_size_test}
 
     return trainloader, testloader, testset, num_examples
 
