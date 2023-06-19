@@ -14,8 +14,8 @@ import random
 import numpy as np
 
 DATA_ROOT = "./dataset"
-Dominant_class=False
-Non_uniform_cardinality=True
+Dominant_class=True
+Non_uniform_cardinality=False
 
 
 def gradient_norm_stop_callback(threshold=1e-5):
