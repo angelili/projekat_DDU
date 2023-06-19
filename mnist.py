@@ -11,10 +11,11 @@ from torch import Tensor
 from torchvision.datasets import MNIST
 import copy
 import random
+import numpy as np
 
 DATA_ROOT = "./dataset"
-Dominant_class=True
-Dominant_cardinality=True
+Dominant_class=False
+Non_uniform_cardinality=True
 
 
 def gradient_norm_stop_callback(threshold=1e-5):
@@ -56,19 +57,6 @@ def objective_function(local_model, global_model, lambda_reg, data, target):
 
     return objective, loss, output, target
 # pylint: disable=unsubscriptable-object
-#check if one class is dominant forexample
-def partition_check(dataset):
-      class_counts = torch.zeros(10)  # Assuming there are 10 classes in the dataset
-    
-      for _, label in dataset:
-          class_counts[label] += 1
-    
-      total_samples = len(dataset)
-    
-      for class_idx, count in enumerate(class_counts):
-          percentage = (count / total_samples) * 100
-          print(f"Class {class_idx}: {count} samples, {percentage:.2f}%")
-          
 class Net(nn.Module):
     """Simple CNN adapted from 'PyTorch: A 60 Minute Blitz'."""
 
@@ -108,7 +96,9 @@ def load_data() -> (
     testset = MNIST(DATA_ROOT, train=False, download=True, transform=transform)
 
     if Dominant_class==True:
-        # Define the class to include 80% of samples from it in our trainset
+  
+
+        # Define the class to include 80% of samples
         class_to_include = random.randint(0, 9)  # Change this to the desired class
 
         # Get the indices of samples belonging to the specified class
@@ -154,10 +144,10 @@ def load_data() -> (
         subset_dataset_other = torch.utils.data.Subset(trainset, subset_indices_other)
 
         # Concatenate the subsets from the specified class and other classes
-        subset_dataset = torch.utils.data.ConcatDataset([subset_dataset_class, subset_dataset_other])
+        trainset = torch.utils.data.ConcatDataset([subset_dataset_class, subset_dataset_other])
 
         # Create the DataLoader with the specified subsets
-        trainloader = torch.utils.data.DataLoader(subset_dataset, batch_size=32, shuffle=True)
+        trainloader = torch.utils.data.DataLoader(trainset, batch_size=32, shuffle=True)
 
 
 
@@ -208,26 +198,32 @@ def load_data() -> (
         subset_dataset_other = torch.utils.data.Subset(testset, subset_indices_other)
 
         # Concatenate the subsets from the specified class and other classes
-        subset_dataset = torch.utils.data.ConcatDataset([subset_dataset_class, subset_dataset_other])
+        testset = torch.utils.data.ConcatDataset([subset_dataset_class, subset_dataset_other])
 
         # Create the DataLoader with the specified subsets
-        testloader = torch.utils.data.DataLoader(subset_dataset, batch_size=32, shuffle=True)
+        testloader = torch.utils.data.DataLoader(testset, batch_size=32, shuffle=True)
         num_examples = {"trainset": len(trainset), "testset": len(testset)}
 
         return trainloader, testloader, testset, num_examples
+    
+    if Non_uniform_cardinality==True:
+        sample_size_train = random.randint(200, 1000)
+        sample_size_test =  int(sample_size_train*0.1)
+    else:
+        sample_size_train=500
+        sample_size_test=100
 
-    sample_size=500
-    indices = random.sample(range(len(trainset)), sample_size)
-    sampler = torch.utils.data.SubsetRandomSampler(indices)
+    indices_train = random.sample(range(len(trainset)), sample_size_train)
+    sampler_train= torch.utils.data.SubsetRandomSampler(indices_train)
 
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=16, shuffle=False, sampler=sampler)
+    trainloader = torch.utils.data.DataLoader(trainset, batch_size=16, shuffle=False, sampler=sampler_train)
+    print(len(trainloader))
+    print('dugi',sample_size_train)
+    print('kraci', sample_size_test)
+    indices_test = random.sample(range(len(testset)), sample_size_test)
+    sampler_test = torch.utils.data.SubsetRandomSampler(indices_test)
 
-    testset = MNIST(DATA_ROOT, train=False, download=True, transform=transform)
-    sample_size=100
-    indices = random.sample(range(len(testset)), sample_size)
-    sampler = torch.utils.data.SubsetRandomSampler(indices)
-
-    testloader = torch.utils.data.DataLoader(testset, batch_size=16, shuffle=False, sampler=sampler)
+    testloader = torch.utils.data.DataLoader(testset, batch_size=16, shuffle=False, sampler=sampler_test)
     num_examples = {"trainset": len(trainset), "testset": len(testset)}
 
     return trainloader, testloader, testset, num_examples
@@ -281,7 +277,6 @@ def train(
         epoch_loss /= len(trainloader.dataset)
         epoch_acc = correct / total
         print(f"Epoch {epoch+1}: train loss {epoch_loss}, accuracy {epoch_acc}")
-        
     return net, local_model
 
 def test_global(
@@ -334,13 +329,24 @@ def test_local(
 
 
   return loss_person, accuracy_person
+#check if one class is dominant forexample
+def partition_check(dataset):
+  class_counts = torch.zeros(10)  # Assuming there are 10 classes in the dataset
 
+  for _, label in dataset:
+      class_counts[label] += 1
+
+  total_samples = len(dataset)
+
+  for class_idx, count in enumerate(class_counts):
+      percentage = (count / total_samples) * 100
+      print(f"Class {class_idx}: {count} samples, {percentage:.2f}%")
 
 def main():
     DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print("Centralized PyTorch training")
     print("Load data")
-    trainloader, testloader, _, _ = load_data()
+    trainloader, testloader, testset, _ = load_data()
     net = Net().to(DEVICE)
 
     print("Start training")
