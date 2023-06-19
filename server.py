@@ -13,6 +13,16 @@ import torchvision.transforms as transforms
 from torch import Tensor
 import mnist
 
+def load_data() -> (
+    Tuple[torch.utils.data.DataLoader, torch.utils.data.DataLoader, Dict]):
+    """Load MNIST (training and test set)."""
+    transform = transforms.Compose(
+        [transforms.ToTensor(), transforms.Normalize((0.1307), (0.3081))]
+    )
+    
+    testset = MNIST(DATA_ROOT, train=False, download=True, transform=transform)
+    return testset
+    
 def get_evaluate_fn(
     testset: torchvision.datasets.MNIST,
 ) -> Callable[[fl.common.NDArrays], Optional[Tuple[float, float]]]:
@@ -40,6 +50,7 @@ def get_evaluate_fn(
         return loss, {"accuracy": accuracy}
 
     return evaluate
+    
 def weighted_average(metrics: List[Tuple[int, Metrics]]) -> Metrics:
     # Multiply accuracy of each client by number of examples used
     accuracies = [num_examples * m["accuracy"] for num_examples, m in metrics]
@@ -53,7 +64,7 @@ if __name__ == "__main__":
     if fedl_no_proxy:
       os.environ["http_proxy"] = ""
       os.environ["https_proxy"] = ""
-    _, _, testset, _ =mnist.load_data()
+    testset=load_data()
     strategy = fl.server.strategy.FedAvgM(
         fraction_fit=0.1,
         fraction_evaluate=0.1,
