@@ -13,9 +13,8 @@ import torchvision.transforms as transforms
 from torch import Tensor
 import mnist
 
-def load_data() -> (
-    Tuple[torch.utils.data.DataLoader, torch.utils.data.DataLoader, Dict]):
-    """Load MNIST (training and test set)."""
+def load_data()
+    """Load MNIST test set."""
     transform = transforms.Compose(
         [transforms.ToTensor(), transforms.Normalize((0.1307), (0.3081))]
     )
