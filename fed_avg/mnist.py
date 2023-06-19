@@ -78,10 +78,10 @@ def load_data() -> (
         subset_dataset_other = torch.utils.data.Subset(trainset, subset_indices_other)
 
         # Concatenate the subsets from the specified class and other classes
-        trainset = torch.utils.data.ConcatDataset([subset_dataset_class, subset_dataset_other])
+        trainset_2 = torch.utils.data.ConcatDataset([subset_dataset_class, subset_dataset_other])
 
         # Create the DataLoader with the specified subsets
-        trainloader = torch.utils.data.DataLoader(trainset, batch_size=32, shuffle=True)
+        trainloader = torch.utils.data.DataLoader(trainset_2, batch_size=32, shuffle=True)
 
 
 
@@ -132,11 +132,11 @@ def load_data() -> (
         subset_dataset_other = torch.utils.data.Subset(testset, subset_indices_other)
 
         # Concatenate the subsets from the specified class and other classes
-        testset = torch.utils.data.ConcatDataset([subset_dataset_class, subset_dataset_other])
+        testset_2 = torch.utils.data.ConcatDataset([subset_dataset_class, subset_dataset_other])
 
         # Create the DataLoader with the specified subsets
-        testloader = torch.utils.data.DataLoader(testset, batch_size=32, shuffle=True)
-        num_examples = {"trainset": len(trainset), "testset": len(testset)}
+        testloader = torch.utils.data.DataLoader(testset_2, batch_size=16, shuffle=True)
+        num_examples = {"trainset": len(trainset_2), "testset": len(testset_2)}
 
         return trainloader, testloader, testset, num_examples
     
@@ -151,12 +151,11 @@ def load_data() -> (
     sampler_train= torch.utils.data.SubsetRandomSampler(indices_train)
 
     trainloader = torch.utils.data.DataLoader(trainset, batch_size=16, shuffle=False, sampler=sampler_train)
-        
     indices_test = random.sample(range(len(testset)), sample_size_test)
     sampler_test = torch.utils.data.SubsetRandomSampler(indices_test)
 
     testloader = torch.utils.data.DataLoader(testset, batch_size=16, shuffle=False, sampler=sampler_test)
-    num_examples = {"trainset": len(trainset), "testset": len(testset)}
+    num_examples = {"trainset": len(trainset_2), "testset": len(testset_2)}
 
     return trainloader, testloader, testset, num_examples
 
