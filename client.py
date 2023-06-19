@@ -63,7 +63,7 @@ def gradient_norm_stop_callback(threshold=1e-5):
 
 
 # Flower Client
-class CifarClient(fl.client.NumPyClient):
+class MnistClient(fl.client.NumPyClient):
     """Flower client implementing mnist image classification using
     PyTorch."""
 
@@ -150,7 +150,7 @@ def main() -> None:
 
 
     # Start client
-    client = CifarClient(model, trainloader, testloader, num_examples)
+    client = MnistClient(model, trainloader, testloader, num_examples)
     fl.client.start_numpy_client(server_address="10.30.0.254:9000",
     client=client)
 
