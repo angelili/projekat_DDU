@@ -17,7 +17,7 @@ pip install -r requirements.txt
 ```
 In order to understand how the Federated Learning works, one must comprehend how Centralized Learning works,
 and why does FL arise as a better solution in some cases. 
-You can simply start the centralized training as described in the tutorial by running cifar.py:
+You can simply start the centralized training as described in the tutorial by running mnist.py:
 It loads the dataset(MNIST in this case), trains a convolutional neural network (CNN) on the training set, and evaluates the trained model on the test set.
 ```
 python3 mnist.py
