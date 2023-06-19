@@ -1,4 +1,4 @@
-"""PyTorch CIFAR-10 image classification.
+
 
 The code is generally adapted from 'PyTorch: A 60 Minute Blitz'. Further
 explanations are given in the official PyTorch tutorial:
