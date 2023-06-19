@@ -14,6 +14,7 @@ import random
 
 DATA_ROOT = "./dataset"
 Dominant_class=True
+Dominant_cardinality=True
 
 
 def gradient_norm_stop_callback(threshold=1e-5):
