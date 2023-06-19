@@ -31,7 +31,7 @@ class MnistClient(fl.client.NumPyClient):
 
     def __init__(
         self,
-        model: cifar.Net,
+        model: mnist.Net,
         trainloader: torch.utils.data.DataLoader,
         testloader: torch.utils.data.DataLoader,
         num_examples: Dict,
