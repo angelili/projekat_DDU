@@ -25,7 +25,7 @@ python3 mnist.py
 The results are not good as one would wish. The dataset is small even with the augmentation, and overfits. By using FL, one can leverage a larger and more diverse dataset distributed across multiple devices or users, which helps in reducing overfitting. In this project, the personalized algorithm is implemented. This should outperform the typical FedAvg algorithm in case of non_IDD data. The algorithm intrinsically holds two models at each client, to which we refer to as: local model(personalized) and model(global). At each iteration of invoking the client, we set local model and model to be the same.  The local model is trained, by minimizing a penalized (wrt. to the global model) loss of the local model  to a certain point. &theta here respresents the local model, 
 ![image](https://github.com/angelili/projekat_DDU/assets/99340194/938826b1-eb5e-4c8e-8dd7-e1055a294aaf)
 
-then the model(the one that is sent to the server) is updated wrt. training. A momentum on the global level could be introduced('&beta')
+then the model(the one that is sent to the server) is updated wrt. training. A momentum on the global level could be introduced('&beta;')
 
 https://slideslive.com/38937057/personalized-federated-learning-with-moreau-envelopes?ref=recommended
 ![pdfml](https://github.com/angelili/projekat_DDU/assets/99340194/04844532-e97e-4510-a09d-595ac8f2135e)
