@@ -15,8 +15,8 @@ import numpy as np
 
 
 DATA_ROOT = "./dataset"
-Dominant_class=True
-Non_uniform_cardinality=False
+Dominant_class=False
+Non_uniform_cardinality=True
 
 def load_data() -> (
     Tuple[torch.utils.data.DataLoader, torch.utils.data.DataLoader, Dict]):
