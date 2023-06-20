@@ -14,7 +14,7 @@ import random
 import numpy as np
 
 DATA_ROOT = "./dataset"
-Dominant_class=True
+Dominant_class=False
 Non_uniform_cardinality=False
 
 
