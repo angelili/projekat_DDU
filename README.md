@@ -48,5 +48,5 @@ NOTE: the ideally function train from mnist.py would be used for the client, tha
 However, if you do not have the appropriate resources and time, feel free to check the simulation provided, one only has to have a Google Colab account. The simulation is done on the CIFAR dataset.
 https://colab.research.google.com/drive/1QRlVAP6umqLYvGCGhwDAbLttBDZyJI4S?usp=sharing
 
-#critique of two approaches(pFedMe and FedAvg)
+##critique of two approaches(pFedMe and FedAvg)
 
