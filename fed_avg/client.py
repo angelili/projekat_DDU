@@ -60,7 +60,7 @@ class MnistClient(fl.client.NumPyClient):
         self.set_parameters(parameters)
         mnist.train(self.model, self.trainloader, epochs=1, device=DEVICE)
         loss, accuracy = mnist.test(net=self.model, testloader=self.testloader, device=DEVICE)
-        return self.get_parameters(config={}), self.num_examples["trainset"], {"Accuracy: ", float(accuracy)}
+        return self.get_parameters(config={}), self.num_examples["trainset"], {"Accuracy": float(accuracy)}
 
     def evaluate(
         self, parameters: List[np.ndarray], config: Dict[str, str]
@@ -70,7 +70,7 @@ class MnistClient(fl.client.NumPyClient):
         loss, accuracy = mnist.test(self.model, self.testloader, device=DEVICE)
         print(type(accuracy), accuracy)
         print(type({"accuracy": float(accuracy)}))
-        return float(loss), self.num_examples["testset"], {"accuracy:", float(accuracy)}
+        return float(loss), self.num_examples["testset"], {"accuracy": float(accuracy)}
 
 
 def main() -> None:
