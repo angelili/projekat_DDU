@@ -15,7 +15,7 @@ import numpy as np
 
 
 DATA_ROOT = "./dataset"
-Dominant_class=True
+Dominant_class=False
 Non_uniform_cardinality=False
 
 def load_data() -> (
