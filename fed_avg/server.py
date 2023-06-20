@@ -77,6 +77,7 @@ if __name__ == "__main__":
         min_evaluate_clients=3,
         min_available_clients=3,
         evaluate_fn=get_evaluate_fn(testset),  #centralised evaluation of global model
+        fit_metrics_aggregation_fn=agg_metrics_train,
         evaluate_metrics_aggregation_fn=weighted_average
     )
     fl.server.start_server(
