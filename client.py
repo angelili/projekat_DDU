@@ -127,8 +127,8 @@ class MnistClient(fl.client.NumPyClient):
         loss_person, accuracy_person= mnist.test_local(local_model=local_model, testloader=self.testloader, device=DEVICE)
         print("Accuracy_personalized:", float(accuracy_person))
         print('type', type(accuracy_person))
-        return self.get_parameters(self.model), len(self.trainloader), {"Accuracy_personalized:", float(accuracy_person)}
-
+        return self.get_parameters(self.model), len(self.trainloader), {"Accuracy_personalized": float(accuracy_person)}
+        
     def evaluate(
         self, parameters: List[np.ndarray], config: Dict[str, str]
     ) -> Tuple[float, int, Dict]:
