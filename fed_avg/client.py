@@ -70,7 +70,7 @@ class MnistClient(fl.client.NumPyClient):
         loss, accuracy = mnist.test(self.model, self.testloader, device=DEVICE)
         print(type(accuracy), accuracy)
         print(type({"accuracy": float(accuracy)}))
-        return float(loss), self.num_examples["testset"], {"accuracy": float(accuracy)}
+        return float(loss), self.num_examples["testset"], {"accuracy:", float(accuracy)}
 
 
 def main() -> None:
