@@ -1,0 +1,8 @@
+2023-07-07 14:42:30.380715: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcudart.so.10.1
+INFO flwr 2023-07-07 14:42:35,322 | grpc.py:50 | Opened insecure gRPC connection (no certificates were passed)
+DEBUG flwr 2023-07-07 14:42:35,324 | connection.py:39 | ChannelConnectivity.IDLE
+DEBUG flwr 2023-07-07 14:42:35,328 | connection.py:39 | ChannelConnectivity.CONNECTING
+DEBUG flwr 2023-07-07 14:42:35,329 | connection.py:39 | ChannelConnectivity.READY
+srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
+slurmstepd: error: *** STEP 15268.0 ON n02 CANCELLED AT 2023-07-07T14:43:41 ***
+slurmstepd: error: *** JOB 15268 ON n02 CANCELLED AT 2023-07-07T14:43:41 ***

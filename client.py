@@ -91,18 +91,19 @@ class MnistClient(fl.client.NumPyClient):
         self.model.load_state_dict(state_dict, strict=True)
 
     def fit(self, parameters, config):
+        
         self.set_parameters(parameters)
         # Define the personalized objective function using the Moreau envelope algorithm
-       
         local_model=copy.deepcopy(self.model).to(DEVICE)
+        
         local_model.train()
-        for r in range(2):
+        for r in range(10):
             correct, total, epoch_loss = 0, 0, 0.0
             # Local update on client 
             optimizer = torch.optim.SGD(local_model.parameters(), lr=0.1)
             for batch_idx, (data, target) in enumerate(self.trainloader):
                 optimizer.zero_grad()
-                objective, loss, output, target = objective_function(local_model, self.model, 15, data.to(DEVICE), target.to(DEVICE))
+                objective, loss, output, target = objective_function(local_model, self.model, 30, data.to(DEVICE), target.to(DEVICE))
                 #objective.requires_grad = True
                 objective.backward()
                 optimizer.step()
@@ -113,12 +114,11 @@ class MnistClient(fl.client.NumPyClient):
                 correct += (torch.max(output.data, 1)[1] == target).sum().item()
 
                 # Check if the gradient norm is below a threshold
-                if gradient_norm_stop_callback(threshold=1e-5)(optimizer):
-                      break
+                
             # Compute Moreau envelope of local model
             with torch.no_grad():
               for param, global_param in zip(local_model.parameters(), self.model.parameters()):
-                  global_param.data=global_param.data-0.05*15*(global_param.data-param.data)
+                  global_param.data=global_param.data-0.005*15*(global_param.data-param.data)
 
             epoch_loss /= len(self.trainloader.dataset)
             epoch_acc = correct / total
@@ -149,7 +149,7 @@ def main() -> None:
     trainloader, testloader, _, num_examples = mnist.load_data()
     
     # Load model
-    model = mnist.Net().to(DEVICE).train()
+    model = mnist.Net().to(DEVICE)
 
 
     # Start client

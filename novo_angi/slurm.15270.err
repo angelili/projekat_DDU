@@ -1,0 +1,16 @@
+srun: /usr/lib64/slurm/select_alps.so: Incompatible Slurm plugin version (18.08.6)
+srun: error: Couldn't load specified plugin name for select/alps: Incompatible plugin version
+srun: /usr/lib64/slurm/select_cray.so: Incompatible Slurm plugin version (18.08.6)
+srun: error: Couldn't load specified plugin name for select/cray: Incompatible plugin version
+srun: /usr/lib64/slurm/select_serial.so: Incompatible Slurm plugin version (18.08.6)
+srun: error: Couldn't load specified plugin name for select/serial: Incompatible plugin version
+srun: /usr/lib64/slurm/switch_cray.so: Incompatible Slurm plugin version (18.08.6)
+srun: error: Couldn't load specified plugin name for switch/cray: Incompatible plugin version
+2023-07-07 14:42:30.373005: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcudart.so.10.1
+INFO flwr 2023-07-07 14:42:35,033 | grpc.py:50 | Opened insecure gRPC connection (no certificates were passed)
+DEBUG flwr 2023-07-07 14:42:35,036 | connection.py:39 | ChannelConnectivity.IDLE
+DEBUG flwr 2023-07-07 14:42:35,038 | connection.py:39 | ChannelConnectivity.CONNECTING
+DEBUG flwr 2023-07-07 14:42:35,040 | connection.py:39 | ChannelConnectivity.READY
+srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
+slurmstepd: error: *** STEP 15270.0 ON n04 CANCELLED AT 2023-07-07T14:43:51 ***
+slurmstepd: error: *** JOB 15270 ON n04 CANCELLED AT 2023-07-07T14:43:51 ***

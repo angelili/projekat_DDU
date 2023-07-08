@@ -147,13 +147,12 @@ def load_data() -> (
         trainset_2 = torch.utils.data.ConcatDataset([subset_dataset_class, subset_dataset_other])
 
         # Create the DataLoader with the specified subsets
-        trainloader = torch.utils.data.DataLoader(trainset_2, batch_size=32, shuffle=True)
+        trainloader = torch.utils.data.DataLoader(trainset_2, batch_size=16, shuffle=True)
 
 
 
 
-        # Define the class to include 80% of samples
-        class_to_include = random.randint(0, 9)  # Change this to the desired class
+        #do the same for the testset
 
         # Get the indices of samples belonging to the specified class
         class_indices = torch.where(testset.targets == class_to_include)[0]
@@ -249,7 +248,7 @@ def train(
     local_model.train()
     for epoch in range(epochs):
         optimizer = torch.optim.SGD(local_model.parameters(), lr=0.001, momentum=0.9)# loop over the dataset multiple times
-        correct, total, epoch_loss = 0, 0, 0.0
+        correct_person, total_person, correct_global, total_global, epoch_loss = 0, 0, 0, 0, 0.0
         for i, data in enumerate(trainloader, 0):
             images, labels = data[0].to(device), data[1].to(device)
             optimizer.zero_grad()
@@ -260,9 +259,10 @@ def train(
             # forward + backward + optimize
 
             epoch_loss += loss
-            total += target.size(0)
-            correct += (torch.max(output.data, 1)[1] == target).sum().item()
-
+            total_person += target.size(0)
+            correct_person += (torch.max(output.data, 1)[1] == target).sum().item()
+            total_global += target.size(0)
+            correct_global += (torch.max(net(images).data, 1)[1] == target).sum().item()
             # Check if the gradient norm is below a threshold
             if gradient_norm_stop_callback(threshold=1e-5)(optimizer):
                     break
@@ -270,10 +270,12 @@ def train(
         with torch.no_grad():
             for param, global_param in zip(local_model.parameters(), net.parameters()):
                 global_param.data=global_param.data-eta*lambda_reg*(global_param.data-param.data)
-
+    
         epoch_loss /= len(trainloader.dataset)
-        epoch_acc = correct / total
-        print(f"Epoch {epoch+1}: train loss {epoch_loss}, accuracy {epoch_acc}")
+        epoch_acc_person = correct_person / total_person
+        epoch_acc_global = correct_global/ total_global
+        print(f"Epoch {epoch+1}: train loss {epoch_loss}, accuracy global {epoch_acc_global}")
+        print(f"Epoch {epoch+1}: train loss {epoch_loss}, accuracy person {epoch_acc_person}")
     return net, local_model
 
 def test_global(
@@ -347,7 +349,7 @@ def main():
     net = Net().to(DEVICE)
 
     print("Start training")
-    net, local_model = train(net=net, trainloader=trainloader, epochs=2, device=DEVICE, eta=0.005, lambda_reg=15)
+    net, local_model = train(net=net, trainloader=trainloader, epochs=10, device=DEVICE, eta=0.005, lambda_reg=15)
     print("Evaluate model")
     loss_global, accuracy_global= test_global(net=net, testloader=testloader, device=DEVICE)
     loss_person, accuracy_person= test_local(local_model=local_model, testloader=testloader, device=DEVICE)

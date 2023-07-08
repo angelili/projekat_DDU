@@ -1,3 +1,4 @@
+
 """Flower server example."""
 
 from collections import OrderedDict
@@ -73,15 +74,15 @@ if __name__ == "__main__":
     strategy = fl.server.strategy.FedAvg(
         fraction_fit=0.1,
         fraction_evaluate=0.1,
-        min_fit_clients=3,
-        min_evaluate_clients=3,
-        min_available_clients=3,
+        min_fit_clients=5,
+        min_evaluate_clients=5,
+        min_available_clients=5,
         evaluate_fn=get_evaluate_fn(testset),  #centralised evaluation of global model
         fit_metrics_aggregation_fn=agg_metrics_train,
         evaluate_metrics_aggregation_fn=weighted_average
     )
     fl.server.start_server(
         server_address= "10.30.0.254:9000",
-        config=fl.server.ServerConfig(num_rounds=3),
+        config=fl.server.ServerConfig(num_rounds=8),
         strategy=strategy
     )

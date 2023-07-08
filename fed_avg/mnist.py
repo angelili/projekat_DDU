@@ -86,8 +86,7 @@ def load_data() -> (
 
 
 
-        # Define the class to include 80% of samples
-        class_to_include = random.randint(0, 9)  # Change this to the desired class
+        
 
         # Get the indices of samples belonging to the specified class
         class_indices = torch.where(testset.targets == class_to_include)[0]
