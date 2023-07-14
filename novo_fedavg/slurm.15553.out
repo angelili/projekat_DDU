@@ -1,0 +1,48 @@
+Training 1 epoch(s) w/ 374 batches each
+[1,   100] loss: 0.010
+[1,   200] loss: 0.003
+[1,   300] loss: 0.004
+<class 'float'> 0.4723618090452261
+<class 'dict'>
+Training 1 epoch(s) w/ 374 batches each
+[1,   100] loss: 0.009
+[1,   200] loss: 0.005
+[1,   300] loss: 0.005
+<class 'float'> 0.36180904522613067
+<class 'dict'>
+Training 1 epoch(s) w/ 374 batches each
+[1,   100] loss: 0.009
+[1,   200] loss: 0.004
+[1,   300] loss: 0.003
+<class 'float'> 0.4723618090452261
+<class 'dict'>
+Training 1 epoch(s) w/ 374 batches each
+[1,   100] loss: 0.007
+[1,   200] loss: 0.004
+[1,   300] loss: 0.003
+<class 'float'> 0.008375209380234505
+<class 'dict'>
+Training 1 epoch(s) w/ 374 batches each
+[1,   100] loss: 0.006
+[1,   200] loss: 0.003
+[1,   300] loss: 0.003
+<class 'float'> 0.5209380234505863
+<class 'dict'>
+Training 1 epoch(s) w/ 374 batches each
+[1,   100] loss: 0.006
+[1,   200] loss: 0.004
+[1,   300] loss: 0.003
+<class 'float'> 0.4723618090452261
+<class 'dict'>
+Training 1 epoch(s) w/ 374 batches each
+[1,   100] loss: 0.006
+[1,   200] loss: 0.003
+[1,   300] loss: 0.003
+<class 'float'> 0.005025125628140704
+<class 'dict'>
+Training 1 epoch(s) w/ 374 batches each
+[1,   100] loss: 0.005
+[1,   200] loss: 0.003
+[1,   300] loss: 0.004
+<class 'float'> 0.39195979899497485
+<class 'dict'>

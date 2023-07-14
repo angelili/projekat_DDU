@@ -25,12 +25,13 @@ import copy
 import mnist
 
 DATA_ROOT = "./dataset"
+Benchmark=True
 
 def load_data() -> (
     Tuple[torch.utils.data.DataLoader, torch.utils.data.DataLoader, Dict]):
     """Load MNIST (training and test set)."""
     transform = transforms.Compose(
-        [transforms.ToTensor(), transforms.Normalize((0.1307), (0.3081))]
+        [transforms.ToTensor(), transforms.Normalize((0.2859), (0.3530))]
     )
     # Load the MNIST dataset
     trainset = FashionMNIST(DATA_ROOT, train=True, download=True, transform=transform)
@@ -45,7 +46,7 @@ def load_data() -> (
                                         trainset.targets == selected_classes[1]))[0]
     indices=indices.numpy()
     np.random.shuffle(indices)
-    num_samples= random.randint(4000,6000)
+    num_samples= random.randint(6000,8000)
     indices=indices[:num_samples]
     subset_indices=torch.from_numpy(indices)
     subset_dataset = torch.utils.data.Subset(trainset, subset_indices)
@@ -107,7 +108,7 @@ class MnistClient(fl.client.NumPyClient):
     ) -> Tuple[List[np.ndarray], int, Dict]:
         # Set model parameters, train model, return updated model parameters
         self.set_parameters(parameters)
-        mnist.train(self.model, self.trainloader, epochs=1, device=DEVICE)
+        mnist.train(self.model, self.trainloader, epochs=30, device=DEVICE)
         loss, accuracy = mnist.test(net=self.model, testloader=self.testloader, device=DEVICE)
         return self.get_parameters(config={}), self.num_examples["trainset"], {"accuracy": float(accuracy)}
 
@@ -132,17 +133,25 @@ def main() -> None:
       os.environ["http_proxy"] = ""
       os.environ["https_proxy"] = ""
     # Load data
-    trainloader, testloader, _, num_examples = mnist.load_data()
+    trainloader, testloader, _, num_examples = load_data()
 
     # Load model
     model = mnist.Net().to(DEVICE).train()
-
+    
+    if Benchmark==True:
+        data_4 = {
+            'trainloader': trainloader,
+            'testloader': testloader,
+            'num_examples': num_examples,
+        }
+        torch.save(data_4, 'data_4.pth')
 
     # Start client
     client = MnistClient(model, trainloader, testloader, num_examples)
     fl.client.start_numpy_client(server_address="10.30.0.254:9000",
     client=client)
-
+    
+    
 
 if __name__ == "__main__":
     main()

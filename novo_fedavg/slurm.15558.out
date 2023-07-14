@@ -1,0 +1,28 @@
+Training 1 epoch(s) w/ 311 batches each
+[1,   100] loss: 0.007
+[1,   200] loss: 0.001
+[1,   300] loss: 0.001
+<class 'float'> 0.0
+<class 'dict'>
+Training 1 epoch(s) w/ 311 batches each
+[1,   100] loss: 0.011
+[1,   200] loss: 0.001
+[1,   300] loss: 0.000
+<class 'float'> 0.0
+<class 'dict'>
+Training 1 epoch(s) w/ 311 batches each
+[1,   100] loss: 0.008
+[1,   200] loss: 0.001
+[1,   300] loss: 0.001
+<class 'float'> 0.0
+<class 'dict'>
+Training 1 epoch(s) w/ 311 batches each
+[1,   100] loss: 0.005
+[1,   200] loss: 0.007
+[1,   300] loss: 0.001
+<class 'float'> 0.0
+<class 'dict'>
+Training 1 epoch(s) w/ 311 batches each
+[1,   100] loss: 0.004
+[1,   200] loss: 0.000
+[1,   300] loss: 0.002

@@ -1,0 +1,38 @@
+2023-07-11 11:58:24.737395: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcudart.so.10.1
+INFO flwr 2023-07-11 11:58:30,296 | grpc.py:50 | Opened insecure gRPC connection (no certificates were passed)
+DEBUG flwr 2023-07-11 11:58:30,299 | connection.py:39 | ChannelConnectivity.IDLE
+DEBUG flwr 2023-07-11 11:58:30,303 | connection.py:39 | ChannelConnectivity.READY
+DEBUG flwr 2023-07-11 11:58:30,915 | connection.py:113 | gRPC channel closed
+Traceback (most recent call last):
+  File "client_5.py", line 231, in <module>
+    main()
+  File "client_5.py", line 226, in main
+    fl.client.start_numpy_client(server_address="10.30.0.254:9000",
+  File "/home/s124m21/.local/lib/python3.8/site-packages/flwr/client/app.py", line 252, in start_numpy_client
+    start_client(
+  File "/home/s124m21/.local/lib/python3.8/site-packages/flwr/client/app.py", line 178, in start_client
+    client_message, sleep_duration, keep_going = handle(
+  File "/home/s124m21/.local/lib/python3.8/site-packages/flwr/client/message_handler/message_handler.py", line 67, in handle
+    return _fit(client, server_msg.fit_ins), 0, True
+  File "/home/s124m21/.local/lib/python3.8/site-packages/flwr/client/message_handler/message_handler.py", line 126, in _fit
+    fit_res = maybe_call_fit(
+  File "/home/s124m21/.local/lib/python3.8/site-packages/flwr/client/client.py", line 184, in maybe_call_fit
+    return client.fit(fit_ins)
+  File "/home/s124m21/.local/lib/python3.8/site-packages/flwr/client/app.py", line 297, in _fit
+    results = self.numpy_client.fit(parameters, ins.config)  # type: ignore
+  File "client_5.py", line 152, in fit
+    self.set_parameters(parameters)
+  File "client_5.py", line 131, in set_parameters
+    self.model.load_state_dict(state_dict, strict=False)
+  File "/home/s124m21/.local/lib/python3.8/site-packages/torch/nn/modules/module.py", line 2041, in load_state_dict
+    raise RuntimeError('Error(s) in loading state_dict for {}:\n\t{}'.format(
+RuntimeError: Error(s) in loading state_dict for Net:
+	size mismatch for conv2.weight: copying a param with shape torch.Size([6]) from checkpoint, the shape in current model is torch.Size([16, 6, 5, 5]).
+	size mismatch for conv2.bias: copying a param with shape torch.Size([6]) from checkpoint, the shape in current model is torch.Size([16]).
+	size mismatch for fc1.weight: copying a param with shape torch.Size([6]) from checkpoint, the shape in current model is torch.Size([120, 256]).
+	size mismatch for fc1.bias: copying a param with shape torch.Size([6]) from checkpoint, the shape in current model is torch.Size([120]).
+	size mismatch for fc2.weight: copying a param with shape torch.Size([]) from checkpoint, the shape in current model is torch.Size([84, 120]).
+	size mismatch for fc2.bias: copying a param with shape torch.Size([16, 6, 5, 5]) from checkpoint, the shape in current model is torch.Size([84]).
+	size mismatch for fc3.weight: copying a param with shape torch.Size([16]) from checkpoint, the shape in current model is torch.Size([10, 84]).
+	size mismatch for fc3.bias: copying a param with shape torch.Size([16]) from checkpoint, the shape in current model is torch.Size([10]).
+srun: error: n01: task 0: Exited with exit code 1

@@ -1,0 +1,10 @@
+2023-07-13 09:55:27.570506: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcudart.so.10.1
+Traceback (most recent call last):
+  File "client_4.py", line 23, in <module>
+    from server import lambda_reg
+  File "/home/s124m21/projekat_DDU/novo_angi/server.py", line 15, in <module>
+    import client_1
+  File "/home/s124m21/projekat_DDU/novo_angi/client_1.py", line 24, in <module>
+    from server import lambda_reg
+ImportError: cannot import name 'lambda_reg' from partially initialized module 'server' (most likely due to a circular import) (/home/s124m21/projekat_DDU/novo_angi/server.py)
+srun: error: n01: task 0: Exited with exit code 1

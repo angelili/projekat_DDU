@@ -57,7 +57,6 @@ def objective_function(local_model, global_model, lambda_reg, data, target):
     return objective, loss, output, target
 
 
-
 class Net(nn.Module):
     def __init__(self) -> None:
         super(Net, self).__init__()
@@ -82,6 +81,7 @@ class Net(nn.Module):
         x = F.relu(self.bn4(self.fc2(x)))
         x = self.fc3(x)
         return x
+   
 
 
     
@@ -90,7 +90,7 @@ def load_data() -> (
     Tuple[torch.utils.data.DataLoader, torch.utils.data.DataLoader, Dict]):
     """Load MNIST (training and test set)."""
     transform = transforms.Compose(
-        [transforms.ToTensor(), transforms.Normalize((0.1307), (0.3081))]
+        [transforms.ToTensor(), transforms.Normalize((0.2859), (0.3530))]
     )
     # Load the MNIST dataset
     trainset = FashionMNIST(DATA_ROOT, train=True, download=True, transform=transform)
@@ -155,7 +155,7 @@ def train(
             images, labels = data[0].to(device), data[1].to(device)
             optimizer.zero_grad()
             # zero the parameter gradients
-            objective, loss, output, target = objective_function(local_model, net, 30, images, labels)
+            objective, loss, output, target = objective_function(local_model, net, lambda_reg, images, labels)
             objective.backward()
             optimizer.step()
             # forward + backward + optimize
@@ -251,7 +251,7 @@ def main():
     net = Net().to(DEVICE)
 
     print("Start training")
-    net, local_model = train(net=net, trainloader=trainloader, epochs=10, device=DEVICE, eta=0.005, lambda_reg=100)
+    net, local_model = train(net=net, trainloader=trainloader, epochs=10, device=DEVICE, eta=0.005, lambda_reg=15)
     print("Evaluate model")
     loss_global, accuracy_global= test_global(net=net, testloader=testloader, device=DEVICE)
     loss_person, accuracy_person= test_local(local_model=local_model, testloader=testloader, device=DEVICE)

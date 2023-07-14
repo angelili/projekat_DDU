@@ -99,7 +99,8 @@ def train(
     """Train the network."""
     # Define loss and optimizer
     criterion = nn.CrossEntropyLoss()
-    optimizer = torch.optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
+    optimizer = torch.optim.AdamW(net.parameters(), lr=0.1)
+
 
     print(f"Training {epochs} epoch(s) w/ {len(trainloader)} batches each")
 

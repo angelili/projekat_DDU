@@ -1,0 +1,9 @@
+2023-07-09 08:56:41.710120: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcudart.so.10.1
+INFO flwr 2023-07-09 08:56:46,303 | grpc.py:50 | Opened insecure gRPC connection (no certificates were passed)
+DEBUG flwr 2023-07-09 08:56:46,306 | connection.py:39 | ChannelConnectivity.IDLE
+DEBUG flwr 2023-07-09 08:56:46,307 | connection.py:39 | ChannelConnectivity.CONNECTING
+DEBUG flwr 2023-07-09 08:56:46,308 | connection.py:39 | ChannelConnectivity.READY
+client_4.py:78: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  proba_leaf = torch.tensor(proba, requires_grad=True)
+DEBUG flwr 2023-07-09 08:59:57,763 | connection.py:113 | gRPC channel closed
+INFO flwr 2023-07-09 08:59:57,763 | app.py:185 | Disconnect and shut down

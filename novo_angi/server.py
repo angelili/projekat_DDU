@@ -11,6 +11,41 @@ import torchvision.transforms as transforms
 from torch import Tensor
 import mnist
 
+import matplotlib.pyplot as plt
+
+FED_BN=False
+
+lambda_reg=15
+local_epochs=30
+
+def plot_training_history(training_history,path):
+    plt.figure()
+    # Iterate over each metric in the training history dictionary
+    for metric, values in training_history.items():
+        # Create a line plot for the metric
+        plt.plot(values, label=metric)
+
+    # Add labels, title, and legend to the plot
+    plt.xlabel('Training Round')
+    plt.ylabel('Metric Value')
+    plt.title('Training History: lambda=15')
+    plt.legend()
+    plt.savefig(path)
+    # Show the plot
+    plt.show()
+
+training_history_acc_dist={"accuracy_global": [], "accuracy_local": [], "accuracy_personalized":[]}
+training_history_acc_cent={'accuracy_centralized': []}
+training_history_loss_dist={"loss_distributed": []}
+training_history_loss_cent={"loss_centralized": []}
+
+def set_parameters(model,parameters: List[np.ndarray]) -> None:
+        # Set model parameters from a list of NumPy ndarrays
+      
+            params_dict = zip(model.state_dict().keys(), parameters)
+            state_dict = OrderedDict({k: torch.tensor(v) for k, v in params_dict})
+            model.load_state_dict(state_dict, strict=True)
+
 def get_evaluate_fn(
     testset: torchvision.datasets.MNIST,
 ) -> Callable[[fl.common.NDArrays], Optional[Tuple[float, float]]]:
@@ -24,9 +59,16 @@ def get_evaluate_fn(
         # determine device
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         model = mnist.Net()
-        params_dict = zip(model.state_dict().keys(), parameters)
-        state_dict = OrderedDict({k: torch.from_numpy(np.copy(v)) for k, v in params_dict})
-        model.load_state_dict(state_dict, strict=True)
+        if FED_BN==True:
+            keys = [k for k in model.state_dict().keys() if "bn" not in k]
+            params_dict = zip(keys, parameters)
+            state_dict = OrderedDict({k: torch.tensor(v) for k, v in params_dict})
+            model.load_state_dict(state_dict, strict=False)
+        else:
+            params_dict = zip(model.state_dict().keys(), parameters)
+            state_dict = OrderedDict({k: torch.tensor(v) for k, v in params_dict})
+            model.load_state_dict(state_dict, strict=True)
+
         model.to(device)
        
        
@@ -34,27 +76,34 @@ def get_evaluate_fn(
         testloader = torch.utils.data.DataLoader(testset, batch_size=50)
         loss, accuracy = mnist.test_global(model, testloader, device)
 
+        training_history_acc_cent["accuracy_centralized"].append(accuracy)
+        training_history_loss_cent["loss_centralized"].append(loss)
         # return statistics
         return loss, {"accuracy": accuracy}
 
     return evaluate
-    
+
 def weighted_average(metrics: List[Tuple[int, Metrics]]) -> Metrics:
     # Multiply accuracy of each client by number of examples used
     accuracies = [num_examples * m["accuracy"] for num_examples, m in metrics]
     examples = [num_examples for num_examples, _ in metrics]
 
+    training_history_acc_dist["accuracy_global"].append(sum(accuracies)/sum(examples))
     # Aggregate and return custom metric (weighted average)
-    return {"accuracy": sum(accuracies) / sum(examples)}
+    return {"accuracy_global": sum(accuracies) / sum(examples)}
     
 def agg_metrics_train(metrics: List[Tuple[int, Metrics]]) -> Metrics:
     # Multiply accuracy of each client by number of examples used
-    accuracies_person = [num_examples * m["accuracy_personalized"] for num_examples, m in metrics]
+    accuracies_person = [num_examples * m["accuracy_person"] for num_examples, m in metrics]
     accuracies_global = [num_examples * m["accuracy_global"] for num_examples, m in metrics]
     examples = [num_examples for num_examples, _ in metrics]
 
+    training_history_acc_dist["accuracy_personalized"].append(sum(accuracies_person)/sum(examples))
+    training_history_acc_dist["accuracy_local"].append(sum(accuracies_global)/sum(examples))
+
+
     # Aggregate and return custom metric (weighted average)
-    return {"accuracy_personalized": sum(accuracies_person)/sum(examples), "accuracy_global": sum(accuracies_global)/sum(examples)}
+    return {"accuracy_personalized": sum(accuracies_person)/sum(examples), "accuracy_local": sum(accuracies_global)/sum(examples)}
 
 if __name__ == "__main__":
     fedl_no_proxy=True
@@ -62,18 +111,28 @@ if __name__ == "__main__":
       os.environ["http_proxy"] = ""
       os.environ["https_proxy"] = ""
     _, _, testset, _ = mnist.load_data()
+  
+    
+   
     strategy = fl.server.strategy.FedAvgM(
         fraction_fit=0.1,
         fraction_evaluate=0.1,
-        min_fit_clients=5,
+        min_fit_clients=4,
         min_evaluate_clients=5,
         min_available_clients=5,
-        evaluate_fn=get_evaluate_fn(testset), #centralised evaluation of global model
+        evaluate_fn=get_evaluate_fn(testset),#centralised evaluation of global model
+     
         fit_metrics_aggregation_fn=agg_metrics_train,
-        evaluate_metrics_aggregation_fn=weighted_average
-    )
+        evaluate_metrics_aggregation_fn=weighted_average,
+       
+       )
+    
     fl.server.start_server(
         server_address= "10.30.0.254:9000",
-        config=fl.server.ServerConfig(num_rounds=300),
+        config=fl.server.ServerConfig(num_rounds=100),
         strategy=strategy
     )
+    
+plot_training_history(training_history_acc_dist,'photo_1.png')
+plot_training_history(training_history_acc_cent,'photo_2.png')
+plot_training_history(training_history_loss_cent,'photo_3.png')
