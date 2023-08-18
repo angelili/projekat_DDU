@@ -1,6 +1,0 @@
-2023-07-09 13:48:00.198389: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcudart.so.10.1
-INFO flwr 2023-07-09 13:48:05,263 | grpc.py:50 | Opened insecure gRPC connection (no certificates were passed)
-DEBUG flwr 2023-07-09 13:48:05,265 | connection.py:39 | ChannelConnectivity.IDLE
-DEBUG flwr 2023-07-09 13:48:05,267 | connection.py:39 | ChannelConnectivity.READY
-DEBUG flwr 2023-07-09 13:51:57,818 | connection.py:113 | gRPC channel closed
-INFO flwr 2023-07-09 13:51:57,818 | app.py:185 | Disconnect and shut down

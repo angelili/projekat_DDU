@@ -1,0 +1,28 @@
+srun: /usr/lib64/slurm/select_alps.so: Incompatible Slurm plugin version (18.08.6)
+srun: error: Couldn't load specified plugin name for select/alps: Incompatible plugin version
+srun: /usr/lib64/slurm/select_cray.so: Incompatible Slurm plugin version (18.08.6)
+srun: error: Couldn't load specified plugin name for select/cray: Incompatible plugin version
+srun: /usr/lib64/slurm/select_serial.so: Incompatible Slurm plugin version (18.08.6)
+srun: error: Couldn't load specified plugin name for select/serial: Incompatible plugin version
+srun: /usr/lib64/slurm/switch_cray.so: Incompatible Slurm plugin version (18.08.6)
+srun: error: Couldn't load specified plugin name for switch/cray: Incompatible plugin version
+2023-08-18 12:34:56.789102: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcudart.so.10.1
+Traceback (most recent call last):
+  File "client_6.py", line 173, in <module>
+    main()
+  File "client_6.py", line 155, in main
+    model = mnist.Net().to(DEVICE).train()
+  File "/home/s124m21/.local/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1145, in to
+    return self._apply(convert)
+  File "/home/s124m21/.local/lib/python3.8/site-packages/torch/nn/modules/module.py", line 797, in _apply
+    module._apply(fn)
+  File "/home/s124m21/.local/lib/python3.8/site-packages/torch/nn/modules/module.py", line 820, in _apply
+    param_applied = fn(param)
+  File "/home/s124m21/.local/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1143, in convert
+    return t.to(device, dtype if t.is_floating_point() or t.is_complex() else None, non_blocking)
+RuntimeError: CUDA error: CUDA-capable device(s) is/are busy or unavailable
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1.
+Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+
+srun: error: n03: task 0: Exited with exit code 1

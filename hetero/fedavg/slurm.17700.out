@@ -1,0 +1,298 @@
+Class 5: 1001
+Class 6: 983
+Class 7: 977
+Class 8: 982
+Class 9: 935
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.0
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.2032854209445585
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.3737166324435318
+<class 'dict'>
+<class 'float'> 0.2032854209445585
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.3613963039014374
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.702258726899384
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.7186858316221766
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.7227926078028748
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.8562628336755647
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.8993839835728953
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.7659137577002053
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.5667351129363449
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.5503080082135524
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.7412731006160165
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.8254620123203286
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.8973305954825462
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.919917864476386
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.7535934291581109
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.9055441478439425
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.8439425051334702
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.9096509240246407
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.9404517453798767
+<class 'dict'>
+<class 'float'> 0.7946611909650924
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.9322381930184805
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.8049281314168378
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.7864476386036962
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.8829568788501027
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.839835728952772
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.9404517453798767
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.8213552361396304
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.7330595482546202
+<class 'dict'>
+<class 'float'> 0.7720739219712526
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.7638603696098563
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.837782340862423
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.8706365503080082
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.864476386036961
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.7905544147843943
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.8747433264887063
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.7412731006160165
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.9301848049281314
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.8336755646817249
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.893223819301848
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.9486652977412731
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.8952772073921971
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.9158110882956879
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.9301848049281314
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.8685831622176592
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.9219712525667351
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.8850102669404517
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.8418891170431212
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.7063655030800822
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.7700205338809035
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.8706365503080082
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.8891170431211499
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.8767967145790554
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.9322381930184805
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.9260780287474333
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.7782340862422998
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.7535934291581109
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.9055441478439425
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.757700205338809
+<class 'dict'>
+<class 'float'> 0.6652977412731006
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.8521560574948666
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.7002053388090349
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.8706365503080082
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.757700205338809
+<class 'dict'>
+<class 'float'> 0.7474332648870636
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.8193018480492813
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.7515400410677618
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.8767967145790554
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.9219712525667351
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.86652977412731
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.8193018480492813
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.8993839835728953
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.9342915811088296
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.839835728952772
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.8973305954825462
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.8993839835728953
+<class 'dict'>
+<class 'float'> 0.8275154004106776
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.8336755646817249
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.7864476386036962
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.7618069815195072
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.8480492813141683
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.9609856262833676
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.8008213552361396
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.8767967145790554
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.864476386036961
+<class 'dict'>
+<class 'float'> 0.811088295687885
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.8562628336755647
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.9117043121149897
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.9096509240246407
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.9589322381930184
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.9096509240246407
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.9425051334702259
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.917864476386037
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.9281314168377823
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.6960985626283368
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.9260780287474333
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.7104722792607803
+<class 'dict'>
+Training 3 epoch(s) w/ 153 batches each
+<class 'float'> 0.7535934291581109
+<class 'dict'>
