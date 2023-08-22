@@ -138,7 +138,7 @@ def main() -> None:
             'testloader': testloader,
             'num_examples': num_examples,
         }
-        torch.save(data_2, 'data_2.pth')
+        torch.save(data_2, 'data_2.pt')
 
     # Start client
     client = MnistClient(model, trainloader, testloader, num_examples)

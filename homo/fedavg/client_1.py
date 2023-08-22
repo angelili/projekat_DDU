@@ -141,7 +141,7 @@ def main() -> None:
             'testloader': testloader,
             'num_examples': num_examples,
         }
-        torch.save(data_1, 'data_1.pth')
+        torch.save(data_1, 'data_1.pt')
     # Start client
     client = MnistClient(model, trainloader, testloader, num_examples)
     fl.client.start_numpy_client(server_address="10.30.0.254:9000",

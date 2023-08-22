@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 FED_BN=False
 
 
-
+lambda_reg=15
 
 # Load each dictionary from the JSON files
 with open("/home/s124m21/projekat_DDU/homo/fedavg/training_history_acc_cent_fed_avg.json", "r") as json_file:

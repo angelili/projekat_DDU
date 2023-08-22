@@ -180,14 +180,14 @@ def main() -> None:
       os.environ["https_proxy"] = ""
     # Load data
     if Benchmark==True:
-        data = torch.load('home/s124m21/projekat_DDU/homo/fedavg/data_10.pth')
+        data = torch.load('home/s124m21/projekat_DDU/homo/fedavg/data_10.pt')
         # Retrieve the variables
         trainloader = data['trainloader']
         num_examples = data['num_examples']
         testloader = data['testloader']
     else:    
         trainloader, testloader, _, num_examples = load_data()
-        
+
     # Load model
     model = mnist.Net().to(DEVICE)
    
