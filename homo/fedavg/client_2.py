@@ -30,7 +30,7 @@ Non_uniform_cardinality=True
 
 def load_data() -> (
     Tuple[torch.utils.data.DataLoader, torch.utils.data.DataLoader, Dict]):
-    """Load MNIST (training and test set)."""
+    """Load FashionMNIST (training and test set)."""
     transform = transforms.Compose(
         [transforms.ToTensor(), transforms.Normalize((0.2859), (0.3530))]
     )
@@ -66,7 +66,7 @@ DEVICE: str = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 # Flower Client
 class MnistClient(fl.client.NumPyClient):
-    """Flower client implementing CIFAR-10 image classification using
+    """Flower client implementing FashionMNIST image classification using
     PyTorch."""
 
     def __init__(
@@ -114,7 +114,7 @@ class MnistClient(fl.client.NumPyClient):
 
 
 def main() -> None:
-    """Load data, start CifarClient."""
+    """Load data, start MnistClient."""
 
     fedl_no_proxy=True
 

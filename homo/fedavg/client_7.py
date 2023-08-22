@@ -115,7 +115,7 @@ class MnistClient(fl.client.NumPyClient):
 
 
 def main() -> None:
-    """Load data, start CifarClient."""
+    """Load data, start MnistClient."""
 
     fedl_no_proxy=True
 

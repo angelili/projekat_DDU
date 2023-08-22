@@ -1,0 +1,16 @@
+srun: /usr/lib64/slurm/select_alps.so: Incompatible Slurm plugin version (18.08.6)
+srun: error: Couldn't load specified plugin name for select/alps: Incompatible plugin version
+srun: /usr/lib64/slurm/select_cray.so: Incompatible Slurm plugin version (18.08.6)
+srun: error: Couldn't load specified plugin name for select/cray: Incompatible plugin version
+srun: /usr/lib64/slurm/select_serial.so: Incompatible Slurm plugin version (18.08.6)
+srun: error: Couldn't load specified plugin name for select/serial: Incompatible plugin version
+srun: /usr/lib64/slurm/switch_cray.so: Incompatible Slurm plugin version (18.08.6)
+srun: error: Couldn't load specified plugin name for switch/cray: Incompatible plugin version
+2023-08-22 20:18:46.757888: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcudart.so.10.1
+Traceback (most recent call last):
+  File "client.py", line 24, in <module>
+    from server import lambda_reg
+  File "/home/s124m21/projekat_DDU/homo/pfedme/server.py", line 22, in <module>
+    with open("/home/s124m21/projekat_DDU/homo/fedavg/training_history_acc_cent_fed_avg.json", "r") as json_file:
+FileNotFoundError: [Errno 2] No such file or directory: '/home/s124m21/projekat_DDU/homo/fedavg/training_history_acc_cent_fed_avg.json'
+srun: error: n03: task 0: Exited with exit code 1

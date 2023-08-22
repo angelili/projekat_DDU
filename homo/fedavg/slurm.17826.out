@@ -1,0 +1,18 @@
+[6000, 6000, 6000, 6000, 6000, 6000, 6000, 6000, 6000, 6000]
+[5400, 600]
+[5400, 600]
+[5400, 600]
+[5400, 600]
+[5400, 600]
+[5400, 600]
+[5400, 600]
+[5400, 600]
+[5400, 600]
+[5400, 600]
+Training 2 epoch(s) w/ 338 batches each
+<class 'float'> 0.10666666666666667
+<class 'dict'>
+Training 2 epoch(s) w/ 338 batches each
+<class 'float'> 0.16833333333333333
+<class 'dict'>
+Training 2 epoch(s) w/ 338 batches each

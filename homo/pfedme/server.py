@@ -15,8 +15,7 @@ import matplotlib.pyplot as plt
 
 FED_BN=False
 
-lambda_reg=15
-local_epochs=2
+
 
 
 # Load each dictionary from the JSON files
@@ -137,6 +136,19 @@ def agg_metrics_train(metrics: List[Tuple[int, Metrics]]) -> Metrics:
     # Aggregate and return custom metric (weighted average)
     return {"accuracy_personalized": sum(accuracies_person)/sum(examples), "accuracy_local": sum(accuracies_global)/sum(examples)}
 
+
+
+def fit_config(server_round: int):
+    """Return training configuration dict for each round."""
+
+    config = {
+        "lambda_reg":15,
+        "local_epochs":1,
+        "local_rounds":120,
+        "local_iterations":10
+    }
+    return config
+
 if __name__ == "__main__":
     fedl_no_proxy=True
     if fedl_no_proxy:
@@ -153,9 +165,9 @@ if __name__ == "__main__":
         min_evaluate_clients=10,
         min_available_clients=10,
         evaluate_fn=get_evaluate_fn(testset),#centralised evaluation of global model
-     
         fit_metrics_aggregation_fn=agg_metrics_train,
         evaluate_metrics_aggregation_fn=weighted_average,
+        on_fit_config_fn=fit_config,
        
        )
     

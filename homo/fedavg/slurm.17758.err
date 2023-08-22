@@ -1,0 +1,10 @@
+srun: /usr/lib64/slurm/select_alps.so: Incompatible Slurm plugin version (18.08.6)
+srun: error: Couldn't load specified plugin name for select/alps: Incompatible plugin version
+srun: /usr/lib64/slurm/select_cray.so: Incompatible Slurm plugin version (18.08.6)
+srun: error: Couldn't load specified plugin name for select/cray: Incompatible plugin version
+srun: /usr/lib64/slurm/select_serial.so: Incompatible Slurm plugin version (18.08.6)
+srun: error: Couldn't load specified plugin name for select/serial: Incompatible plugin version
+srun: /usr/lib64/slurm/switch_cray.so: Incompatible Slurm plugin version (18.08.6)
+srun: error: Couldn't load specified plugin name for switch/cray: Incompatible plugin version
+/opt/miniconda3/bin/python3: can't open file 'client.py': [Errno 2] No such file or directory
+srun: error: n03: task 0: Exited with exit code 2

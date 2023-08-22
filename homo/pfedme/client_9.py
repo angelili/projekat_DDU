@@ -19,8 +19,7 @@ import torch
 import torchvision
 import copy
 import mnist
-from server import lambda_reg
-from server import local_epochs
+
 DATA_ROOT = "./dataset"
 Benchmark=True
 FED_BN=False
@@ -109,9 +108,14 @@ class MnistClient(fl.client.NumPyClient):
             ]
         else:
             # Return model parameters as a list of NumPy ndarrays
-            return [val.cpu().numpy() for _, val in self.model.state_dict().items()]  
+            return [val.cpu().numpy() for _, val in self.model.state_dict().items()]        
+
     def fit(self, parameters, config):
-        
+        lambda_reg: int = config["lambda_reg"]
+        local_rounds: int = config["local_rounds"]
+        local_epochs: int = config["local_epochs"]
+        local_iterations: int= config["local_iterations"]
+    
         self.set_parameters(parameters)
         # Define the personalized objective function using the Moreau envelope algorithm
         global_params = [val.detach().clone() for val in self.model.parameters()]
@@ -125,7 +129,7 @@ class MnistClient(fl.client.NumPyClient):
             counter=0
             for batch_idx, (data, target) in enumerate(self.trainloader):
                 data, target = data.to(DEVICE), target.to(DEVICE)
-                for i in range(10):
+                for i in range(local_iterations):
                     optimizer.zero_grad()
                     proximal_term = 0.0
                     for local_weights, global_weights in zip(self.model.parameters(), global_params):
@@ -144,8 +148,9 @@ class MnistClient(fl.client.NumPyClient):
                     for param, global_param in zip(self.model.parameters(), global_params):
                         global_param.data = global_param.data-0.005*lambda_reg*(global_param.data-param.data)
                 counter+=1
-                if counter==120:
+                if counter==local_rounds:
                    break
+
             epoch_loss /= len(self.trainloader.dataset)
             epoch_acc = correct / total
             print(f"Epoch {r+1}: train loss {epoch_loss}, accuracy {epoch_acc}")
