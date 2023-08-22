@@ -67,43 +67,6 @@ def load_data() -> (
     return trainloader, testloader, testset, num_examples
 
 DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-def objective_function(local_model, global_model, lambda_reg, data, target):
-    output = local_model(data)
-    loss = F.cross_entropy(output, target)
-
-    local_params = torch.cat([param.view(-1) for param in local_model.parameters()])
-    global_params = torch.cat([param.view(-1) for param in global_model.parameters()])
-
-    proba=torch.norm(local_params - global_params)**2
-
-    proba_leaf = torch.tensor(proba, requires_grad=True)
-    objective = loss + (lambda_reg/2) * proba_leaf
-
-    return objective, loss, output, target
-def gradient_norm_stop_callback(threshold=1e-5):
-    """
-    Callback function to monitor the optimization process and stop it once the gradient norm falls below a certain
-    threshold.
-
-    Args:
-        threshold (float): Gradient norm threshold. Default is 1e-5.
-    """
-
-    def callback_function(optimizer):
-        gradient_norm = 0.0
-        for group in optimizer.param_groups:
-          
-            for param in group['params']:
-                
-                if isinstance(param.grad, torch.Tensor):
-                    gradient_norm += torch.norm(param.grad)**2
-        gradient_norm = gradient_norm.sqrt().item()
-        if gradient_norm < threshold:
-            print(f'Gradient norm ({gradient_norm:.6f}) is below the threshold ({threshold:.6f}). Stopping optimization.')
-            return True
-
-    return callback_function
-
 
 # Flower Client
 class MnistClient(fl.client.NumPyClient):
