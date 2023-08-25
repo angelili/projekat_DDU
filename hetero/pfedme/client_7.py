@@ -178,7 +178,7 @@ def main() -> None:
       os.environ["https_proxy"] = ""
     # Load data
     if Benchmark==True:
-        data = torch.load('home/s124m21/projekat_DDU/hetero/fedavg/data_7.pth')
+        data = torch.load('/home/s124m21/projekat_DDU/hetero/fedavg/data_7.pth')
         # Retrieve the variables
         trainloader = data['trainloader']
         num_examples = data['num_examples']
