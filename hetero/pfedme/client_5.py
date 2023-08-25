@@ -20,9 +20,11 @@ import torchvision
 import copy
 import mnist
 
+
 DATA_ROOT = "./dataset"
-Benchmark=True
 FED_BN=False
+Benchmark=True
+
 
 def load_data() -> (
     Tuple[torch.utils.data.DataLoader, torch.utils.data.DataLoader, Dict]):
@@ -35,7 +37,7 @@ def load_data() -> (
     
     testset = FashionMNIST(DATA_ROOT, train=False, download=True, transform=transform)
 
-    selected_classes=[8,9]
+    selected_classes=[4,5]
 
     #train
     # Filter the dataset to include only the selected classes
@@ -47,7 +49,7 @@ def load_data() -> (
     indices=indices[:num_samples]
     subset_indices=torch.from_numpy(indices)
     subset_dataset = torch.utils.data.Subset(trainset, subset_indices)
-    trainloader = torch.utils.data.DataLoader(subset_dataset, batch_size=32, shuffle=True)
+    trainloader = torch.utils.data.DataLoader(subset_dataset, batch_size=16, shuffle=True)
     
     #test
     # Filter the dataset to include only the selected classes
@@ -59,7 +61,7 @@ def load_data() -> (
     indices=indices[:num_samples]
     subset_indices=torch.from_numpy(indices)
     subset_dataset = torch.utils.data.Subset(testset, subset_indices)
-    testloader = torch.utils.data.DataLoader(subset_dataset, batch_size=32, shuffle=True)
+    testloader = torch.utils.data.DataLoader(subset_dataset, batch_size=16, shuffle=True)
     
     num_examples = {"trainset": len(trainloader.dataset), "testset": len(testloader.dataset)}
 
@@ -108,7 +110,7 @@ class MnistClient(fl.client.NumPyClient):
             ]
         else:
             # Return model parameters as a list of NumPy ndarrays
-            return [val.cpu().numpy() for _, val in self.model.state_dict().items()]  
+            return [val.cpu().numpy() for _, val in self.model.state_dict().items()]        
 
     def fit(self, parameters, config):
         lambda_reg: int = config["lambda_reg"]
@@ -158,7 +160,7 @@ class MnistClient(fl.client.NumPyClient):
         loss_global, accuracy_global= mnist.test_global(net=self.model, testloader=self.testloader, device=DEVICE)
         
         return self.get_parameters(self.model), self.num_examples["trainset"], {"accuracy_global": float(accuracy_global),"accuracy_person": float(accuracy_person)}
-
+        
     def evaluate(
         self, parameters: List[np.ndarray], config: Dict[str, str]
     ) -> Tuple[float, int, Dict]:
@@ -169,7 +171,7 @@ class MnistClient(fl.client.NumPyClient):
 
 
 def main() -> None:
-    """Load data, start MnistClient."""
+    """Load data, start CifarClient."""
 
     fedl_no_proxy=True
     if fedl_no_proxy:
@@ -177,7 +179,7 @@ def main() -> None:
       os.environ["https_proxy"] = ""
     # Load data
     if Benchmark==True:
-        data = torch.load('/home/s124m21/projekat_DDU/hetero/fedavg/data_10.pth')
+        data = torch.load('home/s124m21/projekat_DDU/hetero/fedavg/data_5.pth')
         # Retrieve the variables
         trainloader = data['trainloader']
         num_examples = data['num_examples']
@@ -187,7 +189,7 @@ def main() -> None:
     
     # Load model
     model = mnist.Net().to(DEVICE)
-   
+    
     # Perform a single forward pass to properly initialize BatchNorm
     _ = model(next(iter(trainloader))[0].to(DEVICE))
 

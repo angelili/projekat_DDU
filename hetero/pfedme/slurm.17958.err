@@ -1,0 +1,22 @@
+srun: /usr/lib64/slurm/select_alps.so: Incompatible Slurm plugin version (18.08.6)
+srun: error: Couldn't load specified plugin name for select/alps: Incompatible plugin version
+srun: /usr/lib64/slurm/select_cray.so: Incompatible Slurm plugin version (18.08.6)
+srun: error: Couldn't load specified plugin name for select/cray: Incompatible plugin version
+srun: /usr/lib64/slurm/select_serial.so: Incompatible Slurm plugin version (18.08.6)
+srun: error: Couldn't load specified plugin name for select/serial: Incompatible plugin version
+srun: /usr/lib64/slurm/switch_cray.so: Incompatible Slurm plugin version (18.08.6)
+srun: error: Couldn't load specified plugin name for switch/cray: Incompatible plugin version
+2023-08-25 14:58:59.687127: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcudart.so.10.1
+Traceback (most recent call last):
+  File "client_6.py", line 204, in <module>
+    main()
+  File "client_6.py", line 183, in main
+    data = torch.load('home/s124m21/projekat_DDU/hetero/fedavg/data_6.pth')
+  File "/home/s124m21/.local/lib/python3.8/site-packages/torch/serialization.py", line 791, in load
+    with _open_file_like(f, 'rb') as opened_file:
+  File "/home/s124m21/.local/lib/python3.8/site-packages/torch/serialization.py", line 271, in _open_file_like
+    return _open_file(name_or_buffer, mode)
+  File "/home/s124m21/.local/lib/python3.8/site-packages/torch/serialization.py", line 252, in __init__
+    super().__init__(open(name, mode))
+FileNotFoundError: [Errno 2] No such file or directory: 'home/s124m21/projekat_DDU/hetero/fedavg/data_6.pth'
+srun: error: n03: task 0: Exited with exit code 1
