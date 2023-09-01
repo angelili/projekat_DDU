@@ -129,7 +129,8 @@ class MnistClient(fl.client.NumPyClient):
             criterion = torch.nn.CrossEntropyLoss()
             optimizer = torch.optim.Adam(self.model.parameters(), lr=0.1)
             for r in range(local_rounds):
-             for batch_idx, (data, target) in enumerate(self.trainloader):
+                data_iterator = iter(self.trainloader)
+                data, target = next(data_iterator)
                 data, target = data.to(DEVICE), target.to(DEVICE) #sample a batch
                 for i in range(local_iterations):
                     optimizer.zero_grad()

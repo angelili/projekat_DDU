@@ -21,8 +21,7 @@ import torch
 import torchvision
 import copy
 import mnist
-from server import lambda_reg
-from server import local_epochs
+
 
 DATA_ROOT = "./dataset"
 Benchmark=False
@@ -114,7 +113,6 @@ class MnistClient(fl.client.NumPyClient):
         else:
             # Return model parameters as a list of NumPy ndarrays
             return [val.cpu().numpy() for _, val in self.model.state_dict().items()]        
-
     def fit(self, parameters, config):
         lambda_reg: int = config["lambda_reg"]
         local_rounds: int = config["local_rounds"]
@@ -132,7 +130,8 @@ class MnistClient(fl.client.NumPyClient):
             criterion = torch.nn.CrossEntropyLoss()
             optimizer = torch.optim.Adam(self.model.parameters(), lr=0.1)
             for r in range(local_rounds):
-             for batch_idx, (data, target) in enumerate(self.trainloader):
+                data_iterator = iter(self.trainloader)
+                data, target = next(data_iterator)
                 data, target = data.to(DEVICE), target.to(DEVICE) #sample a batch
                 for i in range(local_iterations):
                     optimizer.zero_grad()

@@ -127,7 +127,8 @@ class MnistClient(fl.client.NumPyClient):
             criterion = torch.nn.CrossEntropyLoss()
             optimizer = torch.optim.Adam(self.model.parameters(), lr=0.1)
             for r in range(local_rounds):
-             for batch_idx, (data, target) in enumerate(self.trainloader):
+                data_iterator = iter(self.trainloader)
+                data, target = next(data_iterator)
                 data, target = data.to(DEVICE), target.to(DEVICE) #sample a batch
                 for i in range(local_iterations):
                     optimizer.zero_grad()
@@ -177,7 +178,7 @@ def main() -> None:
       os.environ["https_proxy"] = ""
     # Load data
     if Benchmark==True:
-        data = torch.load('home/s124m21/projekat_DDU/hetero/fedavg/data_9.pth')
+        data = torch.load('/home/s124m21/projekat_DDU/hetero/fedavg/data_9.pth')
         # Retrieve the variables
         trainloader = data['trainloader']
         num_examples = data['num_examples']
