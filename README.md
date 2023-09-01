@@ -9,5 +9,4 @@ The focus is on the heterogeneity among data distributions of clients, since tha
 
 In this version, there are 10 different clients. Each client has its dataset, and its client.py. Since the experimentation took place within the faculty’s ”Axiom” computer cluster infrastructure. Each client was trained on a CUDA partition node, this is specified in client.sh while the main,access node of the cluster hosted the server. Clients are then grouped into run.sh, which is then used for invoking them.
 So, in every experiment scenario with FL here, we start the server in a terminal as follows:
-˝ python3 server.py
-˝
+´´´python3 server.py´´´´
