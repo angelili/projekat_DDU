@@ -90,26 +90,6 @@ def load_data() -> (
     return trainloader, testloader, testset, num_examples
     
 
-def load_data_server():
-    
-    transform = transforms.Compose(
-        [transforms.ToTensor(), transforms.Normalize((0.1307), (0.3081))]
-    )
-     # Load the MNIST dataset
-    trainset = FashionMNIST(DATA_ROOT, train=True, download=True, transform=transform)
-    
-    testset = FashionMNIST(DATA_ROOT, train=False, download=True, transform=transform)
-
-    sample_size_test = random.randint(4000, 6000)
-
-    indices_test = random.sample(range(len(testset)), sample_size_test)
-    sampler_test = torch.utils.data.SubsetRandomSampler(indices_test)
-
-    testset_server = torch.utils.data.DataLoader(testset, batch_size=16, shuffle=False, sampler=sampler_test)
-  
-
-    
-    return testset_server
 
 def train(
     net: Net,

@@ -60,14 +60,14 @@ def load_data() -> (
     return trainloader, testloader, testset, num_examples
 
 
-# pylint: disable=no-member
+
 DEVICE: str = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
-# pylint: enable=no-member
+
 
 
 # Flower Client
 class MnistClient(fl.client.NumPyClient):
-    """Flower client implementing CIFAR-10 image classification using
+    """Flower client implementing FashionMNIST image classification using
     PyTorch."""
 
     def __init__(
