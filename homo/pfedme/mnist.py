@@ -17,45 +17,38 @@ DATA_ROOT = "./dataset"
 Dominant_class=False
 Non_uniform_cardinality=False
 
+on_uniform_cardinality=False
 
-def gradient_norm_stop_callback(threshold=1e-5):
-    """
-    Callback function to monitor the optimization process and stop it once the gradient norm falls below a certain
-    threshold.
+def load_data() -> (
+    Tuple[torch.utils.data.DataLoader, torch.utils.data.DataLoader, Dict]):
+    """Load MNIST (training and test set)."""
+    transform = transforms.Compose(
+        [transforms.ToTensor(), transforms.Normalize((0.2859,), (0.3530,))]
+    )
+    # Load the MNIST dataset
+    trainset = FashionMNIST(DATA_ROOT, train=True, download=True, transform=transform)
+    
+    testset = FashionMNIST(DATA_ROOT, train=False, download=True, transform=transform)
 
-    Args:
-        threshold (float): Gradient norm threshold. Default is 1e-5.
-    """
+    if Non_uniform_cardinality==True:
+        sample_size_train = random.randint(4000, 6000)
+        sample_size_test =  int(sample_size_train*0.1)
+    else:
+        sample_size_train=5000
+        sample_size_test=500
 
-    def callback_function(optimizer):
-        gradient_norm = 0.0
-        for group in optimizer.param_groups:
+    indices_train = random.sample(range(len(trainset)), sample_size_train)
+    sampler_train= torch.utils.data.SubsetRandomSampler(indices_train)
 
-            for param in group['params']:
+    trainloader = torch.utils.data.DataLoader(trainset, batch_size=32, shuffle=False, sampler=sampler_train)
+    indices_test = random.sample(range(len(testset)), sample_size_test)
+    sampler_test = torch.utils.data.SubsetRandomSampler(indices_test)
 
-                if isinstance(param.grad, torch.Tensor):
-                    gradient_norm += torch.norm(param.grad)**2
-        gradient_norm = gradient_norm.sqrt().item()
-        if gradient_norm < threshold:
-            print(f'Gradient norm ({gradient_norm:.6f}) is below the threshold ({threshold:.6f}). Stopping optimization.')
-            return True
+    testloader = torch.utils.data.DataLoader(testset, batch_size=32, shuffle=False, sampler=sampler_test)
+    num_examples = {"trainset": sample_size_train, "testset": sample_size_test}
 
-    return callback_function
+    return trainloader, testloader, testset, num_examples
 
-# Define the personalized objective function using the Moreau envelope algorithm
-def objective_function(local_model, global_model, lambda_reg, data, target):
-    output = local_model(data)
-    loss = F.cross_entropy(output, target)
-
-    local_params = torch.cat([param.view(-1) for param in local_model.parameters()])
-    global_params = torch.cat([param.view(-1) for param in global_model.parameters()])
-
-    proba=torch.norm(local_params - global_params)**2
-
-    proba_leaf = torch.tensor(proba, requires_grad=True)
-    objective = loss + (lambda_reg/2) * proba_leaf
-
-    return objective, loss, output, target
 # pylint: disable=unsubscriptable-object
 class Net(nn.Module):
     """Simple CNN adapted from 'PyTorch: A 60 Minute Blitz'."""
@@ -84,145 +77,7 @@ class Net(nn.Module):
         x = self.fc3(x)
         return x
 
-def load_data() -> (
-    Tuple[torch.utils.data.DataLoader, torch.utils.data.DataLoader, Dict]):
-    """Load MNIST (training and test set)."""
-    transform = transforms.Compose(
-        [transforms.ToTensor(), transforms.Normalize((0.1307), (0.3081))]
-    )
-    # Load the MNIST dataset
-    trainset = FashionMNIST(DATA_ROOT, train=True, download=True, transform=transform)
-    
-    testset = FashionMNIST(DATA_ROOT, train=False, download=True, transform=transform)
 
-    if Dominant_class==True:
-  
-
-        # Define the class to include 80% of samples
-        class_to_include = random.randint(0, 9)  # Change this to the desired class
-
-        # Get the indices of samples belonging to the specified class
-        class_indices = torch.where(trainset.targets == class_to_include)[0]
-
-        # Convert to np.array
-        class_indices=class_indices.numpy()
-
-        # Calculate the number of samples to include from the specified class
-        num_samples_class = int(len(class_indices) * 0.8)
-
-        # Shuffle the set of samples from the specified class
-        np.random.shuffle(class_indices)
-
-        # Select the first `num_samples_class` elements
-        subset_indices_class = class_indices[:num_samples_class]
-
-        # Convert back to tensor
-        subset_indices_class=torch.from_numpy(subset_indices_class)
-
-        # Create a Subset of the original dataset using the selected subset indices from the specified class
-        subset_dataset_class = torch.utils.data.Subset(trainset, subset_indices_class)
-
-        # Calculate the number of samples to include from other classes
-        num_samples_other = int(len(trainset) * 0.2)
-
-        # Get the indices of samples from other classes
-        other_indices = torch.where(trainset.targets != class_to_include)[0]
-
-        # Convert to np.array
-        other_indices=other_indices.numpy()
-
-        # Shuffle the set of samples from other classes
-        np.random.shuffle(other_indices)
-
-        # Select the first `num_samples_others` elements
-        subset_indices_other = other_indices[:num_samples_class]
-
-        # Convert back to tensor
-        subset_indices_other=torch.from_numpy(subset_indices_other)
-
-        # Create a Subset of the original dataset using the selected subset indices from other classes
-        subset_dataset_other = torch.utils.data.Subset(trainset, subset_indices_other)
-
-        # Concatenate the subsets from the specified class and other classes
-        trainset_2 = torch.utils.data.ConcatDataset([subset_dataset_class, subset_dataset_other])
-
-        # Create the DataLoader with the specified subsets
-        trainloader = torch.utils.data.DataLoader(trainset_2, batch_size=16, shuffle=True)
-
-
-
-
-        #do the same for the testset
-
-        # Get the indices of samples belonging to the specified class
-        class_indices = torch.where(testset.targets == class_to_include)[0]
-
-        # Convert to np.array
-        class_indices=class_indices.numpy()
-
-        # Calculate the number of samples to include from the specified class
-        num_samples_class = int(len(class_indices) * 0.8)
-
-        # Shuffle the set of samples from the specified class
-        np.random.shuffle(class_indices)
-
-        # Select the first `num_samples_class` elements
-        subset_indices_class = class_indices[:num_samples_class]
-
-        # Convert back to tensor
-        subset_indices_class=torch.from_numpy(subset_indices_class)
-
-        # Create a Subset of the original dataset using the selected subset indices from the specified class
-        subset_dataset_class = torch.utils.data.Subset(testset, subset_indices_class)
-
-        # Calculate the number of samples to include from other classes
-        num_samples_other = int(len(testset) * 0.2)
-
-        # Get the indices of samples from other classes
-        other_indices = torch.where(testset.targets != class_to_include)[0]
-
-        # Convert to np.array
-        other_indices=other_indices.numpy()
-
-        # Shuffle the set of samples from other classes
-        np.random.shuffle(other_indices)
-
-        # Select the first `num_samples_others` elements
-        subset_indices_other = other_indices[:num_samples_class]
-
-        # Convert back to tensor
-        subset_indices_other=torch.from_numpy(subset_indices_other)
-
-        # Create a Subset of the original dataset using the selected subset indices from other classes
-        subset_dataset_other = torch.utils.data.Subset(testset, subset_indices_other)
-
-        # Concatenate the subsets from the specified class and other classes
-        testset_2 = torch.utils.data.ConcatDataset([subset_dataset_class, subset_dataset_other])
-
-        # Create the DataLoader with the specified subsets
-        testloader = torch.utils.data.DataLoader(testset_2, batch_size=16, shuffle=True)
-        num_examples = {"trainset": len(trainset_2), "testset": len(testset_2)}
-
-        return trainloader, testloader, testset, num_examples
-    
-    if Non_uniform_cardinality==True:
-        sample_size_train = random.randint(200, 1000)
-        sample_size_test =  int(sample_size_train*0.1)
-    else:
-        sample_size_train=500
-        sample_size_test=100
-
-    indices_train = random.sample(range(len(trainset)), sample_size_train)
-    sampler_train= torch.utils.data.SubsetRandomSampler(indices_train)
-
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=16, shuffle=False, sampler=sampler_train)
-    indices_test = random.sample(range(len(testset)), sample_size_test)
-    sampler_test = torch.utils.data.SubsetRandomSampler(indices_test)
-
-    testloader = torch.utils.data.DataLoader(testset, batch_size=16, shuffle=False, sampler=sampler_test)
-    num_examples = {"trainset": sample_size_train, "testset": sample_size_test}
-
-    return trainloader, testloader, testset, num_examples
 def load_data_server():
     
     transform = transforms.Compose(
@@ -235,58 +90,7 @@ def load_data_server():
 
     return testset_server
 
-#training the personalized network which, infacts trains the one that goes to the global
-def train(
-    net: Net,
-    trainloader: torch.utils.data.DataLoader,
-    epochs: int,
-    device: torch.device,
-    eta: float,
-    lambda_reg: float  # pylint: disable=no-member
-) -> None:
-    """Train the network."""
-    # Define loss and optimizer
-    criterion = nn.CrossEntropyLoss()
 
-
-    print(f"Training {epochs} epoch(s) w/ {len(trainloader)} batches each")
-
-    # Train the network
-    net.to(device)
-    local_model=copy.deepcopy(net).to(device)
-
-    local_model.train()
-    for epoch in range(epochs):
-        optimizer = torch.optim.SGD(local_model.parameters(), lr=0.001, momentum=0.9)# loop over the dataset multiple times
-        correct_person, total_person, correct_global, total_global, epoch_loss = 0, 0, 0, 0, 0.0
-        for i, data in enumerate(trainloader, 0):
-            images, labels = data[0].to(device), data[1].to(device)
-            optimizer.zero_grad()
-            # zero the parameter gradients
-            objective, loss, output, target = objective_function(local_model, net, 15, images, labels)
-            objective.backward()
-            optimizer.step()
-            # forward + backward + optimize
-
-            epoch_loss += loss
-            total_person += target.size(0)
-            correct_person += (torch.max(output.data, 1)[1] == target).sum().item()
-            total_global += target.size(0)
-            correct_global += (torch.max(net(images).data, 1)[1] == target).sum().item()
-            # Check if the gradient norm is below a threshold
-            if gradient_norm_stop_callback(threshold=1e-5)(optimizer):
-                    break
-           
-        with torch.no_grad():
-            for param, global_param in zip(local_model.parameters(), net.parameters()):
-                global_param.data=global_param.data-eta*lambda_reg*(global_param.data-param.data)
-    
-        epoch_loss /= len(trainloader.dataset)
-        epoch_acc_person = correct_person / total_person
-        epoch_acc_global = correct_global/ total_global
-        print(f"Epoch {epoch+1}: train loss {epoch_loss}, accuracy global {epoch_acc_global}")
-        print(f"Epoch {epoch+1}: train loss {epoch_loss}, accuracy person {epoch_acc_person}")
-    return net, local_model
 
 def test_global(
     net: Net,

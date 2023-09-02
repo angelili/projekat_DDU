@@ -19,7 +19,7 @@ import flwr as fl
 import numpy as np
 import torch
 import torchvision
-import copy
+
 import mnist
 from server import local_epochs
 DATA_ROOT = "./dataset"
@@ -56,7 +56,8 @@ def load_data() -> (
 
     
     selected_targets = trainset.targets[indices]
-
+    
+    #checkup
     class_counts = {}
     for class_idx in selected_classes:
         count = (selected_targets == class_idx).sum().item()
@@ -82,9 +83,8 @@ def load_data() -> (
 
     return trainloader, testloader, testset, num_examples
 
-# pylint: disable=no-member
 DEVICE: str = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-# pylint: enable=no-member
+
 
 
 # Flower Client

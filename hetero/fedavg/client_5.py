@@ -83,9 +83,9 @@ def load_data() -> (
 
     return trainloader, testloader, testset, num_examples
 
-# pylint: disable=no-member
+
 DEVICE: str = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-# pylint: enable=no-member
+
 
 
 # Flower Client

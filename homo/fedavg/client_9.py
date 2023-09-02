@@ -1,4 +1,3 @@
-"""Flower client example using PyTorch for MNIST image classification."""
 
 """Flower client example using PyTorch for Fashion_MNIST image classification."""
 
@@ -68,7 +67,7 @@ DEVICE: str = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 # Flower Client
 class MnistClient(fl.client.NumPyClient):
-    """Flower client implementing CIFAR-10 image classification using
+    """Flower client implementing image classification using
     PyTorch."""
 
     def __init__(

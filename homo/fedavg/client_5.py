@@ -1,4 +1,3 @@
-"""Flower client example using PyTorch for MNIST image classification."""
 """Flower client example using PyTorch for Fashion_MNIST image classification."""
 
 

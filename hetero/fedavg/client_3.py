@@ -19,7 +19,7 @@ import flwr as fl
 import numpy as np
 import torch
 import torchvision
-import copy
+
 import mnist
 from server import local_epochs
 DATA_ROOT = "./dataset"

@@ -24,44 +24,35 @@ DATA_ROOT = "./dataset"
 Benchmark=True
 FED_BN=False
 
+Non_uniform_cardinality=False
+
 def load_data() -> (
     Tuple[torch.utils.data.DataLoader, torch.utils.data.DataLoader, Dict]):
     """Load MNIST (training and test set)."""
     transform = transforms.Compose(
-        [transforms.ToTensor(), transforms.Normalize((0.2859), (0.3530))]
+        [transforms.ToTensor(), transforms.Normalize((0.2859,), (0.3530,))]
     )
     # Load the MNIST dataset
     trainset = FashionMNIST(DATA_ROOT, train=True, download=True, transform=transform)
     
     testset = FashionMNIST(DATA_ROOT, train=False, download=True, transform=transform)
 
-    selected_classes=[8,9]
+    if Non_uniform_cardinality==True:
+        sample_size_train = random.randint(4000, 6000)
+        sample_size_test =  int(sample_size_train*0.1)
+    else:
+        sample_size_train=5000
+        sample_size_test=500
 
-    #train
-    # Filter the dataset to include only the selected classes
-    indices = torch.where(torch.logical_or(trainset.targets == selected_classes[0],
-                                        trainset.targets == selected_classes[1]))[0]
-    indices=indices.numpy()
-    np.random.shuffle(indices)
-    num_samples= random.randint(1000,2000)
-    indices=indices[:num_samples]
-    subset_indices=torch.from_numpy(indices)
-    subset_dataset = torch.utils.data.Subset(trainset, subset_indices)
-    trainloader = torch.utils.data.DataLoader(subset_dataset, batch_size=16, shuffle=True)
-    
-    #test
-    # Filter the dataset to include only the selected classes
-    indices = torch.where(torch.logical_or(testset.targets == selected_classes[0],
-                                        testset.targets == selected_classes[1]))[0]
-    indices=indices.numpy()
-    np.random.shuffle(indices)
-    num_samples= int(num_samples*0.1)
-    indices=indices[:num_samples]
-    subset_indices=torch.from_numpy(indices)
-    subset_dataset = torch.utils.data.Subset(testset, subset_indices)
-    testloader = torch.utils.data.DataLoader(subset_dataset, batch_size=16, shuffle=True)
-    
-    num_examples = {"trainset": len(trainloader.dataset), "testset": len(testloader.dataset)}
+    indices_train = random.sample(range(len(trainset)), sample_size_train)
+    sampler_train= torch.utils.data.SubsetRandomSampler(indices_train)
+
+    trainloader = torch.utils.data.DataLoader(trainset, batch_size=32, shuffle=False, sampler=sampler_train)
+    indices_test = random.sample(range(len(testset)), sample_size_test)
+    sampler_test = torch.utils.data.SubsetRandomSampler(indices_test)
+
+    testloader = torch.utils.data.DataLoader(testset, batch_size=32, shuffle=False, sampler=sampler_test)
+    num_examples = {"trainset": sample_size_train, "testset": sample_size_test}
 
     return trainloader, testloader, testset, num_examples
 

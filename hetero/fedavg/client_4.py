@@ -20,7 +20,7 @@ import flwr as fl
 import numpy as np
 import torch
 import torchvision
-import copy
+
 import mnist
 from server import local_epochs
 DATA_ROOT = "./dataset"
@@ -82,9 +82,9 @@ def load_data() -> (
     num_examples = {"trainset": len(trainloader.dataset), "testset": len(testloader.dataset)}
 
     return trainloader, testloader, testset, num_examples
-# pylint: disable=no-member
+
 DEVICE: str = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-# pylint: enable=no-member
+
 
 
 # Flower Client
