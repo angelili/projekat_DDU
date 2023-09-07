@@ -126,9 +126,10 @@ class MnistClient(fl.client.NumPyClient):
             # Local update on client 
             criterion = torch.nn.CrossEntropyLoss()
             optimizer = torch.optim.Adam(self.model.parameters(), lr=0.1)
-            counter=0
-            for batch_idx, (data, target) in enumerate(self.trainloader):
-                data, target = data.to(DEVICE), target.to(DEVICE)
+            for r in range(local_rounds):
+                data_iterator = iter(self.trainloader)
+                data, target = next(data_iterator)
+                data, target = data.to(DEVICE), target.to(DEVICE) #sample a batch
                 for i in range(local_iterations):
                     optimizer.zero_grad()
                     proximal_term = 0.0
@@ -141,16 +142,13 @@ class MnistClient(fl.client.NumPyClient):
                     total += target.size(0)
                     correct += (torch.max(self.model(data).data, 1)[1] == target).sum().item()
 
-                    # Check if the gradient norm is below a threshold
+                   #update the model
                     
                 
                 with torch.no_grad():
                     for param, global_param in zip(self.model.parameters(), global_params):
                         global_param.data = global_param.data-0.005*lambda_reg*(global_param.data-param.data)
-                counter+=1
-                if counter==local_rounds:
-                   break
-
+             
             epoch_loss /= len(self.trainloader.dataset)
             epoch_acc = correct / total
             print(f"Epoch {r+1}: train loss {epoch_loss}, accuracy {epoch_acc}")
