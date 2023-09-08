@@ -157,9 +157,7 @@ class MnistClient(fl.client.NumPyClient):
                     loss = criterion(self.model(data), target) + (lambda_reg/2) * proximal_term
                     loss.backward()
                     optimizer.step()
-                    epoch_loss += loss
-                    total += target.size(0)
-                    correct += (torch.max(self.model(data).data, 1)[1] == target).sum().item()
+
 
                    #update the model
                     
@@ -167,10 +165,7 @@ class MnistClient(fl.client.NumPyClient):
                 with torch.no_grad():
                     for param, global_param in zip(self.model.parameters(), global_params):
                         global_param.data = global_param.data-0.005*lambda_reg*(global_param.data-param.data)
-             
-            epoch_loss /= len(self.trainloader.dataset)
-            epoch_acc = correct / total
-            print(f"Epoch {r+1}: train loss {epoch_loss}, accuracy {epoch_acc}")
+           
         loss_person, accuracy_person= mnist.test_local(local_model=self.model, testloader=self.testloader, device=DEVICE)
         with torch.no_grad():     
           for param, global_param in zip(self.model.parameters(), global_params):
