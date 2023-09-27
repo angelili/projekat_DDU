@@ -24,3 +24,4 @@ After the server is up and running, we invoke the clients with:
 ```
 ./run.sh
 ```
+The dataset is already downloaded on top of this directory, the reason is simply beacause if not downloaded beforehand initializing the server leads to bottleneck of data download. If one doesn't want to download the dataset along with this directory, first run any of the centralized scripts mnist.py, and then the dataset is download on top of the directory.
