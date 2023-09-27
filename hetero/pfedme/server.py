@@ -12,7 +12,8 @@ from torch import Tensor
 import mnist
 import json
 import matplotlib.pyplot as plt
-DATA_ROOT = "./dataset"
+
+DATA_ROOT = "/home/s124m21/projekat_DDU/dataset"
 FED_BN=False
 
 lambda_reg=15

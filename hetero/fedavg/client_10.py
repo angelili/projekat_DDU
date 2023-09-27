@@ -24,7 +24,7 @@ import torchvision
 import copy
 import mnist
 from server import local_epochs
-DATA_ROOT = "./dataset"
+DATA_ROOT = "/home/s124m21/projekat_DDU/dataset"
 Benchmark=True
 
 def load_data() -> (

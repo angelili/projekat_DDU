@@ -23,7 +23,8 @@ import copy
 import mnist
 
 
-DATA_ROOT = "./dataset"
+
+DATA_ROOT = "/home/s124m21/projekat_DDU/dataset"
 Benchmark=True
 FED_BN=False
 Non_uniform_cardinality=False

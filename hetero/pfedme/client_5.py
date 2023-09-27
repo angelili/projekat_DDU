@@ -20,8 +20,7 @@ import torchvision
 import copy
 import mnist
 
-
-DATA_ROOT = "./dataset"
+DATA_ROOT = "/home/s124m21/projekat_DDU/dataset"
 FED_BN=False
 Benchmark=True
 

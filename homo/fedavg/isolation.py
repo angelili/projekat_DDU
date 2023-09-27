@@ -15,7 +15,8 @@ import torch
 import numpy as np
 
 Non_uniform_cardinality=False
-DATA_ROOT = "./dataset"
+
+DATA_ROOT = "/home/s124m21/projekat_DDU/dataset"
 
 class Net(nn.Module):
     def __init__(self) -> None:

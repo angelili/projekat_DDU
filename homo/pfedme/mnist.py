@@ -13,7 +13,8 @@ import copy
 import random
 import numpy as np
 
-DATA_ROOT = "./dataset"
+
+DATA_ROOT = "/home/s124m21/projekat_DDU/dataset"
 Dominant_class=False
 Non_uniform_cardinality=False
 

@@ -14,7 +14,7 @@ from torch import Tensor
 import matplotlib.pyplot as plt
 import json
 import mnist
-DATA_ROOT = "./dataset"
+DATA_ROOT = "/home/s124m21/projekat_DDU/dataset"
 
 local_epochs=1
 

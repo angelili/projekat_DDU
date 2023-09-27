@@ -14,11 +14,9 @@ import torch
 import numpy as np
 
 
-DATA_ROOT = "./dataset"
 
+DATA_ROOT = "/home/s124m21/projekat_DDU/dataset"
 
-
-# pylint: disable=unsubscriptable-object
 
  
 class Net(nn.Module):
@@ -35,8 +33,6 @@ class Net(nn.Module):
         self.bn4 = nn.BatchNorm1d(84)
         self.fc3 = nn.Linear(84, 10)
 
-
-    # pylint: disable=arguments-differ,invalid-name
     def forward(self, x: Tensor) -> Tensor:
         """Compute forward pass."""
         x = self.pool(F.relu(self.bn1(self.conv1(x))))

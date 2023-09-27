@@ -23,7 +23,8 @@ import copy
 import mnist
 from server import local_epochs
 from mnist import trainloaders, testloaders
-DATA_ROOT = "./dataset"
+
+DATA_ROOT = "/home/s124m21/projekat_DDU/dataset"
 Benchmark=True
 
 Non_uniform_cardinality=True
