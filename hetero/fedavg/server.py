@@ -1,4 +1,4 @@
-"""Flower server example."""
+"""Flower server"""
 
 from collections import OrderedDict
 import flwr as fl
@@ -16,7 +16,7 @@ import json
 import mnist
 DATA_ROOT = "/home/s124m21/projekat_DDU/dataset"
 
-local_epochs=1
+
 
 
 
@@ -47,7 +47,7 @@ def load_data_server():
 
     
     
-    #selected_classes = [0, 1, 2, 3]  # Replace with  selected classes
+    #selected_classes = [0, 1, 2, 3]  # Replace with  selected classes, if the overall classes among clients are less then all 10
 
     # Convert selected_classes list to a tensor
     #selected_classes_tensor = torch.tensor(selected_classes)
@@ -79,7 +79,7 @@ def get_evaluate_fn(
     def evaluate(
         server_round: int, parameters: fl.common.NDArrays, config: Dict[str, Union[int, float, complex]]
     ) -> Optional[Tuple[float, float]]:
-        """Use the entire MNIST test set for evaluation."""
+        """Use the entire FashionMNIST test set for evaluation."""
 
         # determine device
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -121,7 +121,13 @@ def agg_metrics_train(metrics: List[Tuple[int, Metrics]]) -> Metrics:
     # Aggregate and return custom metric (weighted average)
     return {"accuracy_local": sum(accuracies) / sum(examples)}
     
-   
+def fit_config(server_round: int):
+    """Return training configuration dict for each round."""
+
+    config = {
+     "local_epochs":1,
+    }
+    return config
 
 
     
@@ -140,7 +146,8 @@ if __name__ == "__main__":
         min_available_clients=10,
         evaluate_fn=get_evaluate_fn(testset),  #centralised evaluation of global model
         fit_metrics_aggregation_fn=agg_metrics_train,
-        evaluate_metrics_aggregation_fn=weighted_average
+        evaluate_metrics_aggregation_fn=weighted_average,
+        on_fit_config_fn=fit_config,
     )
     fl.server.start_server(
         server_address= "10.30.0.254:9000",

@@ -15,11 +15,11 @@ import torch
 import numpy as np
 
 
-DATA_ROOT = "./dataset"
+DATA_ROOT = "/home/s124m21/projekat_DDU/dataset"
 
 
 
-# pylint: disable=unsubscriptable-object
+
 
 def load_data() -> (
     Tuple[torch.utils.data.DataLoader, torch.utils.data.DataLoader, Dict]):
@@ -27,7 +27,7 @@ def load_data() -> (
     transform = transforms.Compose(
         [transforms.ToTensor(), transforms.Normalize((0.2859), (0.3530))]
     )
-    # Load the MNIST dataset
+    # Load the FashionMNIST dataset
     trainset = FashionMNIST(DATA_ROOT, train=True, download=True, transform=transform)
     
     testset = FashionMNIST(DATA_ROOT, train=False, download=True, transform=transform)
@@ -92,7 +92,7 @@ class Net(nn.Module):
         self.bn4 = nn.BatchNorm1d(84)
         self.fc3 = nn.Linear(84, 10)
 
-    # pylint: disable=arguments-differ,invalid-name
+    
     def forward(self, x: Tensor) -> Tensor:
         """Compute forward pass."""
         x = self.pool(F.relu(self.bn1(self.conv1(x))))
@@ -110,7 +110,7 @@ def train(
     net: Net,
     trainloader: torch.utils.data.DataLoader,
     epochs: int,
-    device: torch.device,  # pylint: disable=no-member
+    device: torch.device,  
 ) -> None:
     """Train the network."""
     # Define loss and optimizer
@@ -139,27 +139,7 @@ def train(
             optimizer.step()
 
             
-        
-
-def ploting(losses,accuracies):
-    plt.figure(figsize=(10, 5))
-    plt.subplot(1, 2, 1)
-    plt.plot(losses, label='Training Loss')
-    plt.xlabel('Epoch')
-    plt.ylabel('Loss')
-    plt.title('Training Loss Curve')
-    plt.legend()
-
-    plt.subplot(1, 2, 2)
-    plt.plot(accuracies, label='Training Accuracy', color='orange')
-    plt.xlabel('Epoch')
-    plt.ylabel('Accuracy')
-    plt.title('Training Accuracy Curve')
-    plt.legend()
-
-    plt.tight_layout()
-    plt.show()
-    plt.savefig('photo.png')        
+            
 
 def test(
     net: Net,
@@ -183,27 +163,6 @@ def test(
             correct += (predicted == labels).sum().item()
     accuracy = correct / len(testloader.dataset)
     return loss, accuracy
-
-def ploting(losses,accuracies):
-    plt.figure(figsize=(10, 5))
-    plt.subplot(1, 2, 1)
-    plt.plot(losses, label='Training Loss')
-    plt.xlabel('Epoch')
-    plt.ylabel('Loss')
-    plt.title('Training Loss Curve')
-    plt.legend()
-
-    plt.subplot(1, 2, 2)
-    plt.plot(accuracies, label='Training Accuracy', color='orange')
-    plt.xlabel('Epoch')
-    plt.ylabel('Accuracy')
-    plt.title('Training Accuracy Curve')
-    plt.legend()
-
-    plt.tight_layout()
-    plt.show()
-    plt.savefig('photo.png')
-
 
 def main():
     DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")

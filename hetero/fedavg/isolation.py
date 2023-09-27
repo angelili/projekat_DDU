@@ -15,11 +15,10 @@ import torch
 import numpy as np
 
 
-DATA_ROOT = "./dataset"
+
+DATA_ROOT = "/home/s124m21/projekat_DDU/dataset"
 
 
-
-# pylint: disable=unsubscriptable-object
 
 def load_data() -> (
     Tuple[torch.utils.data.DataLoader, torch.utils.data.DataLoader, Dict]):
@@ -92,7 +91,6 @@ class Net(nn.Module):
         self.bn4 = nn.BatchNorm1d(84)
         self.fc3 = nn.Linear(84, 10)
 
-    # pylint: disable=arguments-differ,invalid-name
     def forward(self, x: Tensor) -> Tensor:
         """Compute forward pass."""
         x = self.pool(F.relu(self.bn1(self.conv1(x))))
@@ -109,7 +107,7 @@ def train(
     trainloader: torch.utils.data.DataLoader,
     testloader: torch.utils.data.DataLoader,
     epochs: int,
-    device: torch.device,  # pylint: disable=no-member
+    device: torch.device,  
 ) -> None:
     """Train the network."""
     # Define loss and optimizer

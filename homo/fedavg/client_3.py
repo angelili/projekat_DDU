@@ -1,9 +1,8 @@
-"""Flower client example using PyTorch for FashionMNIST image classification."""
+"""Flower client using PyTorch for FashionMNIST image classification."""
 
 
 import os
-import sys
-import timeit
+
 from collections import OrderedDict
 from typing import Dict, List, Tuple
 import torch
@@ -19,11 +18,9 @@ import flwr as fl
 import numpy as np
 import torch
 import torchvision
-import copy
-import mnist
-from server import local_epochs
-from mnist import trainloaders, testloaders
 
+import mnist
+from mnist import trainloaders, testloaders
 
 DATA_ROOT = "/home/s124m21/projekat_DDU/dataset"
 Benchmark=True
@@ -31,11 +28,11 @@ Non_uniform_cardinality=True
 
 def load_data() -> (
     Tuple[torch.utils.data.DataLoader, torch.utils.data.DataLoader, Dict]):
-    """Load MNIST (training and test set)."""
+    """Load FashionMNIST (training and test set)."""
     transform = transforms.Compose(
         [transforms.ToTensor(), transforms.Normalize((0.2859), (0.3530))]
     )
-    # Load the MNIST dataset
+    # Load the FashionMNIST dataset
     trainset = FashionMNIST(DATA_ROOT, train=True, download=True, transform=transform)
     
     testset = FashionMNIST(DATA_ROOT, train=False, download=True, transform=transform)
@@ -60,9 +57,8 @@ def load_data() -> (
     return trainloader, testloader, testset, num_examples
 
 
-# pylint: disable=no-member
 DEVICE: str = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-# pylint: enable=no-member
+
 
 
 # Flower Client
@@ -97,6 +93,7 @@ class MnistClient(fl.client.NumPyClient):
     def fit(
         self, parameters: List[np.ndarray], config: Dict[str, str]
     ) -> Tuple[List[np.ndarray], int, Dict]:
+        local_epochs: int = config["local_epochs"]
         # Set model parameters, train model, return updated model parameters
         self.set_parameters(parameters)
         mnist.train(self.model, self.trainloader, epochs=local_epochs, device=DEVICE)
@@ -109,8 +106,6 @@ class MnistClient(fl.client.NumPyClient):
         # Set model parameters, evaluate model on local test dataset, return result
         self.set_parameters(parameters)
         loss, accuracy = mnist.test(self.model, self.testloader, device=DEVICE)
-        print(type(accuracy), accuracy)
-        print(type({"accuracy": float(accuracy)}))
         return float(loss), self.num_examples["testset"], {"accuracy": float(accuracy)}
 
 

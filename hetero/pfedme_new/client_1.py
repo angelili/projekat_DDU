@@ -1,9 +1,8 @@
-"""Flower client example using PyTorch for Fashion_MNIST image classification."""
+"""Flower client using PyTorch for FashionMNIST image classification."""
 
 
 import os
-import sys
-import timeit
+
 from collections import OrderedDict
 from typing import Dict, List, Tuple
 import torch
@@ -19,10 +18,7 @@ import flwr as fl
 import numpy as np
 import torch
 import torchvision
-import copy
 import mnist
-
-
 
 
 DATA_ROOT = "/home/s124m21/projekat_DDU/dataset"
@@ -31,11 +27,11 @@ FED_BN=False
 
 def load_data() -> (
     Tuple[torch.utils.data.DataLoader, torch.utils.data.DataLoader, Dict]):
-    """Load MNIST (training and test set)."""
+    """Load FashionMNIST (training and test set)."""
     transform = transforms.Compose(
         [transforms.ToTensor(), transforms.Normalize((0.2859), (0.3530))]
     )
-    # Load the MNIST dataset
+    # Load the FashionMNIST dataset
     trainset = FashionMNIST(DATA_ROOT, train=True, download=True, transform=transform)
     
     testset = FashionMNIST(DATA_ROOT, train=False, download=True, transform=transform)
@@ -91,7 +87,7 @@ DEVICE = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
 
 # Flower Client
 class MnistClient(fl.client.NumPyClient):
-    """Flower client implementing mnist image classification using
+    """Flower client implementing FashionMNIST image classification using
     PyTorch."""
 
     def __init__(

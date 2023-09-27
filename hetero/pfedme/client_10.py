@@ -1,7 +1,8 @@
+"""Flower client using PyTorch for FashionMNIST image classification."""
+
 
 import os
-import sys
-import timeit
+
 from collections import OrderedDict
 from typing import Dict, List, Tuple
 import torch
@@ -17,8 +18,8 @@ import flwr as fl
 import numpy as np
 import torch
 import torchvision
-import copy
 import mnist
+
 
 DATA_ROOT = "/home/s124m21/projekat_DDU/dataset"
 Benchmark=True
@@ -26,33 +27,49 @@ FED_BN=False
 
 def load_data() -> (
     Tuple[torch.utils.data.DataLoader, torch.utils.data.DataLoader, Dict]):
-    """Load MNIST (training and test set)."""
+    """Load FashionMNIST (training and test set)."""
     transform = transforms.Compose(
         [transforms.ToTensor(), transforms.Normalize((0.2859), (0.3530))]
     )
-    # Load the MNIST dataset
+    # Load the FashionMNIST dataset
     trainset = FashionMNIST(DATA_ROOT, train=True, download=True, transform=transform)
     
     testset = FashionMNIST(DATA_ROOT, train=False, download=True, transform=transform)
 
-    selected_classes=[8,9]
+    selected_classes = [9, 0, 1, 2, 3]  # Replace with your selected classes
 
-    #train
+    # Convert selected_classes list to a tensor
+    selected_classes_tensor = torch.tensor(selected_classes)
+
     # Filter the dataset to include only the selected classes
-    indices = torch.where(torch.logical_or(trainset.targets == selected_classes[0],
-                                        trainset.targets == selected_classes[1]))[0]
+    indices = torch.where(torch.isin(trainset.targets, selected_classes_tensor))[0]
+
+
+   
     indices=indices.numpy()
     np.random.shuffle(indices)
-    num_samples= random.randint(1000,2000)
+    num_samples= random.randint(4000,6000)
     indices=indices[:num_samples]
     subset_indices=torch.from_numpy(indices)
     subset_dataset = torch.utils.data.Subset(trainset, subset_indices)
     trainloader = torch.utils.data.DataLoader(subset_dataset, batch_size=32, shuffle=True)
+
     
-    #test
+    selected_targets = trainset.targets[indices]
+
+    class_counts = {}
+    for class_idx in selected_classes:
+        count = (selected_targets == class_idx).sum().item()
+        class_counts[class_idx] = count
+
+    # Print the class counts
+    for class_idx, count in class_counts.items():
+        print(f"Class {class_idx}: {count}")
+
     # Filter the dataset to include only the selected classes
-    indices = torch.where(torch.logical_or(testset.targets == selected_classes[0],
-                                        testset.targets == selected_classes[1]))[0]
+    indices = torch.where(torch.isin(testset.targets, selected_classes_tensor))[0]
+  
+  
     indices=indices.numpy()
     np.random.shuffle(indices)
     num_samples= int(num_samples*0.1)
@@ -64,7 +81,6 @@ def load_data() -> (
     num_examples = {"trainset": len(trainloader.dataset), "testset": len(testloader.dataset)}
 
     return trainloader, testloader, testset, num_examples
-
 DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 # Flower Client

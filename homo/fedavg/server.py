@@ -1,5 +1,4 @@
-
-"""Flower server example."""
+"""Flower server"""
 
 from collections import OrderedDict
 import flwr as fl
@@ -15,7 +14,7 @@ from torch import Tensor
 import mnist
 import json
 
-local_epochs=2
+
 import matplotlib.pyplot as plt
 
 
@@ -95,7 +94,13 @@ def agg_metrics_train(metrics: List[Tuple[int, Metrics]]) -> Metrics:
     # Aggregate and return custom metric (weighted average)
     return {"accuracy_local": sum(accuracies) / sum(examples)}
     
-   
+def fit_config(server_round: int):
+    """Return training configuration dict for each round."""
+
+    config = {
+     "local_epochs":2,
+    }
+    return config
 
 
     
@@ -114,7 +119,8 @@ if __name__ == "__main__":
         min_available_clients=10,
         evaluate_fn=get_evaluate_fn(testset),  #centralised evaluation of global model
         fit_metrics_aggregation_fn=agg_metrics_train,
-        evaluate_metrics_aggregation_fn=weighted_average
+        evaluate_metrics_aggregation_fn=weighted_average,
+        on_fit_config_fn=fit_config,
     )
     fl.server.start_server(
         server_address= "10.30.0.254:9000",

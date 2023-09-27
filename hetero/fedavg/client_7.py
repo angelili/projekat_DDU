@@ -1,11 +1,8 @@
-"""Flower client example using PyTorch for MNIST image classification."""
-
-"""Flower client example using PyTorch for Fashion_MNIST image classification."""
+"""Flower client example using PyTorch for FashionMNIST image classification."""
 
 
 import os
-import sys
-import timeit
+
 from collections import OrderedDict
 from typing import Dict, List, Tuple
 import torch
@@ -21,15 +18,14 @@ import flwr as fl
 import numpy as np
 import torch
 import torchvision
-import copy
 import mnist
-from server import local_epochs
+
 DATA_ROOT = "/home/s124m21/projekat_DDU/dataset"
 Benchmark=False
 
 def load_data() -> (
     Tuple[torch.utils.data.DataLoader, torch.utils.data.DataLoader, Dict]):
-    """Load MNIST (training and test set)."""
+    """Load FashionMNIST (training and test set)."""
     transform = transforms.Compose(
         [transforms.ToTensor(), transforms.Normalize((0.2859), (0.3530))]
     )
@@ -84,14 +80,14 @@ def load_data() -> (
 
     return trainloader, testloader, testset, num_examples
 
-# pylint: disable=no-member
+
 DEVICE: str = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-# pylint: enable=no-member
+
 
 
 # Flower Client
 class MnistClient(fl.client.NumPyClient):
-    """Flower client implementing CIFAR-10 image classification using
+    """Flower client implementing FashionMNIST image classification using
     PyTorch."""
 
     def __init__(
@@ -122,6 +118,7 @@ class MnistClient(fl.client.NumPyClient):
         self, parameters: List[np.ndarray], config: Dict[str, str]
     ) -> Tuple[List[np.ndarray], int, Dict]:
         # Set model parameters, train model, return updated model parameters
+        local_epochs: int = config["local_epochs"]
         self.set_parameters(parameters)
         mnist.train(self.model, self.trainloader, epochs=local_epochs, device=DEVICE)
         loss, accuracy = mnist.test(net=self.model, testloader=self.testloader, device=DEVICE)
@@ -133,13 +130,11 @@ class MnistClient(fl.client.NumPyClient):
         # Set model parameters, evaluate model on local test dataset, return result
         self.set_parameters(parameters)
         loss, accuracy = mnist.test(self.model, self.testloader, device=DEVICE)
-        print(type(accuracy), accuracy)
-        print(type({"accuracy": float(accuracy)}))
         return float(loss), self.num_examples["testset"], {"accuracy": float(accuracy)}
 
 
 def main() -> None:
-    """Load data, start CifarClient."""
+    """Load data, start MnistClient."""
 
     fedl_no_proxy=True
 

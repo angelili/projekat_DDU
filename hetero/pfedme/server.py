@@ -65,7 +65,7 @@ def load_data_server():
 
     
     
-    #selected_classes = [0, 1, 2, 3]  # Replace with  selected classes
+    #selected_classes = [0, 1, 2, 3]  # Replace with  selected classes, if the overall class distribution is not all 10 classes
 
     # Convert selected_classes list to a tensor
     #selected_classes_tensor = torch.tensor(selected_classes)
