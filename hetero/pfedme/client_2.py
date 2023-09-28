@@ -85,7 +85,7 @@ DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 # Flower Client
 class MnistClient(fl.client.NumPyClient):
-    """Flower client implementing FashionMNISTimage classification using
+    """Flower client implementing FashionMNIST image classification using
     PyTorch."""
 
     def __init__(
