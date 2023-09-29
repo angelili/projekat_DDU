@@ -6,9 +6,7 @@ import numpy as np
 import torch
 import torchvision
 from typing import Callable, Optional, Tuple, Dict, Union, List
-from torchvision.datasets import MNIST
-import torchvision.transforms as transforms
-from torch import Tensor
+
 import mnist
 import json
 import matplotlib.pyplot as plt
@@ -18,7 +16,7 @@ FED_BN=False
 
 lambda_reg=15
 
-# Load each dictionary from the JSON files
+# Load each dictionary from the JSON files, metrics from FedAvg
 with open("/home/s124m21/projekat_DDU/homo/fedavg/training_history_acc_cent_fed_avg.json", "r") as json_file:
     data1 = json.load(json_file)
 
@@ -28,6 +26,7 @@ with open("/home/s124m21/projekat_DDU/homo/fedavg/training_history_acc_dist_fed_
 with open("/home/s124m21/projekat_DDU/homo/fedavg/training_history_loss_cent_fed_avg.json", "r") as json_file:
     data3 = json.load(json_file)
 
+#this plot is for history
 def plot_training_history(training_history,data,path):
     plt.figure()
     # Iterate over each metric in the training history dictionary
@@ -64,6 +63,7 @@ def plot_training_history_thin(training_history,data,path):
     # Show the plot
     plt.show()
 
+#preparing empty dictionaries for metrics in pfedme, to be filled in each global round
 training_history_acc_dist={"accuracy_global_pfedme": [], "accuracy_local_pfedme": [], "accuracy_personalized_pfedme":[]}
 training_history_acc_cent={'accuracy_centralized_pfedme': []}
 training_history_loss_dist={"loss_distributed_pfedme": []}

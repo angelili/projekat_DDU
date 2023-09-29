@@ -96,7 +96,7 @@ def get_evaluate_fn(
     def evaluate(
         server_round: int, parameters: fl.common.NDArrays, config: Dict[str, Union[int, float, complex]]
     ) -> Optional[Tuple[float, float]]:
-        """Use the entire MNIST test set for evaluation."""
+        """Use the entire FashionMNIST test set for evaluation."""
 
         # determine device
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")

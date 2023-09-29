@@ -5,28 +5,27 @@ from typing import Tuple, Dict
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import torchvision
+
 import torchvision.transforms as transforms
 from torch import Tensor
 from torchvision.datasets import FashionMNIST
-import copy
+
 import random
-import numpy as np
 
 
 DATA_ROOT = "/home/s124m21/projekat_DDU/dataset"
 Dominant_class=False
 Non_uniform_cardinality=False
 
-on_uniform_cardinality=False
+
 
 def load_data() -> (
     Tuple[torch.utils.data.DataLoader, torch.utils.data.DataLoader, Dict]):
-    """Load MNIST (training and test set)."""
+    """Load FashionMNIST (training and test set)."""
     transform = transforms.Compose(
         [transforms.ToTensor(), transforms.Normalize((0.2859,), (0.3530,))]
     )
-    # Load the MNIST dataset
+    # Load the FashionMNIST dataset
     trainset = FashionMNIST(DATA_ROOT, train=True, download=True, transform=transform)
     
     testset = FashionMNIST(DATA_ROOT, train=False, download=True, transform=transform)
@@ -50,10 +49,9 @@ def load_data() -> (
 
     return trainloader, testloader, testset, num_examples
 
-# pylint: disable=unsubscriptable-object
-class Net(nn.Module):
-    """Simple CNN adapted from 'PyTorch: A 60 Minute Blitz'."""
 
+class Net(nn.Module):
+  
     def __init__(self) -> None:
         super(Net, self).__init__()
         self.conv1 = nn.Conv2d(1, 6, 5)
@@ -67,7 +65,6 @@ class Net(nn.Module):
         self.bn4 = nn.BatchNorm1d(84)
         self.fc3 = nn.Linear(84, 10)
 
-    # pylint: disable=arguments-differ,invalid-name
     def forward(self, x: Tensor) -> Tensor:
         """Compute forward pass."""
         x = self.pool(F.relu(self.bn1(self.conv1(x))))
@@ -91,12 +88,65 @@ def load_data_server():
 
     return testset_server
 
+#training the personalized network which, infacts trains the one that goes to the global
+def train(
+    model: Net,
+    trainloader: torch.utils.data.DataLoader,
+    testloader: torch.utils.data.DataLoader,
+    local_epochs: int,
+    local_iterations: int,
+    local_rounds: int,
+    device: torch.device,
+    eta: float,
+    lambda_reg: float 
+) -> None:
+    """Train the network."""
+       
+    # Define the personalized objective function using the Moreau envelope algorithm
+    global_params = [val.detach().clone() for val in model.parameters()]
+    model.train()
+  
+    for r in range(local_epochs):
+        # Local update on client 
+        criterion = torch.nn.CrossEntropyLoss()
+        optimizer = torch.optim.Adam(model.parameters(), lr=0.1)
+        for r in range(local_rounds):
+            data_iterator = iter(trainloader)
+            data, target = next(data_iterator)
+            data, target = data.to(device), target.to(device) #sample a batch
+            for i in range(local_iterations):
+                optimizer.zero_grad()
+                proximal_term = 0.0
+                for local_weights, global_weights in zip(model.parameters(), global_params):
+                    proximal_term += (local_weights - global_weights).norm(2)**2
+                loss = criterion(model(data), target) + (lambda_reg/2) * proximal_term
+                loss.backward()
+                optimizer.step()
 
+
+                #update the model
+                
+            
+            with torch.no_grad():
+                for param, global_param in zip(model.parameters(), global_params):
+                    global_param.data = global_param.data-eta*lambda_reg*(global_param.data-param.data)
+            
+
+    loss_person, accuracy_person= test_local(local_model=model, testloader=testloader, device=device)
+    with torch.no_grad():     
+        for param, global_param in zip(model.parameters(), global_params):
+            param.data = global_param.data
+    loss_global, accuracy_global= test_global(net=model, testloader=testloader, device=device)
+
+    print("Accuracy_personalized: ", accuracy_person)
+    print("Accuracy_global: ", accuracy_global)
+
+    return model
 
 def test_global(
     net: Net,
     testloader: torch.utils.data.DataLoader,
-    device: torch.device,  # pylint: disable=no-member
+    device: torch.device,  
 ) -> Tuple[float, float]:
     """Validate the network on the entire test set."""
     # Define loss and metrics
@@ -110,7 +160,7 @@ def test_global(
           images, labels = data[0].to(device), data[1].to(device)
           outputs = net(images)
           loss_global += criterion(outputs, labels).item()
-          _, predicted_global = torch.max(outputs.data, 1)  # pylint: disable=no-member
+          _, predicted_global = torch.max(outputs.data, 1)  
           correct_global += (predicted_global == labels).sum().item()
     accuracy_global = correct_global / len(testloader.dataset)
 
@@ -121,7 +171,7 @@ def test_global(
 def test_local(
   local_model: Net,
   testloader: torch.utils.data.DataLoader,
-  device: torch.device,  # pylint: disable=no-member
+  device: torch.device,  #
   ) -> Tuple[float, float]:
   """Validate the network on the entire test set."""
   # Define loss and metrics
@@ -137,7 +187,7 @@ def test_local(
         images, labels = data[0].to(device), data[1].to(device)
         outputs = local_model(images)
         loss_person += criterion(outputs, labels).item()
-        _, predicted_person = torch.max(outputs.data, 1)  # pylint: disable=no-member
+        _, predicted_person = torch.max(outputs.data, 1)  #
         correct_person += (predicted_person == labels).sum().item()
   accuracy_person = correct_person / len(testloader.dataset)
 
@@ -157,21 +207,19 @@ def partition_check(dataset):
       print(f"Class {class_idx}: {count} samples, {percentage:.2f}%")
 
 def main():
-    DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print("Centralized PyTorch training")
     print("Load data")
     trainloader, testloader, testset, _ = load_data()
-    net = Net().to(DEVICE)
+    net = Net().to(device)
 
     print("Start training")
-    net, local_model = train(net=net, trainloader=trainloader, epochs=10, device=DEVICE, eta=0.005, lambda_reg=15)
+    net= train(net=net, trainloader=trainloader, testloader=testloader, local_epochs=1, local_iterations=10, local_rounds=120, device=device, eta=0.005, lambda_reg=15)
     print("Evaluate model")
-    loss_global, accuracy_global= test_global(net=net, testloader=testloader, device=DEVICE)
-    loss_person, accuracy_person= test_local(local_model=local_model, testloader=testloader, device=DEVICE)
+  
+    loss_person, accuracy_person= test_local(local_model=net, testloader=testloader, device=device)
     print("Loss_personalized: ", loss_person)
     print("Accuracy_personalized: ", accuracy_person)
-    print("Loss_global: ", loss_global)
-    print("Accuracy_global: ", accuracy_global)
 
 if __name__ == "__main__":
     main()

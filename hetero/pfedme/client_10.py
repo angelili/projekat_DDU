@@ -81,6 +81,7 @@ def load_data() -> (
     num_examples = {"trainset": len(trainloader.dataset), "testset": len(testloader.dataset)}
 
     return trainloader, testloader, testset, num_examples
+
 DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 # Flower Client
@@ -138,7 +139,6 @@ class MnistClient(fl.client.NumPyClient):
         self.model.train()
   
         for r in range(local_epochs):
-            correct, total, epoch_loss = 0, 0, 0.0
             # Local update on client 
             criterion = torch.nn.CrossEntropyLoss()
             optimizer = torch.optim.Adam(self.model.parameters(), lr=0.1)

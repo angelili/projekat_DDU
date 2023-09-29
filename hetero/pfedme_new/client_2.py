@@ -140,7 +140,6 @@ class MnistClient(fl.client.NumPyClient):
         self.model.train()
   
         for r in range(local_epochs):
-            correct, total, epoch_loss = 0, 0, 0.0
             # Local update on client 
             criterion = torch.nn.CrossEntropyLoss()
             optimizer = torch.optim.Adam(self.model.parameters(), lr=0.1)
@@ -164,7 +163,6 @@ class MnistClient(fl.client.NumPyClient):
                     for param, global_param in zip(self.model.parameters(), global_params):
                         global_param.data = global_param.data-0.005*lambda_reg*(global_param.data-param.data)
 
-            print(f"Epoch {r+1}: train loss {epoch_loss}, accuracy {epoch_acc}")
         loss_person, accuracy_person= mnist.test_local(local_model=self.model, testloader=self.testloader, device=DEVICE)
         with torch.no_grad():     
           for param, global_param in zip(self.model.parameters(), global_params):
