@@ -40,8 +40,6 @@ if __name__ == "__main__":
       testset=general_server.load_data_server()
 
     strategy = fl.server.strategy.FedAvg(
-        fraction_fit=0.1,
-        fraction_evaluate=0.1,
         min_fit_clients=9,
         min_evaluate_clients=10,
         min_available_clients=10,

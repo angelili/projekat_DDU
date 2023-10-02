@@ -53,8 +53,6 @@ if __name__ == "__main__":
     
 
     strategy = fl.server.strategy.FedAvgM(
-    fraction_fit=0.1,
-    fraction_evaluate=0.1,
     min_fit_clients=9,
     min_evaluate_clients=10,
     min_available_clients=10,
@@ -62,8 +60,7 @@ if __name__ == "__main__":
     fit_metrics_aggregation_fn=general_server.agg_metrics_train_pfedme(training_history_acc_dist),
     evaluate_metrics_aggregation_fn=general_server.weighted_average_pfedme(training_history_acc_dist),
     on_fit_config_fn=fit_config,
-    
-    )
+        )
     
     fl.server.start_server(
         server_address= "10.30.0.254:9000",
