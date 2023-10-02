@@ -15,12 +15,6 @@ sys.path.append('/home/s124m21/projekat_DDU')
 import general_server
 
 
-
-
-
-
-
-
 training_history_acc_dist={"accuracy_global": [], "accuracy_local": []}
 training_history_acc_cent={'accuracy_centralized': []}
 training_history_loss_dist={"loss_distributed": []}

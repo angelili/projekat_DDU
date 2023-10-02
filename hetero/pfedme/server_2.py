@@ -5,15 +5,12 @@ import flwr as fl
 
 import os
 
-
 from typing import Dict,  List
 
 import json
 
 import sys
 sys.path.append('/home/s124m21/projekat_DDU')
-
-# import your module without specifying the full path
 import general_server
 
 lambda_reg=15

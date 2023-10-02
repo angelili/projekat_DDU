@@ -1,59 +1,17 @@
 """Flower server"""
 
-from collections import OrderedDict
+
 import flwr as fl
-from flwr.common import Metrics
-import os
-import numpy as np
-import torch
-import torchvision
-from typing import Callable, Optional, Tuple, Dict, Union, List
-from torchvision.datasets import FashionMNIST
-import torchvision.transforms as transforms
-from torch import Tensor
-import matplotlib.pyplot as plt
+
+import os 
+
+from typing import  Dict, List
+
 import json
-import mnist
-DATA_ROOT = "/home/s124m21/projekat_DDU/dataset"
 
 import sys
 sys.path.append('/home/s124m21/projekat_DDU')
-
-# import your module without specifying the full path
-import general_mnist
-
-lambda_reg=15
-
-
-
-
-
-def plot_training_history(training_history, path):
-    plt.figure()
-    # Iterate over each metric in the training history dictionary
-    for metric, values in training_history.items():
-        # Create a line plot for the metric
-        plt.plot(values, label=metric)
-
-    # Add labels, title, and legend to the plot
-    plt.xlabel('Training Round')
-    plt.ylabel('Metric Value')
-    plt.title('Training History')
-    plt.legend()
-    plt.savefig(path)
-    # Show the plot
-    plt.show()
-
-def load_data_server():
-    
-    transform = transforms.Compose(
-        [transforms.ToTensor(), transforms.Normalize((0.1307), (0.3081))]
-    )
-    testset = FashionMNIST(DATA_ROOT, train=False, download=True, transform=transform)
-    testset_server = torch.utils.data.DataLoader(testset, batch_size=50, shuffle=True)
-    
-
-    return testset_server
+import general_server
 
 
 training_history_acc_dist={"accuracy_global": [], "accuracy_local": []}
@@ -62,57 +20,6 @@ training_history_loss_dist={"loss_distributed": []}
 training_history_loss_cent={"loss_centralized": []}
 
 
-
-def get_evaluate_fn(
-    testset: torchvision.datasets.MNIST,
-) -> Callable[[fl.common.NDArrays], Optional[Tuple[float, float]]]:
-    """Return an evaluation function for centralized evaluation."""
-
-    def evaluate(
-        server_round: int, parameters: fl.common.NDArrays, config: Dict[str, Union[int, float, complex]]
-    ) -> Optional[Tuple[float, float]]:
-        """Use the entire FashionMNIST test set for evaluation."""
-
-        # determine device
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        model = general_mnist.Net()
-        params_dict = zip(model.state_dict().keys(), parameters)
-        state_dict = OrderedDict({k: torch.from_numpy(np.copy(v)) for k, v in params_dict})
-        model.load_state_dict(state_dict, strict=True)
-        model.to(device)
-       
-       
-
-        
-        loss, accuracy = general_mnist.test(model, testset, device)
-        training_history_acc_cent["accuracy_centralized"].append(accuracy)
-        training_history_loss_cent["loss_centralized"].append(loss)
-        # return statistics
-        return loss, {"accuracy": accuracy}
-
-    return evaluate
-def weighted_average(metrics: List[Tuple[int, Metrics]]) -> Metrics:
-    # Multiply accuracy of each client by number of examples used
-    accuracies = [num_examples * m["accuracy"] for num_examples, m in metrics]
-   
-    examples = [num_examples for num_examples, _ in metrics]
-
-    training_history_acc_dist["accuracy_global"].append(sum(accuracies)/sum(examples))
-    # Aggregate and return custom metric (weighted average)
-    return {"accuracy_global": sum(accuracies) / sum(examples)}
-
-
-
-def agg_metrics_train(metrics: List[Tuple[int, Metrics]]) -> Metrics:
-   # Multiply accuracy of each client by number of examples used
-    accuracies = [num_examples * m["accuracy"] for num_examples, m in metrics]
-    examples = [num_examples for num_examples, _ in metrics]
-
-    training_history_acc_dist["accuracy_local"].append(sum(accuracies)/sum(examples))
-
-    # Aggregate and return custom metric (weighted average)
-    return {"accuracy_local": sum(accuracies) / sum(examples)}
-    
 def fit_config(server_round: int):
     """Return training configuration dict for each round."""
 
@@ -128,7 +35,7 @@ if __name__ == "__main__":
     if fedl_no_proxy:
       os.environ["http_proxy"] = ""
       os.environ["https_proxy"] = ""
-      testset= load_data_server()
+      testset= general_server.load_data_server()
 
     strategy = fl.server.strategy.FedAvg(
         fraction_fit=0.1,
@@ -136,20 +43,20 @@ if __name__ == "__main__":
         min_fit_clients=9,
         min_evaluate_clients=10,
         min_available_clients=10,
-        evaluate_fn=get_evaluate_fn(testset),  #centralised evaluation of global model
-        fit_metrics_aggregation_fn=agg_metrics_train,
-        evaluate_metrics_aggregation_fn=weighted_average,
-        on_fit_config_fn=fit_config,
-    )
+        evaluate_fn=general_server.get_evaluate_fn_fedavg(testset,training_history_acc_cent, training_history_loss_cent),#centralised evaluation of global model
+        fit_metrics_aggregation_fn=general_server.agg_metrics_train_fedavg(training_history_acc_dist),
+        evaluate_metrics_aggregation_fn=general_server.weighted_average_fedavg(training_history_acc_dist),
+        on_fit_config_fn=fit_config)
+    
     fl.server.start_server(
         server_address= "10.30.0.254:9000",
         config=fl.server.ServerConfig(num_rounds=100),
         strategy=strategy
     )
 
-    plot_training_history(training_history_acc_dist,'photo_1.png')
-    plot_training_history(training_history_acc_cent,'photo_2.png')
-    plot_training_history(training_history_loss_cent,'photo_3.png')
+    general_server.plot_training_history(training_history_acc_dist,'photo_1.png')
+    general_server.plot_training_history(training_history_acc_cent,'photo_2.png')
+    general_server.plot_training_history(training_history_loss_cent,'photo_3.png')
 
     with open("training_history_acc_dist_fed_avg.json", "w") as json_file:
         json.dump(training_history_acc_dist, json_file)

@@ -1,24 +1,24 @@
-from collections import OrderedDict
+"""Flower server"""
+import os
+import json
+
+
 import flwr as fl
 from flwr.common import Metrics
-import os
-import numpy as np
 import torch
 import torchvision
 from typing import Callable, Optional, Tuple, Dict, Union, List
-from torchvision.datasets import FashionMNIST
-import torchvision.transforms as transforms
-from torch import Tensor
-import mnist
-import json
+from collections import OrderedDict
+
 import matplotlib.pyplot as plt
 
-DATA_ROOT = "/home/s124m21/projekat_DDU/dataset"
-FED_BN=False
+import sys
+sys.path.append('/home/s124m21/projekat_DDU')
+import general_server
+import general_mnist
 
 lambda_reg=15
-
-
+FED_BN=False
 
 # Load each dictionary from the JSON files
 with open("/home/s124m21/projekat_DDU/hetero/fedavg/training_history_acc_cent_fed_avg.json", "r") as json_file:
@@ -30,63 +30,75 @@ with open("/home/s124m21/projekat_DDU/hetero/fedavg/training_history_acc_dist_fe
 with open("/home/s124m21/projekat_DDU/hetero/fedavg/training_history_loss_cent_fed_avg.json", "r") as json_file:
     data3 = json.load(json_file)
 
-def plot_training_history(training_history,data,path):
+
+with open("/home/s124m21/projekat_DDU/hetero/pfedme/training_history_acc_cent_pfedme.json", "r") as json_file:
+    data4 = json.load(json_file)
+
+with open("/home/s124m21/projekat_DDU/hetero/pfedme/training_history_acc_dist_pfedme.json", "r") as json_file:
+    data5 = json.load(json_file)
+
+with open("/home/s124m21/projekat_DDU/hetero/pfedme/training_history_loss_cent_pfedme.json", "r") as json_file:
+    data6 = json.load(json_file)
+
+
+
+
+def plot_key_differences_local(fedavg,pfedme,pfedme_new,path):
     plt.figure()
-    # Iterate over each metric in the training history dictionary
-    for metric, values in training_history.items():
-        # Create a line plot for the metric
-        plt.plot(values, label=metric)
-    for metric, values in data.items():
-        # Create a line plot for the metric
-        plt.plot(values, label=metric)
+    # Extract local metrics from fedavg
+    values=fedavg["accuracy_local"]
+    # Create a line plot for the metric
+    plt.plot(values, label="accuracy_local_fedavg")
+    # Extract local metrics from pfedme
+    values=pfedme["accuracy_local_pfedme"]
+    # Create a line plot for the metric
+    plt.plot(values, label="accuracy_local_pfedme")
+    # Extract local metrics from pfedme_new
+    values=pfedme_new["accuracy_local_pfedme_new"]
+    # Create a line plot for the metric
+    plt.plot(values, label="accuracy_local_pfedme_new")
+
+ 
     # Add labels, title, and legend to the plot
     plt.xlabel('Training Round')
     plt.ylabel('Metric Value')
-    plt.title('Training History: lambda='+str(lambda_reg))
+    plt.title('Comparison of local models')
     plt.legend()
     plt.savefig(path)
     # Show the plot
     plt.show()
 
+def plot_key_differences_centralized(fedavg,pfedme,pfedme_new,path):
+    plt.figure()
+    # Extract local metrics from fedavg
+    values=fedavg["accuracy_centralized"]
+    # Create a line plot for the metric
+    plt.plot(values, label="accuracy_centralized_fedavg")
+    # Extract local metrics from pfedme
+    values=pfedme["accuracy_centralized_pfedme"]
+    # Create a line plot for the metric
+    plt.plot(values, label="accuracy_centralized_pfedme")
+    # Extract local metrics from pfedme_new
+    values=pfedme_new["accuracy_centralized_pfedme_new"]
+    # Create a line plot for the metric
+    plt.plot(values, label="accuracy_centralized_pfedme_new")
 
-training_history_acc_dist={"accuracy_global_pfedme": [], "accuracy_local_pfedme": [], "accuracy_personalized_pfedme":[]}
-training_history_acc_cent={'accuracy_centralized_pfedme': []}
-training_history_loss_dist={"loss_distributed_pfedme": []}
-training_history_loss_cent={"loss_centralized_pfedme": []}
-
-def load_data_server():
-    
-    transform = transforms.Compose(
-        [transforms.ToTensor(), transforms.Normalize((0.1307), (0.3081))]
-    )
-    testset = FashionMNIST(DATA_ROOT, train=False, download=True, transform=transform)
-    testset_server = torch.utils.data.DataLoader(testset, batch_size=50, shuffle=True)
  
+    # Add labels, title, and legend to the plot
+    plt.xlabel('Training Round')
+    plt.ylabel('Metric Value')
+    plt.title('Comparison of global models')
+    plt.legend()
+    plt.savefig(path)
+    # Show the plot
+    plt.show()
 
-    
-    
-    #selected_classes = [0, 1, 2, 3]  # Replace with  selected classes, if the overall class distribution is not all 10 classes
+training_history_acc_dist={"accuracy_global_pfedme_new": [], "accuracy_local_pfedme_new": [], "accuracy_personalized_pfedme_new":[]}
+training_history_acc_cent={'accuracy_centralized_pfedme_new': []}
+training_history_loss_dist={"loss_distributed_pfedme_new": []}
+training_history_loss_cent={"loss_centralized_pfedme_new": []}
 
-    # Convert selected_classes list to a tensor
-    #selected_classes_tensor = torch.tensor(selected_classes)
 
-    # Filter the dataset to include only the selected classes
-    #indices = torch.where(torch.isin(testset.targets, selected_classes_tensor))[0]
-
-    #indices=indices.numpy()
-    #subset_indices=torch.from_numpy(indices)
-    #subset_dataset = torch.utils.data.Subset(testset, subset_indices)
-    #testset_server = torch.utils.data.DataLoader(subset_dataset, batch_size=50, shuffle=True)
-    
-
-    return testset_server
-
-def set_parameters(model,parameters: List[np.ndarray]) -> None:
-        # Set model parameters from a list of NumPy ndarrays
-      
-            params_dict = zip(model.state_dict().keys(), parameters)
-            state_dict = OrderedDict({k: torch.tensor(v) for k, v in params_dict})
-            model.load_state_dict(state_dict, strict=True)
 
 def get_evaluate_fn(
     testset: torchvision.datasets.MNIST,
@@ -96,11 +108,11 @@ def get_evaluate_fn(
     def evaluate(
         server_round: int, parameters: fl.common.NDArrays, config: Dict[str, Union[int, float, complex]]
     ) -> Optional[Tuple[float, float]]:
-        """Use the entire FashionMNIST test set for evaluation."""
+        """Use the entire MNIST test set for evaluation."""
 
         # determine device
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        model = mnist.Net()
+        model = general_mnist.Net()
         if FED_BN==True:
             keys = [k for k in model.state_dict().keys() if "bn" not in k]
             params_dict = zip(keys, parameters)
@@ -115,12 +127,12 @@ def get_evaluate_fn(
        
        
         
-        loss, accuracy = mnist.test_global(model, testset, device)
+        loss, accuracy = general_mnist.test_global(model, testset, device)
         #testloader = torch.utils.data.DataLoader(testset, batch_size=50)
         #loss, accuracy = mnist.test_global(model, testloader, device)
 
-        training_history_acc_cent["accuracy_centralized_pfedme"].append(accuracy)
-        training_history_loss_cent["loss_centralized_pfedme"].append(loss)
+        training_history_acc_cent["accuracy_centralized_pfedme_new"].append(accuracy)
+        training_history_loss_cent["loss_centralized_pfedme_new"].append(loss)
         # return statistics
         return loss, {"accuracy": accuracy}
 
@@ -131,7 +143,7 @@ def weighted_average(metrics: List[Tuple[int, Metrics]]) -> Metrics:
     accuracies = [num_examples * m["accuracy"] for num_examples, m in metrics]
     examples = [num_examples for num_examples, _ in metrics]
 
-    training_history_acc_dist["accuracy_global_pfedme"].append(sum(accuracies)/sum(examples))
+    training_history_acc_dist["accuracy_global_pfedme_new"].append(sum(accuracies)/sum(examples))
     # Aggregate and return custom metric (weighted average)
     return {"accuracy_global": sum(accuracies) / sum(examples)}
     
@@ -141,8 +153,8 @@ def agg_metrics_train(metrics: List[Tuple[int, Metrics]]) -> Metrics:
     accuracies_global = [num_examples * m["accuracy_global"] for num_examples, m in metrics]
     examples = [num_examples for num_examples, _ in metrics]
 
-    training_history_acc_dist["accuracy_personalized_pfedme"].append(sum(accuracies_person)/sum(examples))
-    training_history_acc_dist["accuracy_local_pfedme"].append(sum(accuracies_global)/sum(examples))
+    training_history_acc_dist["accuracy_personalized_pfedme_new"].append(sum(accuracies_person)/sum(examples))
+    training_history_acc_dist["accuracy_local_pfedme_new"].append(sum(accuracies_global)/sum(examples))
 
 
     # Aggregate and return custom metric (weighted average)
@@ -164,8 +176,7 @@ if __name__ == "__main__":
     if fedl_no_proxy:
       os.environ["http_proxy"] = ""
       os.environ["https_proxy"] = ""
-    #_, _, testset, _ = mnist.load_data()
-    testset=load_data_server()
+    testset=general_server.load_data_server()
     
    
     strategy = fl.server.strategy.FedAvgM(
@@ -187,16 +198,13 @@ if __name__ == "__main__":
         config=fl.server.ServerConfig(num_rounds=100),
         strategy=strategy)
     
+    #detalied comparison with FedAvg, same as for pFedMe
+    general_server.plot_training_comparison(training_history_acc_dist, data2,'photo_1.png')
+    general_server.plot_training_comparison(training_history_acc_cent, data1,'photo_2.png')
+    general_server.plot_training_comparison(training_history_loss_cent, data3, 'photo_3.png')
 
-    plot_training_history(training_history_acc_dist, data2,'photo_1.png')
-    plot_training_history(training_history_acc_cent, data1,'photo_2.png')
-    plot_training_history(training_history_loss_cent, data3, 'photo_3.png')
+    #key comparison of FedAvg, pFedMe, pFedMe_new local models
+    plot_key_differences_local(data2, data5,training_history_acc_dist, "key_differences_local.png")
 
-    with open("training_history_acc_dist_pfedme.json", "w") as json_file:
-        json.dump(training_history_acc_dist, json_file)
-
-    with open("training_history_acc_cent_pfedme.json", "w") as json_file:
-        json.dump(training_history_acc_cent, json_file)
-
-    with open("training_history_loss_cent_pfedme.json", "w") as json_file:
-        json.dump(training_history_loss_cent, json_file)
+    #key comparison of FedAvg, pFedMe, pFedMe_new centralized models
+    plot_key_differences_centralized(data1,data4,training_history_acc_cent,"key_differences_centralized")
