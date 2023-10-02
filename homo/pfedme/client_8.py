@@ -14,8 +14,12 @@ import random
 import flwr as fl
 import numpy as np
 import torch
-import mnist
 
+import sys
+sys.path.append('/home/s124m21/projekat_DDU')
+
+# import your module without specifying the full path
+import general_mnist
 
 
 DATA_ROOT = "/home/s124m21/projekat_DDU/dataset"
@@ -63,7 +67,7 @@ class MnistClient(fl.client.NumPyClient):
 
     def __init__(
         self,
-        model: mnist.Net,
+        model: general_mnist.Net,
         trainloader: torch.utils.data.DataLoader,
         testloader: torch.utils.data.DataLoader,
         num_examples: Dict,
@@ -135,11 +139,11 @@ class MnistClient(fl.client.NumPyClient):
                         global_param.data = global_param.data-0.005*lambda_reg*(global_param.data-param.data)
              
 
-        loss_person, accuracy_person= mnist.test_local(local_model=self.model, testloader=self.testloader, device=DEVICE)
+        loss_person, accuracy_person= general_mnist.test_local(local_model=self.model, testloader=self.testloader, device=DEVICE)
         with torch.no_grad():     
           for param, global_param in zip(self.model.parameters(), global_params):
                 param.data = global_param.data
-        loss_global, accuracy_global= mnist.test_global(net=self.model, testloader=self.testloader, device=DEVICE)
+        loss_global, accuracy_global= general_mnist.test_global(net=self.model, testloader=self.testloader, device=DEVICE)
         
         return self.get_parameters(self.model), self.num_examples["trainset"], {"accuracy_global": float(accuracy_global),"accuracy_person": float(accuracy_person)}
         
@@ -148,7 +152,7 @@ class MnistClient(fl.client.NumPyClient):
     ) -> Tuple[float, int, Dict]:
         # Set model parameters, evaluate model on local test dataset, return result
         self.set_parameters(parameters)
-        loss, accuracy = mnist.test_global(self.model, self.testloader, device=DEVICE)
+        loss, accuracy = general_mnist.test_global(self.model, self.testloader, device=DEVICE)
         return float(loss), self.num_examples["testset"], {"accuracy": float(accuracy)}
 
 
@@ -169,7 +173,7 @@ def main() -> None:
     else:    
         trainloader, testloader, _, num_examples = load_data()
     # Load model
-    model = mnist.Net().to(DEVICE)
+    model = general_mnist.Net().to(DEVICE)
 
     # Perform a single forward pass to properly initialize BatchNorm
     _ = model(next(iter(trainloader))[0].to(DEVICE))

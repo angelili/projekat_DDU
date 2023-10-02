@@ -6,21 +6,19 @@ import os
 from collections import OrderedDict
 from typing import Dict, List, Tuple
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
-import torchvision
+
 import torchvision.transforms as transforms
-from torch import Tensor
 from torchvision.datasets import FashionMNIST
 
 import random
 import flwr as fl
 import numpy as np
-import torch
-import torchvision
 
-import mnist
-from mnist import trainloaders, testloaders
+import sys
+sys.path.append('/home/s124m21/projekat_DDU')
+
+# import your module without specifying the full path
+import general_mnist
 
 DATA_ROOT = "/home/s124m21/projekat_DDU/dataset"
 Benchmark=True
@@ -69,7 +67,7 @@ class MnistClient(fl.client.NumPyClient):
 
     def __init__(
         self,
-        model: mnist.Net,
+        model: general_mnist.Net,
         trainloader: torch.utils.data.DataLoader,
         testloader: torch.utils.data.DataLoader,
         num_examples: Dict,
@@ -97,8 +95,8 @@ class MnistClient(fl.client.NumPyClient):
         # Set model parameters, train model, return updated model parameters
         local_epochs: int = config["local_epochs"]
         self.set_parameters(parameters)
-        mnist.train(self.model, self.trainloader, epochs=local_epochs, device=DEVICE)
-        loss, accuracy = mnist.test(net=self.model, testloader=self.testloader, device=DEVICE)
+        general_mnist.train(self.model, self.trainloader, epochs=local_epochs, device=DEVICE)
+        loss, accuracy = general_mnist.test(net=self.model, testloader=self.testloader, device=DEVICE)
         return self.get_parameters(config={}), self.num_examples["trainset"], {"accuracy": float(accuracy)}
 
     def evaluate(
@@ -106,7 +104,7 @@ class MnistClient(fl.client.NumPyClient):
     ) -> Tuple[float, int, Dict]:
         # Set model parameters, evaluate model on local test dataset, return result
         self.set_parameters(parameters)
-        loss, accuracy = mnist.test(self.model, self.testloader, device=DEVICE)
+        loss, accuracy = general_mnist.test(self.model, self.testloader, device=DEVICE)
         print(type(accuracy), accuracy)
         print(type({"accuracy": float(accuracy)}))
         return float(loss), self.num_examples["testset"], {"accuracy": float(accuracy)}
@@ -123,12 +121,12 @@ def main() -> None:
       os.environ["https_proxy"] = ""
     # Load data
     #trainloader, testloader, _, num_examples = load_data()
-    trainloader=trainloaders[9]
-    testloader=testloaders[9]    
+    trainloader=general_mnist.trainloaders[9]
+    testloader=general_mnist.testloaders[9]    
     num_examples= {"trainset": 5400, "testset": 600}
 
     # Load model
-    model = mnist.Net().to(DEVICE).train()
+    model = general_mnist.Net().to(DEVICE).train()
     
     
     if Benchmark==True:

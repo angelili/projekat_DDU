@@ -16,6 +16,14 @@ import json
 import mnist
 DATA_ROOT = "/home/s124m21/projekat_DDU/dataset"
 
+import sys
+sys.path.append('/home/s124m21/projekat_DDU')
+
+# import your module without specifying the full path
+import general_mnist
+
+lambda_reg=15
+
 
 
 
@@ -43,22 +51,6 @@ def load_data_server():
     )
     testset = FashionMNIST(DATA_ROOT, train=False, download=True, transform=transform)
     testset_server = torch.utils.data.DataLoader(testset, batch_size=50, shuffle=True)
- 
-
-    
-    
-    #selected_classes = [0, 1, 2, 3]  # Replace with  selected classes, if the overall classes among clients are less then all 10
-
-    # Convert selected_classes list to a tensor
-    #selected_classes_tensor = torch.tensor(selected_classes)
-
-    # Filter the dataset to include only the selected classes
-    #indices = torch.where(torch.isin(testset.targets, selected_classes_tensor))[0]
-
-    #indices=indices.numpy()
-    #subset_indices=torch.from_numpy(indices)
-    #subset_dataset = torch.utils.data.Subset(testset, subset_indices)
-    #testset_server = torch.utils.data.DataLoader(subset_dataset, batch_size=50, shuffle=True)
     
 
     return testset_server
@@ -83,7 +75,7 @@ def get_evaluate_fn(
 
         # determine device
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        model = mnist.Net()
+        model = general_mnist.Net()
         params_dict = zip(model.state_dict().keys(), parameters)
         state_dict = OrderedDict({k: torch.from_numpy(np.copy(v)) for k, v in params_dict})
         model.load_state_dict(state_dict, strict=True)
@@ -92,7 +84,7 @@ def get_evaluate_fn(
        
 
         
-        loss, accuracy = mnist.test(model, testset, device)
+        loss, accuracy = general_mnist.test(model, testset, device)
         training_history_acc_cent["accuracy_centralized"].append(accuracy)
         training_history_loss_cent["loss_centralized"].append(loss)
         # return statistics

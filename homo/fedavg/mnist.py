@@ -18,31 +18,6 @@ import numpy as np
 DATA_ROOT = "/home/s124m21/projekat_DDU/dataset"
 
 
- 
-class Net(nn.Module):
-    def __init__(self) -> None:
-        super(Net, self).__init__()
-        self.conv1 = nn.Conv2d(1, 16, 5)
-        self.bn1 = nn.BatchNorm2d(16)
-        self.pool = nn.MaxPool2d(2, 2)
-        self.conv2 = nn.Conv2d(16, 32, 5)
-        self.bn2 = nn.BatchNorm2d(32)
-        self.fc1 = nn.Linear(32 * 4 * 4, 120)
-        self.bn3 = nn.BatchNorm1d(120)
-        self.fc2 = nn.Linear(120, 84)
-        self.bn4 = nn.BatchNorm1d(84)
-        self.fc3 = nn.Linear(84, 10)
-
-    def forward(self, x: Tensor) -> Tensor:
-        """Compute forward pass."""
-        x = self.pool(F.relu(self.bn1(self.conv1(x))))
-        x = self.pool(F.relu(self.bn2(self.conv2(x))))
-        x = x.view(-1, 32* 4* 4)
-        x = F.relu(self.bn3(self.fc1(x)))
-        x = F.relu(self.bn4(self.fc2(x)))
-        x = self.fc3(x)
-        return x
-
     
 def load_data() -> (
     Tuple[torch.utils.data.DataLoader, torch.utils.data.DataLoader, Dict]):
@@ -120,38 +95,7 @@ def train(
             optimizer.step()
 
             
-def load_datasets():
-    transform = transforms.Compose(
-        [transforms.ToTensor(), transforms.Normalize((0.1307), (0.3081))]
-    )
 
-    trainset = FashionMNIST(DATA_ROOT, train=True, download=True, transform=transform)
-    
-    testset = FashionMNIST(DATA_ROOT, train=False, download=True, transform=transform)
-
-
-    # Split training set into 10 partitions to simulate the individual dataset
-    partition_size = len(trainset) // 10
-    lengths = [partition_size] * 10
-    datasets = random_split(trainset, lengths, torch.Generator().manual_seed(42))
-    print(lengths)
-    # Split each partition into train/val and create DataLoader
-    trainloaders = []
-    testloaders = []
-    for ds in datasets:
-        len_val = len(ds) // 10  # 10 % validation set
-        len_train = len(ds) - len_val
-        lengths = [len_train, len_val]
-        print(lengths)
-        ds_train, ds_val = random_split(ds, lengths, torch.Generator().manual_seed(42))
-        trainloaders.append(DataLoader(ds_train, batch_size=16, shuffle=True))
-        testloaders.append(DataLoader(ds_val, batch_size=16))
-    testloader = DataLoader(testset, batch_size=16)
-    return trainloaders, testloaders, testloader
-
-
-trainloaders, testloaders, testloader = load_datasets() 
-        
 
 def test(
     net: Net,
