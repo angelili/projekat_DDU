@@ -6,8 +6,6 @@ import os
 
 from typing import  Dict ,List
 
-
-
 import json
 
 import sys
