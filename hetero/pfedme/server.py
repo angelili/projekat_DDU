@@ -37,7 +37,7 @@ def fit_config(server_round: int):
     """Return training configuration dict for each round."""
 
     config = {
-        "lambda_reg":15,
+        "lambda_reg":5,
         "local_epochs":1,
         "local_rounds":120,
         "local_iterations":10
