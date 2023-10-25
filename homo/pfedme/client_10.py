@@ -1,4 +1,3 @@
-"""Flower client example using PyTorch for FashionMNIST image classification."""
 
 
 import os

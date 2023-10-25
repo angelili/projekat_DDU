@@ -3,16 +3,16 @@ from typing import Tuple, Dict
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import torchvision
+
 
 import matplotlib.pyplot as plt
 import torchvision.transforms as transforms
 from torch import Tensor
 from torchvision.datasets import FashionMNIST
-from torchvision.datasets import CIFAR10
+
 import random
 import torch
-import numpy as np
+
 
 Non_uniform_cardinality=False
 
@@ -51,7 +51,7 @@ def load_data() -> (
     Tuple[torch.utils.data.DataLoader, torch.utils.data.DataLoader, Dict]):
     """Load MNIST (training and test set)."""
     transform = transforms.Compose(
-        [transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))]
+        [transforms.ToTensor(), transforms.Normalize((0.1307), (0.3081))]
     )
     # Load the MNIST dataset
     trainset = FashionMNIST(DATA_ROOT, train=True, download=True, transform=transform)
@@ -67,30 +67,85 @@ def load_data() -> (
 
     indices_train = random.sample(range(len(trainset)), sample_size_train)
     sampler_train= torch.utils.data.SubsetRandomSampler(indices_train)
-
     trainloader = torch.utils.data.DataLoader(trainset, batch_size=32, shuffle=False, sampler=sampler_train)
+
     indices_test = random.sample(range(len(testset)), sample_size_test)
     sampler_test = torch.utils.data.SubsetRandomSampler(indices_test)
-
     testloader = torch.utils.data.DataLoader(testset, batch_size=32, shuffle=False, sampler=sampler_test)
+
     num_examples = {"trainset": sample_size_train, "testset": sample_size_test}
+    # Extract labels for the sampled training set
+    train_labels = [trainset[i][1] for i in indices_train]
+    test_labels = [testset[i][1] for i in indices_test]
+
+    # Count the number of samples in each class for the sampled data
+    class_counts_train = {}
+    class_counts_test = {}
+
+    for label in train_labels:
+        if label not in class_counts_train:
+            class_counts_train[label] = 1
+        else:
+            class_counts_train[label] += 1
+
+    for label in test_labels:
+        if label not in class_counts_test:
+            class_counts_test[label] = 1
+        else:
+            class_counts_test[label] += 1
+
+    # Print class counts for the sampled data
+    for label, count in class_counts_train.items():
+        print(f"Train Class {label}: {count} samples")
+
+    for label, count in class_counts_test.items():
+        print(f"Test Class {label}: {count} samples")
+
+
+    
+
 
     return trainloader, testloader, testset, num_examples
 
 
 
 
+class Net(nn.Module):
+    def __init__(self) -> None:
+        super(Net, self).__init__()
+        self.conv1 = nn.Conv2d(1, 6, 5)
+        self.bn1 = nn.BatchNorm2d(6)
+        self.pool = nn.MaxPool2d(2, 2)
+        self.conv2 = nn.Conv2d(6, 16, 5)
+        self.bn2 = nn.BatchNorm2d(16)
+        self.fc1 = nn.Linear(16 * 4 * 4, 120)
+        self.bn3 = nn.BatchNorm1d(120)
+        self.fc2 = nn.Linear(120, 84)
+        self.bn4 = nn.BatchNorm1d(84)
+        self.fc3 = nn.Linear(84, 10)
+
+    def forward(self, x: Tensor) -> Tensor:
+        """Compute forward pass."""
+        x = self.pool(F.relu(self.bn1(self.conv1(x))))
+        x = self.pool(F.relu(self.bn2(self.conv2(x))))
+        x = x.view(-1, 16 * 4* 4)
+        x = F.relu(self.bn3(self.fc1(x)))
+        x = F.relu(self.bn4(self.fc2(x)))
+        x = self.fc3(x)
+        return x
+   
+
 def train(
     net: Net,
     trainloader: torch.utils.data.DataLoader,
     testloader: torch.utils.data.DataLoader,
     epochs: int,
-    device: torch.device,  # pylint: disable=no-member
+    device: torch.device,  
 ) -> None:
     """Train the network."""
     # Define loss and optimizer
     criterion = nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(net.parameters(), lr=0.01)
+    optimizer = torch.optim.Adam(net.parameters(), lr=0.001)
     losses = []
     accuracies = []
 
@@ -123,6 +178,9 @@ def train(
         print('accuracy:',accuracy)
 
     return losses, accuracies
+
+        
+
 
 def test(
     net: Net,
@@ -184,6 +242,6 @@ def main():
     print("Accuracy: ", accuracy)
     ploting(losses, accuracies)
 
-
 if __name__ == "__main__":
     main()
+
