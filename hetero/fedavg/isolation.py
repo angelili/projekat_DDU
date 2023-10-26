@@ -9,7 +9,7 @@ import torchvision
 import matplotlib.pyplot as plt
 import torchvision.transforms as transforms
 from torch import Tensor
-from torchvision.datasets import FashionMNIST
+from torchvision.datasets import CIFAR10
 import random
 import torch
 import numpy as np
@@ -24,17 +24,21 @@ def load_data() -> (
     Tuple[torch.utils.data.DataLoader, torch.utils.data.DataLoader, Dict]):
     """Load MNIST (training and test set)."""
     transform = transforms.Compose(
-        [transforms.ToTensor(), transforms.Normalize((0.2859), (0.3530))]
+        [transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
     )
     # Load the MNIST dataset
-    trainset = FashionMNIST(DATA_ROOT, train=True, download=True, transform=transform)
+    trainset = CIFAR10(DATA_ROOT, train=True, download=True, transform=transform)
     
-    testset = FashionMNIST(DATA_ROOT, train=False, download=True, transform=transform)
+    testset = CIFAR10(DATA_ROOT, train=False, download=True, transform=transform)
 
-    selected_classes = [0, 1, 2, 3, 4,]  # Replace with your selected classes
-
+    selected_classes = [0, 1, 2]  # Replace with your selected classes
+    print(type(selected_classes))
+    print(type(trainset.targets))
     # Convert selected_classes list to a tensor
     selected_classes_tensor = torch.tensor(selected_classes)
+   
+    # Assuming trainset.targets is a list
+    trainset.targets = torch.tensor(trainset.targets)
 
     # Filter the dataset to include only the selected classes
     indices = torch.where(torch.isin(trainset.targets, selected_classes_tensor))[0]
@@ -43,7 +47,7 @@ def load_data() -> (
    
     indices=indices.numpy()
     np.random.shuffle(indices)
-    num_samples= random.randint(4000,6000)
+    num_samples= random.randint(1000,2000)
     indices=indices[:num_samples]
     subset_indices=torch.from_numpy(indices)
     subset_dataset = torch.utils.data.Subset(trainset, subset_indices)
@@ -61,6 +65,9 @@ def load_data() -> (
     for class_idx, count in class_counts.items():
         print(f"Class {class_idx}: {count}")
 
+        
+    # Assuming trainset.targets is a list
+    testset.targets = torch.tensor(testset.targets)
     # Filter the dataset to include only the selected classes
     indices = torch.where(torch.isin(testset.targets, selected_classes_tensor))[0]
   
@@ -80,12 +87,12 @@ def load_data() -> (
 class Net(nn.Module):
     def __init__(self) -> None:
         super(Net, self).__init__()
-        self.conv1 = nn.Conv2d(1, 6, 5)
+        self.conv1 = nn.Conv2d(3, 6, 5)
         self.bn1 = nn.BatchNorm2d(6)
         self.pool = nn.MaxPool2d(2, 2)
         self.conv2 = nn.Conv2d(6, 16, 5)
         self.bn2 = nn.BatchNorm2d(16)
-        self.fc1 = nn.Linear(16 * 4 * 4, 120)
+        self.fc1 = nn.Linear(16 * 5 * 5, 120)
         self.bn3 = nn.BatchNorm1d(120)
         self.fc2 = nn.Linear(120, 84)
         self.bn4 = nn.BatchNorm1d(84)
@@ -95,7 +102,7 @@ class Net(nn.Module):
         """Compute forward pass."""
         x = self.pool(F.relu(self.bn1(self.conv1(x))))
         x = self.pool(F.relu(self.bn2(self.conv2(x))))
-        x = x.view(-1, 16 * 4* 4)
+        x = x.view(-1, 16 * 5* 5)
         x = F.relu(self.bn3(self.fc1(x)))
         x = F.relu(self.bn4(self.fc2(x)))
         x = self.fc3(x)
