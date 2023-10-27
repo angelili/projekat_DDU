@@ -13,7 +13,7 @@ DATA_ROOT = "/home/s124m21/projekat_DDU/dataset"
 
 def load_datasets():
     transform = transforms.Compose(
-        [transforms.ToTensor(), transforms.Normalize((0.1307), (0.3081))]
+        [transforms.ToTensor(),  transforms.Normalize((0.2859), (0.3530))]
     )
 
     trainset = FashionMNIST(DATA_ROOT, train=True, download=True, transform=transform)
