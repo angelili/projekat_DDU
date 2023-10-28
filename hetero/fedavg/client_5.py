@@ -1,6 +1,5 @@
 """Flower client using PyTorch for FashionMNIST image classification."""
 
-
 import os
 
 import torch
@@ -37,9 +36,9 @@ def main() -> None:
     if Benchmark==True:
         data_5 = {
             'trainloader': trainloader,
-            'testloader': testloader,
+            'testloader': testloader }
 
-        }
+        
         torch.save(data_5, 'data_5.pth')
 
     # Start client

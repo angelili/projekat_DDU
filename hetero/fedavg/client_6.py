@@ -37,9 +37,7 @@ def main() -> None:
     if Benchmark==True:
         data_6 = {
             'trainloader': trainloader,
-            'testloader': testloader,
-
-        }
+            'testloader': testloader}
         torch.save(data_6, 'data_6.pth')
 
     # Start client

@@ -28,7 +28,7 @@ def main() -> None:
     # Load data
     trainloader, testloader = client.load_data([2, 3, 4, 5, 6])
     # Set device
-    DEVICE= torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    DEVICE= torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
     # Load model
     model = general_mnist.Net().to(DEVICE).train()
 
