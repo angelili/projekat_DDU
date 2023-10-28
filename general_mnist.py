@@ -2,8 +2,10 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch import Tensor
+import numpy as np
+import random
 
-from typing import Tuple, Dict
+from typing import Tuple, Dict, List
 from torch.utils.data import DataLoader, random_split
 import torchvision.transforms as transforms
 from torchvision.datasets import FashionMNIST
@@ -40,7 +42,62 @@ def load_datasets():
 
 
 trainloaders, testloaders, testloader = load_datasets() 
-        
+
+def load_data(selected_classes:List) -> (
+    Tuple[torch.utils.data.DataLoader, torch.utils.data.DataLoader, Dict]):
+    """Load FashionMNIST (training and test set)."""
+    transform = transforms.Compose(
+        [transforms.ToTensor(), transforms.Normalize((0.2859), (0.3530))]
+    )
+    # Load the MNIST dataset
+    trainset = FashionMNIST(DATA_ROOT, train=True, download=True, transform=transform)
+    
+    testset = FashionMNIST(DATA_ROOT, train=False, download=True, transform=transform)
+
+    # Convert selected_classes list to a tensor
+    selected_classes_tensor = torch.tensor(selected_classes)
+
+    # Filter the dataset to include only the selected classes
+    indices = torch.where(torch.isin(trainset.targets, selected_classes_tensor))[0]
+
+
+   
+    indices=indices.numpy()
+    np.random.shuffle(indices)
+    num_samples= random.randint(4000,6000)
+    indices=indices[:num_samples]
+    subset_indices=torch.from_numpy(indices)
+    subset_dataset = torch.utils.data.Subset(trainset, subset_indices)
+    trainloader = torch.utils.data.DataLoader(subset_dataset, batch_size=32, shuffle=True)
+
+    
+    selected_targets = trainset.targets[indices]
+    
+    #checkup
+    class_counts = {}
+    for class_idx in selected_classes:
+        count = (selected_targets == class_idx).sum().item()
+        class_counts[class_idx] = count
+
+    # Print the class counts
+    for class_idx, count in class_counts.items():
+        print(f"Class {class_idx}: {count}")
+
+    # Filter the dataset to include only the selected classes
+    indices = torch.where(torch.isin(testset.targets, selected_classes_tensor))[0]
+  
+  
+    indices=indices.numpy()
+    np.random.shuffle(indices)
+    num_samples= int(num_samples*0.1)
+    indices=indices[:num_samples]
+    subset_indices=torch.from_numpy(indices)
+    subset_dataset = torch.utils.data.Subset(testset, subset_indices)
+    testloader = torch.utils.data.DataLoader(subset_dataset, batch_size=32, shuffle=True)
+    
+  
+
+    return trainloader, testloader
 class Net(nn.Module):
   
     def __init__(self) -> None:

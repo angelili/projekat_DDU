@@ -71,9 +71,9 @@ if __name__ == "__main__":
         strategy=strategy)
     
 
-    general_server.plot_training_comparison(training_history_acc_dist, data2,'photo_1.png')
-    general_server.plot_training_comparison(training_history_acc_cent, data1,'photo_2.png')
-    general_server.plot_training_comparison(training_history_loss_cent, data3, 'photo_3.png')
+    general_server.plot_training_comparison(training_history_acc_dist, data2,'accuracies_clients.png')
+    general_server.plot_training_comparison(training_history_acc_cent, data1,'accuracies_server.png')
+    general_server.plot_training_comparison(training_history_loss_cent, data3, 'losses_server.png')
 
     with open("training_history_acc_dist_pfedme.json", "w") as json_file:
         json.dump(training_history_acc_dist, json_file)

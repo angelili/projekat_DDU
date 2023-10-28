@@ -122,17 +122,19 @@ if __name__ == "__main__":
     testset=general_server.load_data_server()
     
    
+    
     strategy = fl.server.strategy.FedAvgM(
-        min_fit_clients=9,
-        min_evaluate_clients=10,
-        min_available_clients=10,
-        evaluate_fn=get_evaluate_fn(testset),#centralised evaluation of global model
-     
-        fit_metrics_aggregation_fn=agg_metrics_train(training_history_acc_dist),
-        evaluate_metrics_aggregation_fn=weighted_average(training_history_acc_dist),
-        on_fit_config_fn=fit_config,
-       
-       )
+    min_fit_clients=9,
+    min_evaluate_clients=10,
+    min_available_clients=10,
+    evaluate_fn=general_server.get_evaluate_fn(testset,training_history_acc_cent, training_history_loss_cent,
+                                                      'accuracy_centralized_pfedme_new','loss_centralized_pfedme_new'),
+                                
+    fit_metrics_aggregation_fn=general_server.agg_metrics_train_both_pfedme(training_history_acc_dist,'accuracy_local_pfedme_new','accuracy_person_pfedme_new'),
+    evaluate_metrics_aggregation_fn=general_server.weighted_average(training_history_acc_dist,'accuracy_global_pfedme_new'),
+    on_fit_config_fn=fit_config,
+        )
+    
     
     fl.server.start_server(
         server_address= "10.30.0.254:9000",

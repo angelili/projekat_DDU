@@ -170,19 +170,19 @@ def main() -> None:
         data = torch.load('/home/s124m21/projekat_DDU/hetero/fedavg/data_1.pth')
         # Retrieve the variables
         trainloader = data['trainloader']
-        num_examples = data['num_examples']
         testloader = data['testloader']
     else:    
         trainloader, testloader, _, num_examples = load_data()
-    
+
+    DEVICE = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
     # Load model
     model = general_mnist.Net().to(DEVICE)
-
+  
     # Perform a single forward pass to properly initialize BatchNorm
     _ = model(next(iter(trainloader))[0].to(DEVICE))
 
     # Start client
-    client = MnistClient(model, trainloader, testloader, num_examples)
+    client = MnistClient(model, trainloader, testloader, DEVICE)
     fl.client.start_numpy_client(server_address="10.30.0.254:9000",
     client=client)
 
