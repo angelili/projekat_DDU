@@ -20,7 +20,7 @@ import general_mnist
 lambda_reg=15
 FED_BN=False
 
-# Load each dictionary from the JSON files
+# Load each dictionary from the JSON files of FedAvg
 with open("/home/s124m21/projekat_DDU/hetero/fedavg/training_history_acc_cent_fed_avg.json", "r") as json_file:
     data1 = json.load(json_file)
 
@@ -31,6 +31,7 @@ with open("/home/s124m21/projekat_DDU/hetero/fedavg/training_history_loss_cent_f
     data3 = json.load(json_file)
 
 
+# Load each dictionary from the JSON files of pFedMe
 with open("/home/s124m21/projekat_DDU/hetero/pfedme/training_history_acc_cent_pfedme.json", "r") as json_file:
     data4 = json.load(json_file)
 
@@ -100,66 +101,6 @@ training_history_loss_cent={"loss_centralized_pfedme_new": []}
 
 
 
-def get_evaluate_fn(
-    testset: torchvision.datasets.MNIST,
-) -> Callable[[fl.common.NDArrays], Optional[Tuple[float, float]]]:
-    """Return an evaluation function for centralized evaluation."""
-
-    def evaluate(
-        server_round: int, parameters: fl.common.NDArrays, config: Dict[str, Union[int, float, complex]]
-    ) -> Optional[Tuple[float, float]]:
-        """Use the entire MNIST test set for evaluation."""
-
-        # determine device
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        model = general_mnist.Net()
-        if FED_BN==True:
-            keys = [k for k in model.state_dict().keys() if "bn" not in k]
-            params_dict = zip(keys, parameters)
-            state_dict = OrderedDict({k: torch.tensor(v) for k, v in params_dict})
-            model.load_state_dict(state_dict, strict=False)
-        else:
-            params_dict = zip(model.state_dict().keys(), parameters)
-            state_dict = OrderedDict({k: torch.tensor(v) for k, v in params_dict})
-            model.load_state_dict(state_dict, strict=True)
-
-        model.to(device)
-       
-       
-        
-        loss, accuracy = general_mnist.test_global(model, testset, device)
-        #testloader = torch.utils.data.DataLoader(testset, batch_size=50)
-        #loss, accuracy = mnist.test_global(model, testloader, device)
-
-        training_history_acc_cent["accuracy_centralized_pfedme_new"].append(accuracy)
-        training_history_loss_cent["loss_centralized_pfedme_new"].append(loss)
-        # return statistics
-        return loss, {"accuracy": accuracy}
-
-    return evaluate
-
-def weighted_average(metrics: List[Tuple[int, Metrics]]) -> Metrics:
-    # Multiply accuracy of each client by number of examples used
-    accuracies = [num_examples * m["accuracy"] for num_examples, m in metrics]
-    examples = [num_examples for num_examples, _ in metrics]
-
-    training_history_acc_dist["accuracy_global_pfedme_new"].append(sum(accuracies)/sum(examples))
-    # Aggregate and return custom metric (weighted average)
-    return {"accuracy_global": sum(accuracies) / sum(examples)}
-    
-def agg_metrics_train(metrics: List[Tuple[int, Metrics]]) -> Metrics:
-    # Multiply accuracy of each client by number of examples used
-    accuracies_person = [num_examples * m["accuracy_person"] for num_examples, m in metrics]
-    accuracies_global = [num_examples * m["accuracy_global"] for num_examples, m in metrics]
-    examples = [num_examples for num_examples, _ in metrics]
-
-    training_history_acc_dist["accuracy_personalized_pfedme_new"].append(sum(accuracies_person)/sum(examples))
-    training_history_acc_dist["accuracy_local_pfedme_new"].append(sum(accuracies_global)/sum(examples))
-
-
-    # Aggregate and return custom metric (weighted average)
-    return {"accuracy_personalized": sum(accuracies_person)/sum(examples), "accuracy_local": sum(accuracies_global)/sum(examples)}
-
 
 def fit_config(server_round: int):
     """Return training configuration dict for each round."""
@@ -182,15 +123,13 @@ if __name__ == "__main__":
     
    
     strategy = fl.server.strategy.FedAvgM(
-        fraction_fit=0.1,
-        fraction_evaluate=0.1,
         min_fit_clients=9,
         min_evaluate_clients=10,
         min_available_clients=10,
         evaluate_fn=get_evaluate_fn(testset),#centralised evaluation of global model
      
-        fit_metrics_aggregation_fn=agg_metrics_train,
-        evaluate_metrics_aggregation_fn=weighted_average,
+        fit_metrics_aggregation_fn=agg_metrics_train(training_history_acc_dist),
+        evaluate_metrics_aggregation_fn=weighted_average(training_history_acc_dist),
         on_fit_config_fn=fit_config,
        
        )
@@ -201,9 +140,9 @@ if __name__ == "__main__":
         strategy=strategy)
     
     #detalied comparison with FedAvg, same as for pFedMe
-    general_server.plot_training_comparison(training_history_acc_dist, data2,'photo_1.png')
-    general_server.plot_training_comparison(training_history_acc_cent, data1,'photo_2.png')
-    general_server.plot_training_comparison(training_history_loss_cent, data3, 'photo_3.png')
+    general_server.plot_training_comparison(training_history_acc_dist, data2,'accuracies_clients.png')
+    general_server.plot_training_comparison(training_history_acc_cent, data1,'accuracies_server.png')
+    general_server.plot_training_comparison(training_history_loss_cent, data3, 'losses_server.png')
 
     #key comparison of FedAvg, pFedMe, pFedMe_new local models
     plot_key_differences_local(data2, data5,training_history_acc_dist, "key_differences_local.png")

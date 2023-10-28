@@ -14,19 +14,19 @@ sys.path.append('/home/s124m21/projekat_DDU')
 import general_server
 
 
-training_history_acc_dist={"accuracy_global": [], "accuracy_local": []}
-training_history_acc_cent={'accuracy_centralized': []}
-training_history_loss_dist={"loss_distributed": []}
-training_history_loss_cent={"loss_centralized": []}
+training_history_acc_dist={"accuracy_global_fedavg": [], "accuracy_local_fedavg": []}
+training_history_acc_cent={'accuracy_centralized_fedavg': []}
+training_history_loss_dist={"loss_distributed_fedavg": []}
+training_history_loss_cent={"loss_centralized_fedavg": []}
 
 
 def fit_config(server_round: int):
-    """Return training configuration dict for each round."""
+        """Return training configuration dict for each round."""
 
-    config = {
-     "local_epochs":1,
-    }
-    return config
+        config = {'pfedme': False,
+            "local_epochs": 2,
+            "learning_rate": 0.1, }
+        return config
 
 
     
@@ -52,9 +52,9 @@ if __name__ == "__main__":
         strategy=strategy
     )
 
-    general_server.plot_training_history(training_history_acc_dist,'photo_1.png')
-    general_server.plot_training_history(training_history_acc_cent,'photo_2.png')
-    general_server.plot_training_history(training_history_loss_cent,'photo_3.png')
+    general_server.plot_training_history(training_history_acc_dist,'accuracies_clients.png')
+    general_server.plot_training_history(training_history_acc_cent,'accuracies_server.png')
+    general_server.plot_training_history(training_history_loss_cent,'loss_server.png')
 
     with open("training_history_acc_dist_fed_avg.json", "w") as json_file:
         json.dump(training_history_acc_dist, json_file)
