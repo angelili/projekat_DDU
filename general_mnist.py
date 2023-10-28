@@ -90,7 +90,7 @@ def train_pfedme(
             data, target = data.to(device), target.to(device) #sample a batch
             for i in range(local_iterations):
                 optimizer.zero_grad()
-                proximal_term = 0.0
+                penalty_term = 0.0
                 for local_weights, global_weights in zip(model.parameters(), global_params):  #here
                     penalty_term += (local_weights - global_weights).norm(2)**2
                 loss = criterion(model(data), target) + (lambda_reg/2) * penalty_term
@@ -102,7 +102,7 @@ def train_pfedme(
                 data, target = next(data_iterator)
                 data, target = data.to(device), target.to(device) #sample a batch
                 optimizer.zero_grad()
-                proximal_term = 0.0
+                penalty_term = 0.0
                 for local_weights, global_weights in zip(model.parameters(), global_params):
                     penalty_term += (local_weights - global_weights).norm(2)**2
                 loss = criterion(model(data), target) + (lambda_reg/2) * penalty_term

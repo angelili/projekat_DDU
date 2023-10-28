@@ -57,9 +57,11 @@ if __name__ == "__main__":
     min_fit_clients=9,
     min_evaluate_clients=10,
     min_available_clients=10,
-    evaluate_fn=general_server.get_evaluate_fn_pfedme(testset,training_history_acc_cent, training_history_loss_cent),#centralised evaluation of global model
-    fit_metrics_aggregation_fn=general_server.agg_metrics_train_pfedme(training_history_acc_dist),
-    evaluate_metrics_aggregation_fn=general_server.weighted_average_pfedme(training_history_acc_dist),
+    evaluate_fn=general_server.get_evaluate_fn(testset,training_history_acc_cent, training_history_loss_cent,
+                                                      "accuracy_centralized_pfedme","loss_centralized_pfedme"),
+                                
+    fit_metrics_aggregation_fn=general_server.agg_metrics_train_both_pfedme(training_history_acc_dist,'accuracy_local_pfedme','accuracy_person_pfedme'),
+    evaluate_metrics_aggregation_fn=general_server.weighted_average(training_history_acc_dist,'accuracy_global'),
     on_fit_config_fn=fit_config,
         )
     

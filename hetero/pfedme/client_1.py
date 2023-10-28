@@ -139,13 +139,13 @@ class MnistClient(fl.client.NumPyClient):
         mu: float = config["global_learning_rate"]
     
         self.set_parameters(parameters)
-        global_params = general_mnist.train_pfedme(model=self.model, trainloader=self.trainloader, new=new, device=self.device, local_rounds=local_rounds, local_iterations=local_iterations, lambda_reg=lambda_reg, lr=lr, mu=mu)
+        global_params = general_mnist.train_pfedme(model=self.model, trainloader=self.trainloader, new=new, device=DEVICE, local_rounds=local_rounds, local_iterations=local_iterations, lambda_reg=lambda_reg, lr=lr, mu=mu)
 
-        loss_person, accuracy_person = general_mnist.test(model=self.model, testloader=self.testloader, device=self.device)
+        loss_person, accuracy_person = general_mnist.test(model=self.model, testloader=self.testloader, device=DEVICE)
         with torch.no_grad():     
             for param, global_param in zip(self.model.parameters(), global_params):
                 param = global_param
-        loss_local, accuracy_local = general_mnist.test(model=self.model, testloader=self.testloader, device=self.device)
+        loss_local, accuracy_local = general_mnist.test(model=self.model, testloader=self.testloader, device=DEVICE)
         
         return self.get_parameters(self.model), len(self.testloader.dataset), {"accuracy_local": float(accuracy_local),"accuracy_person": float(accuracy_person)}
     
@@ -154,7 +154,7 @@ class MnistClient(fl.client.NumPyClient):
     ) -> Tuple[float, int, Dict]:
         # Set model parameters, evaluate model on local test dataset, return result
         self.set_parameters(parameters)
-        loss, accuracy = general_mnist.test_global(self.model, self.testloader, device=DEVICE)
+        loss, accuracy = general_mnist.test(self.model, self.testloader, device=DEVICE)
         return float(loss), self.num_examples["testset"], {"accuracy": float(accuracy)}
 
 
