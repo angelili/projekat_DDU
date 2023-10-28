@@ -25,7 +25,7 @@ def main() -> None:
       os.environ["https_proxy"] = ""
     # Load data
     if Benchmark==True:
-        data = torch.load('/home/s124m21/projekat_DDU/hetero/fedavg/data_8.pth')
+        data = torch.load('/home/s124m21/projekat_DDU/hetero/fedavg/data_10.pth')
         # Retrieve the variables
         trainloader = data['trainloader']
         testloader = data['testloader']
@@ -40,9 +40,9 @@ def main() -> None:
     _ = model(next(iter(trainloader))[0].to(DEVICE))
 
     # Start client
-    client_9 = client.MnistClient_pfedme(model, trainloader, testloader, DEVICE)
+    client_10 = client.MnistClient_pfedme(model, trainloader, testloader, DEVICE)
     fl.client.start_numpy_client(server_address="10.30.0.254:9000",
-    client=client_9)
+    client=client_10)
 
 
 if __name__ == "__main__":

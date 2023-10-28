@@ -30,7 +30,7 @@ def main() -> None:
         trainloader = data['trainloader']
         testloader = data['testloader']
     else:    
-        trainloader, testloader = client.load_data([2, 3, 4, 5, 6] )
+        trainloader, testloader = client.load_data([2, 3, 4, 5, 6])
 
     DEVICE = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
     # Load model

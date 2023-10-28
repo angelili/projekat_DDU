@@ -61,7 +61,7 @@ if __name__ == "__main__":
                                                       "accuracy_centralized_pfedme","loss_centralized_pfedme"),
                                 
     fit_metrics_aggregation_fn=general_server.agg_metrics_train_both_pfedme(training_history_acc_dist,'accuracy_local_pfedme','accuracy_person_pfedme'),
-    evaluate_metrics_aggregation_fn=general_server.weighted_average(training_history_acc_dist,'accuracy_global'),
+    evaluate_metrics_aggregation_fn=general_server.weighted_average(training_history_acc_dist,'accuracy_global_pfedme'),
     on_fit_config_fn=fit_config,
         )
     

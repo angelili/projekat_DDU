@@ -43,7 +43,7 @@ if __name__ == "__main__":
         min_available_clients=10,
         evaluate_fn=general_server.get_evaluate_fn_fedavg(testset,training_history_acc_cent, training_history_loss_cent),#centralised evaluation of global model
         fit_metrics_aggregation_fn=general_server.agg_metrics_train_fedavg(training_history_acc_dist),
-        evaluate_metrics_aggregation_fn=general_server.weighted_average_fedavg(training_history_acc_dist),
+        evaluate_metrics_aggregation_fn=general_server.weighted_average(training_history_acc_dist),
         on_fit_config_fn=fit_config)
     
     fl.server.start_server(

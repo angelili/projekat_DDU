@@ -86,7 +86,7 @@ def weighted_average(dict: Dict, key: str) -> Metrics:
     return evaluate
 
 
-#function used to evaluate at the end of training
+
 
 def agg_metrics_train_both_pfedme(dict: Dict, key_local:str, key_person:str ) -> Metrics:    
     def evaluate(metrics: List[Tuple[int, Metrics]]) -> Metrics:
@@ -114,15 +114,13 @@ def agg_metrics_train_fedavg(dict: Dict, key:str ) -> Metrics:
 
         # Aggregate and return custom metric (weighted average)
         return {"accuracy_local_fedavg": sum(accuracies) / sum(examples)}
+    
     return evaluate
 
 
 
 
 
-
-    # Aggregate and return custom metric (weighted average)
-    return {"accuracy_personalized": sum(accuracies_person)/sum(examples), "accuracy_local": sum(accuracies_global)/sum(examples)}
 
 def plot_training_history(training_history, path):
     plt.figure()
