@@ -130,51 +130,24 @@ class MnistClient(fl.client.NumPyClient):
         else:
             # Return model parameters as a list of NumPy ndarrays
             return [val.cpu().numpy() for _, val in self.model.state_dict().items()]        
-
     def fit(self, parameters, config):
+        new: bool = config['new']
         lambda_reg: int = config["lambda_reg"]
         local_rounds: int = config["local_rounds"]
-        local_epochs: int = config["local_epochs"]
         local_iterations: int= config["local_iterations"]
+        lr: float = config["learning_rate"]
+        mu: float = config["global_learning_rate"]
     
         self.set_parameters(parameters)
-        # Define the personalized objective function using the Moreau envelope algorithm
-        global_params = [val.detach().clone() for val in self.model.parameters()]
-        self.model.train()
-  
-        for r in range(local_epochs):
-            # Local update on client 
-            criterion = torch.nn.CrossEntropyLoss()
-            optimizer = torch.optim.Adam(self.model.parameters(), lr=0.1)
-            for r in range(local_rounds):
-                for i in range(local_iterations):
-                    data_iterator = iter(self.trainloader)
-                    data, target = next(data_iterator)
-                    data, target = data.to(DEVICE), target.to(DEVICE) #sample a batch
-                    optimizer.zero_grad()
-                    proximal_term = 0.0
-                    for local_weights, global_weights in zip(self.model.parameters(), global_params):
-                        proximal_term += (local_weights - global_weights).norm(2)**2
-                    loss = criterion(self.model(data), target) + (lambda_reg/2) * proximal_term
-                    loss.backward()
-                    optimizer.step()
+        global_params = general_mnist.train_pfedme(model=self.model, trainloader=self.trainloader, new=new, device=self.device, local_rounds=local_rounds, local_iterations=local_iterations, lambda_reg=lambda_reg, lr=lr, mu=mu)
 
-
-                   #update the model
-                    
-                
-                with torch.no_grad():
-                    for param, global_param in zip(self.model.parameters(), global_params):
-                        global_param.data = global_param.data-0.005*lambda_reg*(global_param.data-param.data)
-             
-
-        loss_person, accuracy_person= general_mnist.test_local(local_model=self.model, testloader=self.testloader, device=DEVICE)
+        loss_person, accuracy_person = general_mnist.test(model=self.model, testloader=self.testloader, device=self.device)
         with torch.no_grad():     
-          for param, global_param in zip(self.model.parameters(), global_params):
-                param.data = global_param.data
-        loss_global, accuracy_global= general_mnist.test_global(net=self.model, testloader=self.testloader, device=DEVICE)
+            for param, global_param in zip(self.model.parameters(), global_params):
+                param = global_param
+        loss_local, accuracy_local = general_mnist.test(model=self.model, testloader=self.testloader, device=self.device)
         
-        return self.get_parameters(self.model), self.num_examples["trainset"], {"accuracy_global": float(accuracy_global),"accuracy_person": float(accuracy_person)}
+        return self.get_parameters(self.model), len(self.testloader.dataset), {"accuracy_local": float(accuracy_local),"accuracy_person": float(accuracy_person)}
         
     def evaluate(
         self, parameters: List[np.ndarray], config: Dict[str, str]

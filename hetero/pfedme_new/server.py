@@ -160,15 +160,17 @@ def agg_metrics_train(metrics: List[Tuple[int, Metrics]]) -> Metrics:
     # Aggregate and return custom metric (weighted average)
     return {"accuracy_personalized": sum(accuracies_person)/sum(examples), "accuracy_local": sum(accuracies_global)/sum(examples)}
 
+
 def fit_config(server_round: int):
     """Return training configuration dict for each round."""
 
-    config = {
-        "lambda_reg":15,
-        "local_epochs":1,
-        "local_rounds":120,
-        "local_iterations":10
-    }
+    config = {'pfedme':True,
+            'new': False,
+            "lambda_reg":15,
+            "local_rounds":120,
+            "local_iterations":10,
+            "learning_rate": 0.1,
+            "global_learning_rate": 0.005 }
     return config
 
 if __name__ == "__main__":
