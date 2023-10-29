@@ -6,8 +6,6 @@ import torch
 
 import flwr as fl
 
-from server import Benchmark
-
 import sys
 sys.path.append('/home/s124m21/projekat_DDU')
 
@@ -40,12 +38,10 @@ def main() -> None:
     # Load model
     model = general_mnist.Net().to(DEVICE).train()
 
-    #Load the variables as data
-    data = torch.load('/home/s124m21/projekat_DDU/homo/fedavg/data_1.pt')
-    # Retrieve the variables
-    trainloader = data['trainloader']
-    testloader = data['testloader']
-   
+    # Perform a single forward pass to properly initialize BatchNorm
+    _ = model(next(iter(trainloader))[0].to(DEVICE))
+
+
     # Start client
     client_1 = client.MnistClient(model, trainloader, testloader, DEVICE)
     fl.client.start_numpy_client(server_address="10.30.0.254:9000",

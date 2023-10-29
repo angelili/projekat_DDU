@@ -32,7 +32,7 @@ def main() -> None:
     DEVICE = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
 
     # Load model
-    model = general_mnist.Net().to(DEVICE).train()
+    model = general_mnist.Net().to(DEVICE)
 
     #Load the variables as data
     data = torch.load('/home/s124m21/projekat_DDU/homo/fedavg/data_3.pt')

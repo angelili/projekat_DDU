@@ -13,8 +13,6 @@ sys.path.append('/home/s124m21/projekat_DDU')
 import general_mnist
 import client
 
-
-
 def main() -> None:
     """Load data, start MnistClient."""
 
@@ -31,19 +29,12 @@ def main() -> None:
     trainloader = data['trainloader']
     testloader = data['testloader']
      
-    
     #Set up the device
     DEVICE = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
 
     # Load model
-    model = general_mnist.Net().to(DEVICE).train()
-
-    #Load the variables as data
-    data = torch.load('/home/s124m21/projekat_DDU/homo/fedavg/data_1.pt')
-    # Retrieve the variables
-    trainloader = data['trainloader']
-    testloader = data['testloader']
-   
+    model = general_mnist.Net().to(DEVICE)
+    
     # Start client
     client_1 = client.MnistClient(model, trainloader, testloader, DEVICE)
     fl.client.start_numpy_client(server_address="10.30.0.254:9000",

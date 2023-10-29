@@ -35,13 +35,14 @@ if __name__ == "__main__":
     if fedl_no_proxy:
       os.environ["http_proxy"] = ""
       os.environ["https_proxy"] = ""
-      testset= general_server.load_data_server()
+    testset= general_server.load_data_server()
 
     strategy = fl.server.strategy.FedAvg(
         min_fit_clients=9,
         min_evaluate_clients=10,
         min_available_clients=10,
-        evaluate_fn=general_server.get_evaluate_fn(testset,training_history_acc_cent, training_history_loss_cent, 'accuracy_centralized_fedavg','loss_centralized_fedavg'),#centralised evaluation of global model
+        evaluate_fn=general_server.get_evaluate_fn(testset,training_history_acc_cent, training_history_loss_cent, 
+                                                   'accuracy_centralized_fedavg','loss_centralized_fedavg'),#centralised evaluation of global model
         fit_metrics_aggregation_fn=general_server.agg_metrics_train_fedavg(training_history_acc_dist, 'accuracy_local_fedavg'),
         evaluate_metrics_aggregation_fn=general_server.weighted_average(training_history_acc_dist, 'accuracy_global_fedavg'),
         on_fit_config_fn=fit_config)

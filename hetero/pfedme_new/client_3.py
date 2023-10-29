@@ -14,8 +14,7 @@ sys.path.append('/home/s124m21/projekat_DDU')
 import general_mnist
 import client
 
-
-
+from general_mnist import Benchmark
 
 def main() -> None:
     """Load data, start Client."""

@@ -1,5 +1,5 @@
 import general_mnist
-
+from general_mnist import FED_BN
 import torch
 import flwr as fl
 

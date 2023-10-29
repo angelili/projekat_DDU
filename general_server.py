@@ -184,7 +184,7 @@ def plot_training_comparison(training_history,data,path,lambda_reg=15):
     # Iterate over each metric in the training history dictionary
     for metric, values in training_history.items():
         # Create a line plot for the metric
-        plt.plot(values, label=metric, alpha=overlapping)
+        plt.plot(values, label=metric)
     for metric, values in data.items():
         # Create a line plot for the metric
         plt.plot(values, label=metric)

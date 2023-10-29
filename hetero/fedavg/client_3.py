@@ -14,7 +14,7 @@ import general_mnist
 import client
 
 
-from general_mnist import Benchmark
+Benchmark=True
 
 def main() -> None:
     """Load data, start Client."""

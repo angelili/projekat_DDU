@@ -1,15 +1,14 @@
+from typing import Tuple
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch import Tensor
-
-
-
-from typing import Tuple
 from torch.utils.data import DataLoader
 
 
-
+Benchmark=True
+FED_BN=False
 
 
 
