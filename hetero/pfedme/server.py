@@ -13,7 +13,7 @@ import sys
 sys.path.append('/home/s124m21/projekat_DDU')
 import general_server
 
-lambda_reg=15
+lambda_reg=15 #just for plotting
 
 # Load each dictionary from the JSON files
 with open("/home/s124m21/projekat_DDU/hetero/fedavg/training_history_acc_cent_fed_avg.json", "r") as json_file:
@@ -60,7 +60,7 @@ if __name__ == "__main__":
     evaluate_fn=general_server.get_evaluate_fn(testset,training_history_acc_cent, training_history_loss_cent,
                                                       "accuracy_centralized_pfedme","loss_centralized_pfedme"),
                                 
-    fit_metrics_aggregation_fn=general_server.agg_metrics_train_both_pfedme(training_history_acc_dist,'accuracy_local_pfedme','accuracy_person_pfedme'),
+    fit_metrics_aggregation_fn=general_server.agg_metrics_train_both_pfedme(training_history_acc_dist,'accuracy_local_pfedme','accuracy_personalized_pfedme'),
     evaluate_metrics_aggregation_fn=general_server.weighted_average(training_history_acc_dist,'accuracy_global_pfedme'),
     on_fit_config_fn=fit_config,
         )

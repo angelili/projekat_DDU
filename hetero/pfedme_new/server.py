@@ -47,7 +47,7 @@ with open("/home/s124m21/projekat_DDU/hetero/pfedme/training_history_loss_cent_p
 def plot_key_differences_local(fedavg,pfedme,pfedme_new,path):
     plt.figure()
     # Extract local metrics from fedavg
-    values=fedavg["accuracy_local"]
+    values=fedavg["accuracy_local_fedavg"]
     # Create a line plot for the metric
     plt.plot(values, label="accuracy_local_fedavg")
     # Extract local metrics from pfedme
@@ -72,7 +72,7 @@ def plot_key_differences_local(fedavg,pfedme,pfedme_new,path):
 def plot_key_differences_centralized(fedavg,pfedme,pfedme_new,path):
     plt.figure()
     # Extract local metrics from fedavg
-    values=fedavg["accuracy_centralized"]
+    values=fedavg["accuracy_centralized_fedavg"]
     # Create a line plot for the metric
     plt.plot(values, label="accuracy_centralized_fedavg")
     # Extract local metrics from pfedme
@@ -130,7 +130,7 @@ if __name__ == "__main__":
     evaluate_fn=general_server.get_evaluate_fn(testset,training_history_acc_cent, training_history_loss_cent,
                                                       'accuracy_centralized_pfedme_new','loss_centralized_pfedme_new'),
                                 
-    fit_metrics_aggregation_fn=general_server.agg_metrics_train_both_pfedme(training_history_acc_dist,'accuracy_local_pfedme_new','accuracy_person_pfedme_new'),
+    fit_metrics_aggregation_fn=general_server.agg_metrics_train_both_pfedme(training_history_acc_dist,'accuracy_local_pfedme_new','accuracy_personalized_pfedme_new'),
     evaluate_metrics_aggregation_fn=general_server.weighted_average(training_history_acc_dist,'accuracy_global_pfedme_new'),
     on_fit_config_fn=fit_config,
         )

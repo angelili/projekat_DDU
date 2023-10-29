@@ -1,5 +1,5 @@
 """Flower server"""
-
+"The global variables for Benchmarking, and FED_BN are defined in the general_mnist"
 
 import flwr as fl
 

@@ -13,8 +13,8 @@ sys.path.append('/home/s124m21/projekat_DDU')
 import general_mnist
 import client
 
-Benchmark=True
 
+from general_mnist import Benchmark
 
 def main() -> None:
     """Load data, start Client."""
@@ -42,7 +42,7 @@ def main() -> None:
         torch.save(data_3, 'data_3.pth')
 
     # Start client
-    client_3 = client.MnistClient_fedavg(model, trainloader, testloader, DEVICE)
+    client_3 = client.MnistClient(model, trainloader, testloader, DEVICE)
     fl.client.start_numpy_client(server_address="10.30.0.254:9000",
     client=client_3)
 

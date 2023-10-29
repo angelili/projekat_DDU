@@ -23,8 +23,8 @@ training_history_loss_cent={"loss_centralized_fedavg": []}
 def fit_config(server_round: int):
         """Return training configuration dict for each round."""
 
-        config = {'pfedme': False,
-            "local_epochs": 2,
+        config = {"pfedme": False,
+            "local_epochs": 1,
             "learning_rate": 0.1, }
         return config
 
@@ -41,9 +41,9 @@ if __name__ == "__main__":
         min_fit_clients=9,
         min_evaluate_clients=10,
         min_available_clients=10,
-        evaluate_fn=general_server.get_evaluate_fn_fedavg(testset,training_history_acc_cent, training_history_loss_cent),#centralised evaluation of global model
-        fit_metrics_aggregation_fn=general_server.agg_metrics_train_fedavg(training_history_acc_dist),
-        evaluate_metrics_aggregation_fn=general_server.weighted_average(training_history_acc_dist),
+        evaluate_fn=general_server.get_evaluate_fn(testset,training_history_acc_cent, training_history_loss_cent, 'accuracy_centralized_fedavg','loss_centralized_fedavg'),#centralised evaluation of global model
+        fit_metrics_aggregation_fn=general_server.agg_metrics_train_fedavg(training_history_acc_dist, 'accuracy_local_fedavg'),
+        evaluate_metrics_aggregation_fn=general_server.weighted_average(training_history_acc_dist, 'accuracy_global_fedavg'),
         on_fit_config_fn=fit_config)
     
     fl.server.start_server(

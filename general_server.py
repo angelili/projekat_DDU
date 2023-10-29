@@ -1,12 +1,16 @@
 import torch
 
 from collections import OrderedDict
+from typing import Callable, Optional, Tuple, Dict, Union, List
+
 import flwr as fl
 from flwr.common import Metrics
 
+
 import torchvision.transforms as transforms
 from torchvision.datasets import FashionMNIST
-from typing import Callable, Optional, Tuple, Dict, Union, List
+from torch.utils.data import DataLoader, random_split
+
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -26,10 +30,50 @@ def load_data_server():
     )
     testset = FashionMNIST(DATA_ROOT, train=False, download=True, transform=transform)
 
-    testset_server = torch.utils.data.DataLoader(testset, batch_size=50, shuffle=True)
+    testset_server = DataLoader(testset, batch_size=50, shuffle=True)
     
 
     return testset_server    
+
+
+#THIS IS ONLY FOR THE HOMOGENEOUS CASE
+def load_datasets():
+  
+
+    transform = transforms.Compose(
+        [transforms.ToTensor(), transforms.Normalize((0.2859), (0.3530))]
+    )
+
+    trainset = FashionMNIST(DATA_ROOT, train=True, download=True, transform=transform)
+    testset = FashionMNIST(DATA_ROOT, train=False, download=True, transform=transform)
+
+    # Split the training set into 10 partitions
+    size_train = len(trainset) // 10
+
+    partition_len = [size_train] * 10
+    partitions_train= random_split(
+        trainset, partition_len, torch.Generator().manual_seed(42))
+
+    # Split the test set into 10 partitions in the same way
+    size_test = len(testset) // 10
+
+    partition_len = [size_test] * 10
+    partitions_test= random_split(
+        testset, partition_len, torch.Generator().manual_seed(42))
+
+
+    # Create DataLoader for each partition
+    trainloaders=[]
+    testloaders = []
+    for partition_train, partition_test in zip(partitions_train, partitions_test):
+        trainloaders.append(
+            DataLoader(partition_train, batch_size=32, shuffle=True)
+        )
+        testloaders.append(
+            DataLoader(partition_test, batch_size=32, shuffle=False)
+        )
+
+    return trainloaders, testloaders
 
 #The following metrics are the same; the difference is in keys from the dictionaries we are filling in _fedavg_pfedme_pfedme_new
 
@@ -118,10 +162,6 @@ def agg_metrics_train_fedavg(dict: Dict, key:str ) -> Metrics:
     return evaluate
 
 
-
-
-
-
 def plot_training_history(training_history, path):
     plt.figure()
     # Iterate over each metric in the training history dictionary
@@ -144,7 +184,7 @@ def plot_training_comparison(training_history,data,path,lambda_reg=15):
     # Iterate over each metric in the training history dictionary
     for metric, values in training_history.items():
         # Create a line plot for the metric
-        plt.plot(values, label=metric)
+        plt.plot(values, label=metric, alpha=overlapping)
     for metric, values in data.items():
         # Create a line plot for the metric
         plt.plot(values, label=metric)

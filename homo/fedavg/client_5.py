@@ -1,111 +1,17 @@
 """Flower client using PyTorch for FashionMNIST image classification."""
-
-
 import os
 
-from collections import OrderedDict
-from typing import Dict, List, Tuple
 import torch
 
-import torchvision.transforms as transforms
-from torchvision.datasets import FashionMNIST
-
-import random
 import flwr as fl
-import numpy as np
 
 import sys
 sys.path.append('/home/s124m21/projekat_DDU')
 
 # import your module without specifying the full path
 import general_mnist
+import client
 
-DATA_ROOT = "/home/s124m21/projekat_DDU/dataset"
-Benchmark=True
-Non_uniform_cardinality=True
-
-def load_data() -> (
-    Tuple[torch.utils.data.DataLoader, torch.utils.data.DataLoader, Dict]):
-    """Load FashionMNIST (training and test set)."""
-    transform = transforms.Compose(
-        [transforms.ToTensor(), transforms.Normalize((0.2859), (0.3530))]
-    )
-    # Load the FashionMNIST dataset
-    trainset = FashionMNIST(DATA_ROOT, train=True, download=True, transform=transform)
-    
-    testset = FashionMNIST(DATA_ROOT, train=False, download=True, transform=transform)
-
-    if Non_uniform_cardinality==True:
-        sample_size_train = random.randint(4000, 6000)
-        sample_size_test =  int(sample_size_train*0.1)
-    else:
-        sample_size_train=5000
-        sample_size_test=500
-
-    indices_train = random.sample(range(len(trainset)), sample_size_train)
-    sampler_train= torch.utils.data.SubsetRandomSampler(indices_train)
-
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=32, shuffle=False, sampler=sampler_train)
-    indices_test = random.sample(range(len(testset)), sample_size_test)
-    sampler_test = torch.utils.data.SubsetRandomSampler(indices_test)
-
-    testloader = torch.utils.data.DataLoader(testset, batch_size=32, shuffle=False, sampler=sampler_test)
-    num_examples = {"trainset": sample_size_train, "testset": sample_size_test}
-
-    return trainloader, testloader, testset, num_examples
-
-
-# pylint: disable=no-member
-DEVICE: str = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-# pylint: enable=no-member
-
-
-# Flower Client
-class MnistClient(fl.client.NumPyClient):
-    """Flower client implementing FashionMNIST image classification using
-    PyTorch."""
-
-    def __init__(
-        self,
-        model: general_mnist.Net,
-        trainloader: torch.utils.data.DataLoader,
-        testloader: torch.utils.data.DataLoader,
-        num_examples: Dict,
-    ) -> None:
-        self.model = model
-        self.trainloader = trainloader
-        self.testloader = testloader
-        self.num_examples = num_examples
-
-    def get_parameters(self, config: Dict[str, str]) -> List[np.ndarray]:
-      
-        # Return model parameters as a list of NumPy ndarrays
-        return [val.cpu().numpy() for _, val in self.model.state_dict().items()]
-
-    def set_parameters(self, parameters: List[np.ndarray]) -> None:
-        # Set model parameters from a list of NumPy ndarrays
-       
-        params_dict = zip(self.model.state_dict().keys(), parameters)
-        state_dict = OrderedDict({k: torch.tensor(v) for k, v in params_dict})
-        self.model.load_state_dict(state_dict, strict=True)
-
-    def fit(
-        self, parameters: List[np.ndarray], config: Dict[str, str]
-    ) -> Tuple[List[np.ndarray], int, Dict]:
-        # Set model parameters, train model, return updated model parameters
-        local_epochs: int = config["local_epochs"]
-        self.set_parameters(parameters)
-        general_mnist.train(self.model, self.trainloader, epochs=local_epochs, device=DEVICE)
-        loss, accuracy = general_mnist.test(net=self.model, testloader=self.testloader, device=DEVICE)
-        return self.get_parameters(config={}), self.num_examples["trainset"], {"accuracy": float(accuracy)}
-
-    def evaluate(
-        self, parameters: List[np.ndarray], config: Dict[str, str]
-    ) -> Tuple[float, int, Dict]:
-        # Set model parameters, evaluate model on local test dataset, return result
-        self.set_parameters(parameters)
-        loss, accuracy = general_mnist.test(self.model, self.testloader, device=DEVICE)
-        return float(loss), self.num_examples["testset"], {"accuracy": float(accuracy)}
 
 
 def main() -> None:
@@ -117,29 +23,25 @@ def main() -> None:
     if fedl_no_proxy:
       os.environ["http_proxy"] = ""
       os.environ["https_proxy"] = ""
-    # Load data
-    #trainloader, testloader, _, num_examples = load_data()
-    trainloader=general_mnist.trainloaders[4]
-    testloader=general_mnist.testloaders[4]    
-    num_examples={"trainset": 5400, "testset": 600}
+
+    #Load the variables as data
+    data = torch.load('/home/s124m21/projekat_DDU/homo/fedavg/data_5.pt')
+    # Retrieve the variables
+    trainloader = data['trainloader']
+    testloader = data['testloader']
+   
+    #Set up the device
+    DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     # Load model
     model = general_mnist.Net().to(DEVICE).train()
 
-    if Benchmark==True:
-        data_5 = {
-            'trainloader': trainloader,
-            'testloader': testloader,
-            'num_examples': num_examples,
-        }
-        torch.save(data_5, 'data_5.pt')
-
     # Start client
-    client = MnistClient(model, trainloader, testloader, num_examples)
+    client_5 = client.MnistClient(model, trainloader, testloader, DEVICE)
     fl.client.start_numpy_client(server_address="10.30.0.254:9000",
-    client=client)
-    
- 
+    client=client_5)
+
+
 
 if __name__ == "__main__":
     main()

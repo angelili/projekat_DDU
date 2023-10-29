@@ -13,8 +13,7 @@ sys.path.append('/home/s124m21/projekat_DDU')
 import general_mnist
 import client
 
-Benchmark=True
-
+from general_mnist import Benchmark
 
 def main() -> None:
     """Load data, start Client."""
@@ -28,7 +27,7 @@ def main() -> None:
     # Load data
     trainloader, testloader = client.load_data([0, 1, 2, 3, 4])
     # Set device
-    DEVICE= torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
+    DEVICE = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
     # Load model
     model = general_mnist.Net().to(DEVICE).train()
 
@@ -41,7 +40,7 @@ def main() -> None:
         torch.save(data_1, 'data_1.pth')
 
     # Start client
-    client_1 = client.MnistClient_fedavg(model, trainloader, testloader, DEVICE)
+    client_1 = client.MnistClient(model, trainloader, testloader, DEVICE)
     fl.client.start_numpy_client(server_address="10.30.0.254:9000",
     client=client_1)
 

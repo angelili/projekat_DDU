@@ -14,7 +14,7 @@ import random
 import flwr as fl
 import numpy as np
 import torch
-
+from server import Benchmark
 import sys
 sys.path.append('/home/s124m21/projekat_DDU')
 

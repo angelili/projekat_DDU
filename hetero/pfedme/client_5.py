@@ -1,33 +1,19 @@
 """Flower client using PyTorch for FashionMNIST image classification."""
-
-
 import os
 
-from collections import OrderedDict
-from typing import Dict, List, Tuple
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
-import torchvision
-import torchvision.transforms as transforms
-from torch import Tensor
-from torchvision.datasets import FashionMNIST
 
-import random
 import flwr as fl
-import numpy as np
-import torch
-import torchvision
 
 import sys
+
 sys.path.append('/home/s124m21/projekat_DDU')
 
 # import your module without specifying the full path
 import general_mnist
 import client
 
-Benchmark=True
-
+from general_mnist import Benchmark
 
 def main() -> None:
     """Load data, start Client."""
@@ -53,7 +39,7 @@ def main() -> None:
     _ = model(next(iter(trainloader))[0].to(DEVICE))
 
     # Start client
-    client_5 = client.MnistClient_pfedme(model, trainloader, testloader, DEVICE)
+    client_5 = client.MnistClient(model, trainloader, testloader, DEVICE)
     fl.client.start_numpy_client(server_address="10.30.0.254:9000",
     client=client_5)
 
