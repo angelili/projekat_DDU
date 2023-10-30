@@ -24,7 +24,7 @@ After the server is up and running, we invoke the clients with:
 ```
 ./run.sh
 ```
-NOTE: Initializing the server leads to bottleneck of data download for some reason on the FashionMNIST, I suggest running isolation.py in FedAvg, and then stopping after the download has been completed.
+NOTE: Initializing the server leads to bottleneck of data download for some reason in the FashionMNIST, I suggest running isolation.py from one of the fedavg, and then stopping after the download has been completed.
 
 
 The two 'flags', FED_BN, Benchmark are set in `general_mnist.py`. The flag FED_BN is based on [FedBN] strategy , which suggests that Batch Normalization layers on clients could become biased and lead to overfitting the local model when data heterogeneity takes place,
