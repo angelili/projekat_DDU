@@ -43,7 +43,7 @@ This project is licensed under the [MIT License](https://opensource.org/license/
 
 ## Acknowledgments
 
-This project includes code from the [Flower project](https://github.com/adap/flower) on GitHub. We are grateful for their contributions to open source.
+This project includes code from the [Flower project](https://github.com/adap/flower) on GitHub. I give my best gratitude for their contributions to open source.
 
 ### Disclaimer
 
