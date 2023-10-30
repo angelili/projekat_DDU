@@ -26,12 +26,12 @@ After the server is up and running, we invoke the clients with:
 ```
 NOTE: Initializing the server leads to bottleneck of data download for some reason in the FashionMNIST, I suggest running isolation.py from one of the fedavg, and then stopping after the download has been completed.
 
-
+# Project internal setup
 The two 'flags', FED_BN, Benchmark are set in `general_mnist.py`. The flag FED_BN is based on [FedBN] strategy , which suggests that Batch Normalization layers on clients could become biased and lead to overfitting the local model when data heterogeneity takes place,
 so in FedBN, those layers are ignored while sending and recieveing the parameters. In my experimentation implementing this `FedBN=True` produced worse results, since data heterogenity is not so strong. So I suggest leaving `FedBN=False`.
 Benchmarking flag is used for benchmarking purposes. If `Benchmark=True`, in pfedme, pfedme_new, we will use the datasets on clients from fedavg scenario, we will make comparison plots etc. If `Benchmark=True` newdatasets are loaded, and no comparison plots are made.
 
-
+# Project modules
 Two most important modules are `general_server.py` and `general_mnist.py`, alongside `client.py`.
 In the `general_server.py` we have : `load_data_server()` yielding `testset_server` , which will be placed on the server. This is only necessary for building research, since in really the server should not contain any private data. 
 The server coordinates the evaluation based on clients' data in the setup. Those evaluation functions are defined here. The main idea is to initialize a dictionary, that for keys, has accuracies, the value of the key is a an empty list, that in every round gets filled with respective accuracy. The functions are used to calculate for example, the average of local accuracies obtained from each client, and to fill the dictionary.
@@ -39,7 +39,7 @@ The server coordinates the evaluation based on clients' data in the setup. Those
 
 ## License
 
-This project is licensed under the [Apache License 2.0](LICENSE) - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the [MIT License](https://opensource.org/license/mit/) - see the [LICENSE](https://github.com/angelili/projekat_DDU/blob/main/LICENSE) file for details.
 
 ## Acknowledgments
 
@@ -47,4 +47,4 @@ This project includes code from the [Flower project](https://github.com/adap/flo
 
 ### Disclaimer
 
-[Projekat_DDU] is  endorsed by the [Marvel project](https://www.marvel-project.eu/) This project has received funding from the European Union’s Horizon 2020 Research and Innovation program under grant agreement No 957337.
+[Projekat_DDU](https://github.com/angelili/projekat_DDU) is  endorsed by the [Marvel project](https://www.marvel-project.eu/) This project has received funding from the European Union’s Horizon 2020 Research and Innovation program under grant agreement No 957337.
