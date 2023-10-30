@@ -34,7 +34,7 @@ def main() -> None:
     DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     # Load model
-    model = general_mnist.Net().to(DEVICE)
+    model = general_mnist.Net().to(DEVICE).train()
 
     
     # Perform a single forward pass to properly initialize BatchNorm
