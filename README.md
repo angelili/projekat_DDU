@@ -6,9 +6,37 @@ The main algorithm is the pFedMe, from the following paper : [Personalized Feder
 Envelopes](https://arxiv.org/pdf/2006.08848.pdf). The pracitcal novelty of this thesis is its implementation in [Flower](https://flower.dev/).
 This framework simplifies the development and deployment of FL(Federated Learning) systems. The thesis also provides implementations of FedAvg, and of a modified version of pFedMe, pFedMe_new.
 The focus is on the heterogeneity among data distributions of clients, since that is the key issue that Personalized FL tackles. 
-First a brief overview of pFedMe, and pFedMe_new
+First a brief overview of pFedMe, and pFedMe_new:
+# An Introduction to pFedMe, pFedMe_new
 
-In this version, there are 10 different clients. Each client has its dataset, and its client.py.  Each client was trained on a CUDA partition node, this is specified in client.sh while the main,access node of the cluster hosted the server. The setup of client.sh files is tailored based on Faculty of Sciences, computer cluster Axiom, and its CUDA nodes.
+
+Alongside the strandard loss of the client, here we optimize also for the penalty term, which controls the personalized model $\theta$ of the client remaining close to the global model x. Mathematically the main objective is:
+$$\min_{x\in \mathbb{R}^d} \Bigl\{ F(x) := \frac{1}{n} \sum_{i=1}^n F_i(x) \Bigr\}$$
+$$ \text{where} \quad F_i(x) := \min_{\theta _i\in \mathbb{R}^d}\Bigl\{ f_i(\theta_i)+ \frac{\lambda}{2} \big\|\theta_i - x \big\|^2 \Bigr\} $$
+
+So pFedme algorithm is outlined as follows:
+
+
+*  At a global round $t= 0,\ldots, T-1$ server broadcasts the global model $x_t$ to each client $i$
+*  At local round, the local model is set $r=0$ $x_{i,0}^t=x_t$
+
+
+
+*  At a local round $r=0,\ldots, R-1$ the client samples a batch $D_i$ and takes for $k=0, \ldots, K-1$ steps using some  optimizer:
+
+$$\tilde{f}_i(\theta_i; \mathcal{D}_i)+ \frac{\lambda}{2} \big\|\theta_i - x_{i,r}^t\big\|^2 $$
+*   After K iterations obtains $\tilde{\theta}_i(x_{i,r}^t)$ the personliazed model approximate
+*   Computes the new local model which signifies the end of one local round!
+   $$x_{i,r+1}^t=x_{i,r}^t-\eta\underbrace{\lambda(x_{i,r}^t-\tilde{\theta}_i(x_{i,r}^t)}_{:=\nabla F_i(x_{i,r}^t)}$$
+
+* Server uniformly samples a subset of clients $\mathcal{S}^t$ with size $S$, each of the sampled client sends the \textbf{local} model $x_{i,R}^t$ to the server
+
+
+*    Server updates the global model: $x_{t+1}=(1-\beta)x_t + \beta \sum_{i \in \mathcal{S}^t} \frac{x_{i,R}^t}{S}$
+
+The difference between pFedMe and pFedMe_new is in local iterations & batch sampling. pFedMe takes a new batch every inner iteration, while pFedMe_new takes a batch and performs iterations on it.
+
+In this experimentation, there are 10 different clients. Each client has its dataset, and its client.py.  Each client was trained on a CUDA partition node, this is specified in client.sh while the main,access node of the cluster hosted the server. The setup of client.sh files is tailored based on Faculty of Sciences, computer cluster Axiom, and its CUDA nodes.
 
 # Project setup
 pip
@@ -35,7 +63,9 @@ Benchmarking flag is used for benchmarking purposes. If `Benchmark=True`, in pfe
 Two most important modules are `general_server.py` and `general_mnist.py`, alongside `client.py`.
 In the `general_server.py` we have : `load_data_server()` yielding `testset_server` , which will be placed on the server. This is only necessary for building research, since in really the server should not contain any private data. 
 The server coordinates the evaluation based on clients' data in the setup. Those evaluation functions are defined here. The main idea is to initialize a dictionary, that for keys, has accuracies, the value of the key is a an empty list, that in every round gets filled with respective accuracy. The functions are used to calculate for example, the average of local accuracies obtained from each client, and to fill the dictionary.
-`general_mnist.py` contains a neural network model class (Net), training functions for two different federated learning scenarios (train_pfedme and train_fedavg). Both of the training functions will be used in their respective scenarios. This leads us to `client.py`, where we define the MnistClient.
+`general_mnist.py` contains a neural network model class (Net), training functions for two different federated learning scenarios (train_pfedme and train_fedavg). Both of the training functions will be used in their respective scenarios. This leads us to `client.py`, where we define the `MnistClient`.
+# Heart of FL, the server
+Throughout all setups, we have a `server.py` 
 
 ## License
 

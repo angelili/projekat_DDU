@@ -71,7 +71,7 @@ def load_data(selected_classes:List) -> (
 
     return trainloader, testloader
 
-# Flower Client in pfedme, pfedme_new
+# Flower Client in all three algorithms
 class MnistClient(fl.client.NumPyClient):
     """Flower client implementing FashionMNIST image classification using
     PyTorch."""
@@ -158,53 +158,5 @@ class MnistClient(fl.client.NumPyClient):
         return float(loss), len(self.testloader.dataset), {"accuracy": float(accuracy)}
     
 
-# Flower Client in fedavg
-class MnistClient_fedavg(fl.client.NumPyClient):
-    """Flower client implementing image classification using
-    PyTorch."""
-
-    def __init__(
-        self,
-        model: general_mnist.Net,
-        trainloader: torch.utils.data.DataLoader,
-        testloader: torch.utils.data.DataLoader,
-        device: torch.device
-    ) -> None:
-        self.model = model
-        self.trainloader = trainloader
-        self.testloader = testloader
-        self.device=device
-
-    def get_parameters(self, config: Dict[str, str]) -> List[np.ndarray]:
-        self.model.train()
-        # Return model parameters as a list of NumPy ndarrays
-        return [val.cpu().numpy() for _, val in self.model.state_dict().items()]
-
-    def set_parameters(self, parameters: List[np.ndarray]) -> None:
-        # Set model parameters from a list of NumPy ndarrays
-        self.model.train()
-        params_dict = zip(self.model.state_dict().keys(), parameters)
-        state_dict = OrderedDict({k: torch.tensor(v) for k, v in params_dict})
-        self.model.load_state_dict(state_dict, strict=True)
-
-    def fit(
-        self, parameters: List[np.ndarray], config: Dict[str, str]
-    ) -> Tuple[List[np.ndarray], int, Dict]:
-        # Set model parameters, train model, return updated model parameters
-        local_epochs: int = config["local_epochs"]
-        lr: float = config['learning_rate']
-
-        self.set_parameters(parameters)
-        general_mnist.train_fedavg(model=self.model, trainloader=self.trainloader, local_epochs =local_epochs, device=self.device, lr=lr)
-        loss, accuracy = general_mnist.test(model=self.model, testloader=self.testloader, device=self.device)
-        return self.get_parameters(config={}),len(self.testloader.dataset), {"accuracy_local": float(accuracy)}
-
-    def evaluate(
-        self, parameters: List[np.ndarray], config: Dict[str, str]
-    ) -> Tuple[float, int, Dict]:
-        # Set model parameters, evaluate model on local test dataset, return result
-        self.set_parameters(parameters)
-        loss, accuracy = general_mnist.test(self.model, self.testloader, device=self.device)
-        return float(loss), len(self.testloader.dataset), {"accuracy": float(accuracy)}
 
 
