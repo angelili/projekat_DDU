@@ -11,6 +11,7 @@ sys.path.append('/home/s124m21/projekat_DDU')
 
 # import your module without specifying the full path
 import general_mnist
+
 import client
 
 

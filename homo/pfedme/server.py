@@ -66,8 +66,8 @@ if __name__ == "__main__":
                     'trainloader': trainloader,
                     'testloader': testloader
                 }
-        file_name = f'data_{client_id}.pt'
-        torch.save(data_dict, file_name)
+                file_name = f'data_{client_id}.pt'
+                torch.save(data_dict, file_name)
    
     strategy = fl.server.strategy.FedAvgM(
     min_fit_clients=9,
@@ -79,8 +79,7 @@ if __name__ == "__main__":
     fit_metrics_aggregation_fn=general_server.agg_metrics_train_both_pfedme(training_history_acc_dist,
                                                     'accuracy_local_pfedme','accuracy_personalized_pfedme'),
     evaluate_metrics_aggregation_fn=general_server.weighted_average(training_history_acc_dist,'accuracy_global_pfedme'),
-    on_fit_config_fn=fit_config,
-        )
+    on_fit_config_fn=fit_config)
     
     fl.server.start_server(
         server_address= "10.30.0.254:9000",

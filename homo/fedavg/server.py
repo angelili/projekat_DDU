@@ -40,14 +40,14 @@ if __name__ == "__main__":
     #ofcourse this is not possible in reality
     trainloaders, testloaders = general_server.load_datasets()
   
-  # Save each data partition to separate files with client IDs from 1 to 10
+    # Save each data partition to separate files with client IDs from 1 to 10
     for client_id, (trainloader, testloader) in enumerate(zip(trainloaders, testloaders), start=1):
             data_dict = {
                 'trainloader': trainloader,
                 'testloader': testloader
             }
-    file_name = f'data_{client_id}.pt'
-    torch.save(data_dict, file_name)
+            file_name = f'data_{client_id}.pt'
+            torch.save(data_dict, file_name)
 
 
     strategy = fl.server.strategy.FedAvg(
@@ -60,12 +60,7 @@ if __name__ == "__main__":
         evaluate_metrics_aggregation_fn=general_server.weighted_average(training_history_acc_dist, 'accuracy_global_fedavg'),
         on_fit_config_fn=fit_config)
     
-    fl.server.start_server(
-        server_address= "10.30.0.254:9000",
-        config=fl.server.ServerConfig(num_rounds=100),
-        strategy=strategy
-    )
-
+  
     general_server.plot_training_history(training_history_acc_dist,'accuracies_clients.png')
     general_server.plot_training_history(training_history_acc_cent,'accuracies_server.png')
     general_server.plot_training_history(training_history_loss_cent,'loss_server.png')
