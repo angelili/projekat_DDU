@@ -60,6 +60,11 @@ if __name__ == "__main__":
         evaluate_metrics_aggregation_fn=general_server.weighted_average(training_history_acc_dist, 'accuracy_global_fedavg'),
         on_fit_config_fn=fit_config)
     
+    fl.server.start_server(
+    server_address= "10.30.0.254:9000",
+    config=fl.server.ServerConfig(num_rounds=100),
+    strategy=strategy)
+
   
     general_server.plot_training_history(training_history_acc_dist,'accuracies_clients.png')
     general_server.plot_training_history(training_history_acc_cent,'accuracies_server.png')

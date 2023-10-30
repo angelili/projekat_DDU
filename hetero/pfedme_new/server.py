@@ -15,31 +15,9 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.append('/home/s124m21/projekat_DDU')
 import general_server
-import general_mnist
+from general_mnist import Benchmark
 
 lambda_reg=15
-FED_BN=False
-
-# Load each dictionary from the JSON files of FedAvg
-with open("/home/s124m21/projekat_DDU/hetero/fedavg/training_history_acc_cent_fed_avg.json", "r") as json_file:
-    data1 = json.load(json_file)
-
-with open("/home/s124m21/projekat_DDU/hetero/fedavg/training_history_acc_dist_fed_avg.json", "r") as json_file:
-    data2 = json.load(json_file)
-
-with open("/home/s124m21/projekat_DDU/hetero/fedavg/training_history_loss_cent_fed_avg.json", "r") as json_file:
-    data3 = json.load(json_file)
-
-
-# Load each dictionary from the JSON files of pFedMe
-with open("/home/s124m21/projekat_DDU/hetero/pfedme/training_history_acc_cent_pfedme.json", "r") as json_file:
-    data4 = json.load(json_file)
-
-with open("/home/s124m21/projekat_DDU/hetero/pfedme/training_history_acc_dist_pfedme.json", "r") as json_file:
-    data5 = json.load(json_file)
-
-with open("/home/s124m21/projekat_DDU/hetero/pfedme/training_history_loss_cent_pfedme.json", "r") as json_file:
-    data6 = json.load(json_file)
 
 
 
@@ -141,13 +119,40 @@ if __name__ == "__main__":
         config=fl.server.ServerConfig(num_rounds=100),
         strategy=strategy)
     
-    #detalied comparison with FedAvg, same as for pFedMe
-    general_server.plot_training_comparison(training_history_acc_dist, data2,'accuracies_clients.png')
-    general_server.plot_training_comparison(training_history_acc_cent, data1,'accuracies_server.png')
-    general_server.plot_training_comparison(training_history_loss_cent, data3, 'losses_server.png')
+    if Benchmark==True:
+        # Load each dictionary from the JSON files of FedAvg
+        with open("/home/s124m21/projekat_DDU/hetero/fedavg/training_history_acc_cent_fed_avg.json", "r") as json_file:
+            data1 = json.load(json_file)
 
-    #key comparison of FedAvg, pFedMe, pFedMe_new local models
-    plot_key_differences_local(data2, data5,training_history_acc_dist, "key_differences_local.png")
+        with open("/home/s124m21/projekat_DDU/hetero/fedavg/training_history_acc_dist_fed_avg.json", "r") as json_file:
+            data2 = json.load(json_file)
 
-    #key comparison of FedAvg, pFedMe, pFedMe_new centralized models
-    plot_key_differences_centralized(data1,data4,training_history_acc_cent,"key_differences_centralized")
+        with open("/home/s124m21/projekat_DDU/hetero/fedavg/training_history_loss_cent_fed_avg.json", "r") as json_file:
+            data3 = json.load(json_file)
+
+
+        # Load each dictionary from the JSON files of pFedMe
+        with open("/home/s124m21/projekat_DDU/hetero/pfedme/training_history_acc_cent_pfedme.json", "r") as json_file:
+            data4 = json.load(json_file)
+
+        with open("/home/s124m21/projekat_DDU/hetero/pfedme/training_history_acc_dist_pfedme.json", "r") as json_file:
+            data5 = json.load(json_file)
+
+        with open("/home/s124m21/projekat_DDU/hetero/pfedme/training_history_loss_cent_pfedme.json", "r") as json_file:
+            data6 = json.load(json_file)
+
+        #detalied comparison with FedAvg, same as for pFedMe
+        general_server.plot_training_comparison(training_history_acc_dist, data2,'accuracies_clients.png')
+        general_server.plot_training_comparison(training_history_acc_cent, data1,'accuracies_server.png')
+        general_server.plot_training_comparison(training_history_loss_cent, data3, 'losses_server.png')
+
+        #key comparison of FedAvg, pFedMe, pFedMe_new local models
+        plot_key_differences_local(data2, data5,training_history_acc_dist, "key_differences_local.png")
+
+        #key comparison of FedAvg, pFedMe, pFedMe_new centralized models
+        plot_key_differences_centralized(data1,data4,training_history_acc_cent,"key_differences_centralized")
+
+   else:
+        general_server.plot_training_history(training_history_acc_dist,'accuracies_clients.png')
+        general_server.plot_training_history(training_history_acc_cent,'accuracies_server.png')
+        general_server.plot_training_history(training_history_loss_cent,'loss_server.png')

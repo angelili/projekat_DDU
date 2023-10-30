@@ -12,6 +12,7 @@ import json
 import sys
 sys.path.append('/home/s124m21/projekat_DDU')
 import general_server
+from general_mnist import Benchmark
 
 lambda_reg=15 #just for plotting
 
@@ -70,16 +71,30 @@ if __name__ == "__main__":
         config=fl.server.ServerConfig(num_rounds=100),
         strategy=strategy)
     
+    if Benchmark==True:
+        # Load each dictionary from the JSON files
+        with open("/home/s124m21/projekat_DDU/hetero/fedavg/training_history_acc_cent_fed_avg.json", "r") as json_file:
+            data1 = json.load(json_file)
 
-    general_server.plot_training_comparison(training_history_acc_dist, data2,'accuracies_clients.png')
-    general_server.plot_training_comparison(training_history_acc_cent, data1,'accuracies_server.png')
-    general_server.plot_training_comparison(training_history_loss_cent, data3, 'losses_server.png')
+        with open("/home/s124m21/projekat_DDU/hetero/fedavg/training_history_acc_dist_fed_avg.json", "r") as json_file:
+            data2 = json.load(json_file)
 
-    with open("training_history_acc_dist_pfedme.json", "w") as json_file:
-        json.dump(training_history_acc_dist, json_file)
+        with open("/home/s124m21/projekat_DDU/hetero/fedavg/training_history_loss_cent_fed_avg.json", "r") as json_file:
+            data3 = json.load(json_file)
 
-    with open("training_history_acc_cent_pfedme.json", "w") as json_file:
-        json.dump(training_history_acc_cent, json_file)
+        general_server.plot_training_comparison(training_history_acc_dist, data2,'accuracies_clients.png')
+        general_server.plot_training_comparison(training_history_acc_cent, data1,'accuracies_server.png')
+        general_server.plot_training_comparison(training_history_loss_cent, data3, 'losses_server.png')
+        #leaving the results for pfedme_new
+        with open("training_history_acc_dist_pfedme.json", "w") as json_file:
+            json.dump(training_history_acc_dist, json_file)
 
-    with open("training_history_loss_cent_pfedme.json", "w") as json_file:
-        json.dump(training_history_loss_cent, json_file)
+        with open("training_history_acc_cent_pfedme.json", "w") as json_file:
+            json.dump(training_history_acc_cent, json_file)
+
+        with open("training_history_loss_cent_pfedme.json", "w") as json_file:
+            json.dump(training_history_loss_cent, json_file)
+    else:
+        general_server.plot_training_history(training_history_acc_dist,'accuracies_clients.png')
+        general_server.plot_training_history(training_history_acc_cent,'accuracies_server.png')
+        general_server.plot_training_history(training_history_loss_cent,'loss_server.png')
