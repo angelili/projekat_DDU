@@ -13,15 +13,16 @@ from torch.utils.data import DataLoader, random_split
 
 
 import matplotlib.pyplot as plt
-import numpy as np
+
 
 import general_mnist
+from general_mnist import FED_BN
 
 DATA_ROOT = "/home/s124m21/projekat_DDU/dataset"
-FED_BN=False
 
 
 
+#server has always the whole test set for the evaluation
 
 def load_data_server():
     
@@ -36,7 +37,9 @@ def load_data_server():
     return testset_server    
 
 
-#THIS IS ONLY FOR THE HOMOGENEOUS CASE
+#THIS SECTION IS ONLY FOR THE HOMOGENEOUS CASE
+#partition both the training and test set on 10 clients!
+
 def load_datasets():
   
 
@@ -75,9 +78,58 @@ def load_datasets():
 
     return trainloaders, testloaders
 
-#The following metrics are the same; the difference is in keys from the dictionaries we are filling in _fedavg_pfedme_pfedme_new
+#this is the function I used in my master thesis, the server has the whole test set which is not seen by the clients. 
+#so the test set is left intact and wil be used by the central server to asses the performance of the global model.
+# The FashionMNIST trainset is partitioned among 10 clients,
+#  the partition in each clientis then partitioned as trainset and testset of the client.
+#  This old version of partitioning produced better accuracy results on the global model on the server??
 
+def load_datasets_old():
     
+   
+    transform = transforms.Compose(
+        [transforms.ToTensor(), transforms.Normalize((0.2859), (0.3530))]
+    )
+
+    trainset = FashionMNIST(DATA_ROOT, train=True, download=True, transform=transform)
+    testset = FashionMNIST(DATA_ROOT, train=False, download=True, transform=transform)
+
+ 
+
+    # split trainset into `num_partitions` trainsets
+    num_images = len(trainset) // 10
+
+    partition_len = [num_images] * 10
+
+    trainsets = random_split(
+        trainset, partition_len, torch.Generator().manual_seed(2023)
+    )
+
+    # create dataloaders with train+val support
+    trainloaders = []
+    testloaders = []
+    for trainset_ in trainsets:
+        num_total = len(trainset_)
+        num_val = int(0.1 * num_total)
+        num_train = num_total - num_val
+
+        for_train, for_val = random_split(
+            trainset_, [num_train, num_val], torch.Generator().manual_seed(42)
+        )
+
+        trainloaders.append(
+            DataLoader(for_train, batch_size=32, shuffle=True)
+        )
+        testloaders.append(
+            DataLoader(for_val, batch_size=32, shuffle=False)
+        )
+
+
+    return trainloaders, testloaders
+#The following functions are evaluation functions.
+
+#function which tests the global model on the server
+#we out the empty dictionaries to be filled in, and their keys
 def get_evaluate_fn(
     testset: FashionMNIST, dict_acc: Dict, dict_loss: Dict, key_acc: str, key_loss: str
 ) -> Callable[[fl.common.NDArrays], Optional[Tuple[float, float]]]:
@@ -88,10 +140,10 @@ def get_evaluate_fn(
     ) -> Optional[Tuple[float, float]]:
         """Use the entire FashionMNIST test set for evaluation."""
 
-        # determine device
+        # determine device for the server, and call the model on it, place the parameters
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         model = general_mnist.Net()
-        if FED_BN==True:
+        if FED_BN==True: 
             keys = [k for k in model.state_dict().keys() if "bn" not in k]
             params_dict = zip(keys, parameters)
             state_dict = OrderedDict({k: torch.tensor(v) for k, v in params_dict})
@@ -106,9 +158,7 @@ def get_evaluate_fn(
        
         
         loss, accuracy = general_mnist.test(model, testset, device)
-        #testloader = torch.utils.data.DataLoader(testset, batch_size=50)
-        #loss, accuracy = mnist.test_global(model, testloader, device)
-
+        #fill the dictionaries
         dict_acc[key_acc].append(accuracy)
         dict_loss[key_loss].append(loss)
         # return statistics
@@ -118,7 +168,7 @@ def get_evaluate_fn(
 
 
 
-
+#same for every algorithm, this function takes the returned values from evaluation method in MnistClient
 def weighted_average(dict: Dict, key: str) -> Metrics:
     # Multiply accuracy of each client by number of examples used
     def evaluate (metrics: List[Tuple[int, Metrics]]) -> Metrics:
@@ -131,7 +181,7 @@ def weighted_average(dict: Dict, key: str) -> Metrics:
 
 
 
-
+#for pfedme, pfedme_new because they have local, personalized model tto return from fit method in MnistClient
 def agg_metrics_train_both_pfedme(dict: Dict, key_local:str, key_person:str ) -> Metrics:    
     def evaluate(metrics: List[Tuple[int, Metrics]]) -> Metrics:
         # Multiply accuracy of each client by number of examples used
@@ -147,7 +197,7 @@ def agg_metrics_train_both_pfedme(dict: Dict, key_local:str, key_person:str ) ->
         return {key_person: sum(accuracies_person)/sum(examples), key_local: sum(accuracies_local)/sum(examples)}
     return evaluate
 
-
+#for pfedme, pfedme_new because it has ave local model results to return from fit method in MnistClient
 def agg_metrics_train_fedavg(dict: Dict, key:str ) -> Metrics:  
     def evaluate(metrics: List[Tuple[int, Metrics]]) -> Metrics:
         # Multiply accuracy of each client by number of examples used
@@ -161,6 +211,16 @@ def agg_metrics_train_fedavg(dict: Dict, key:str ) -> Metrics:
     
     return evaluate
 
+#same for every algorithm, this function takes the returned values from evaluation method in MnistClient
+def weighted_average(dict: Dict, key: str) -> Metrics:
+    # Multiply accuracy of each client by number of examples used
+    def evaluate (metrics: List[Tuple[int, Metrics]]) -> Metrics:
+        accuracies = [num_examples * m["accuracy"] for num_examples, m in metrics]
+        examples = [num_examples for num_examples, _ in metrics]
+        dict[key].append(sum(accuracies)/sum(examples))
+        # Aggregate and return custom metric (weighted average)
+        return {key : sum(accuracies) / sum(examples)}
+    return evaluate
 
 def plot_training_history(training_history, path):
     plt.figure()

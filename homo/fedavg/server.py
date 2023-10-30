@@ -24,7 +24,7 @@ def fit_config(server_round: int):
         """Return training configuration dict for each round."""
 
         config = {"pfedme": False,
-            "local_epochs": 1,
+            "local_epochs": 2,
             "learning_rate": 0.1, }
         return config
 
