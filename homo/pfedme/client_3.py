@@ -12,6 +12,7 @@ sys.path.append('/home/s124m21/projekat_DDU')
 # import your module without specifying the full path
 import general_mnist
 import client
+from general_mnist import Benchmark
 
 
 
@@ -25,12 +26,19 @@ def main() -> None:
       os.environ["http_proxy"] = ""
       os.environ["https_proxy"] = ""
 
-    # Load the variables as data
-    data = torch.load('/home/s124m21/projekat_DDU/homo/fedavg/data_3.pt')
-    # Retrieve the variables
-    trainloader = data['trainloader']
-    testloader = data['testloader']
-     
+    
+    if Benchmark==True:
+      # Load the variables as data from the FedAvg
+      data = torch.load('/home/s124m21/projekat_DDU/homo/fedavg/data_3.pt')
+      # Retrieve the variables
+      trainloader = data['trainloader']
+      testloader = data['testloader']
+    else:
+       # Make new variables
+      data = torch.load('/home/s124m21/projekat_DDU/homo/pfedme/data_3.pt')
+      # Retrieve the variables
+      trainloader = data['trainloader']
+      testloader = data['testloader']
     
     #Set up the device
     DEVICE = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")

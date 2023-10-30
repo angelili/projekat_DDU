@@ -31,6 +31,8 @@ def main() -> None:
     DEVICE= torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
     # Load model
     model = general_mnist.Net().to(DEVICE).train()
+    # Perform a single forward pass to properly initialize BatchNorm
+    _ = model(next(iter(trainloader))[0].to(DEVICE))
 
     # Save the variables to a file
     if Benchmark==True:
