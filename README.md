@@ -35,7 +35,7 @@ Benchmarking flag is used for benchmarking purposes. If `Benchmark=True`, in pfe
 Two most important modules are `general_server.py` and `general_mnist.py`, alongside `client.py`.
 In the `general_server.py` we have : `load_data_server()` yielding `testset_server` , which will be placed on the server. This is only necessary for building research, since in really the server should not contain any private data. 
 The server coordinates the evaluation based on clients' data in the setup. Those evaluation functions are defined here. The main idea is to initialize a dictionary, that for keys, has accuracies, the value of the key is a an empty list, that in every round gets filled with respective accuracy. The functions are used to calculate for example, the average of local accuracies obtained from each client, and to fill the dictionary.
-`general_mnist.py` contains a neural network model class (Net), training functions for two different federated learning scenarios (train_pfedme and train_fedavg). Both of the training functions will be used in their respective scenarios. This leads us to `client.py`. 
+`general_mnist.py` contains a neural network model class (Net), training functions for two different federated learning scenarios (train_pfedme and train_fedavg). Both of the training functions will be used in their respective scenarios. This leads us to `client.py`, where we define the MnistClient.
 
 ## License
 
