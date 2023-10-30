@@ -55,7 +55,7 @@ if __name__ == "__main__":
       os.environ["https_proxy"] = ""
     testset=general_server.load_data_server()
     # since the dataset is PARTITIONED, the partitioning is done here at the server, to make sure everyone gets a different portion,
-    #ofcourse this is not possible in reality  --- if we want new data not the same as for fedavg
+    #ofcourse this is not possible in reality, here if we want new data not the same as for fedavg, loading new!
     if Benchmark==False:
   
         trainloaders, testloaders = general_server.load_datasets()

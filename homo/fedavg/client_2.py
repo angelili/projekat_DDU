@@ -35,6 +35,11 @@ def main() -> None:
 
     # Load model
     model = general_mnist.Net().to(DEVICE)
+
+    
+    # Perform a single forward pass to properly initialize BatchNorm
+    _ = model(next(iter(trainloader))[0].to(DEVICE))
+
    
     # Start client
     client_2 = client.MnistClient(model, trainloader, testloader, DEVICE)

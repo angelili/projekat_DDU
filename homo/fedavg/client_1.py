@@ -23,17 +23,22 @@ def main() -> None:
       os.environ["http_proxy"] = ""
       os.environ["https_proxy"] = ""
 
-    #Load the variables as data
+    # Load the variables as data
     data = torch.load('/home/s124m21/projekat_DDU/homo/fedavg/data_1.pt')
     # Retrieve the variables
     trainloader = data['trainloader']
     testloader = data['testloader']
      
-    #Set up the device
+    # Set up the device
     DEVICE = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
 
     # Load model
     model = general_mnist.Net().to(DEVICE)
+
+    
+    # Perform a single forward pass to properly initialize BatchNorm
+    _ = model(next(iter(trainloader))[0].to(DEVICE))
+
     
     # Start client
     client_1 = client.MnistClient(model, trainloader, testloader, DEVICE)

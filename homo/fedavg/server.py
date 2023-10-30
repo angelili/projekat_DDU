@@ -35,7 +35,7 @@ if __name__ == "__main__":
     if fedl_no_proxy:
       os.environ["http_proxy"] = ""
       os.environ["https_proxy"] = ""
-      testset=general_server.load_data_server()
+    testset=general_server.load_data_server()
     # since the dataset is PARTITIONED, the partitioning is done here at the server, to make sure everyone gets a different portion,
     #ofcourse this is not possible in reality
     trainloaders, testloaders = general_server.load_datasets()
@@ -66,9 +66,9 @@ if __name__ == "__main__":
         strategy=strategy
     )
 
-    general_server.plot_training_history(training_history_acc_dist,'photo_1.png')
-    general_server.plot_training_history(training_history_acc_cent,'photo_2.png')
-    general_server.plot_training_history(training_history_loss_cent,'photo_3.png')
+    general_server.plot_training_history(training_history_acc_dist,'accuracies_clients.png')
+    general_server.plot_training_history(training_history_acc_cent,'accuracies_server.png')
+    general_server.plot_training_history(training_history_loss_cent,'loss_server.png')
 
     with open("training_history_acc_dist_fed_avg.json", "w") as json_file:
         json.dump(training_history_acc_dist, json_file)

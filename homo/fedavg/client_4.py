@@ -37,12 +37,11 @@ def main() -> None:
     model = general_mnist.Net().to(DEVICE)
 
     
-    #Load the variables as data
-    data = torch.load('/home/s124m21/projekat_DDU/homo/fedavg/data_4.pt')
-    # Retrieve the variables
-    trainloader = data['trainloader']
-    testloader = data['testloader']
-    # Start client
+    # Perform a single forward pass to properly initialize BatchNorm
+    _ = model(next(iter(trainloader))[0].to(DEVICE))
+
+
+    # Start the client
     client_4 = client.MnistClient(model, trainloader, testloader, DEVICE)
     fl.client.start_numpy_client(server_address="10.30.0.254:9000",
     client=client_4)
