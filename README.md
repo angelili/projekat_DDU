@@ -12,7 +12,7 @@ First a brief overview of pFedMe, and pFedMe_new:
 
 Alongside the strandard loss of the client, here we optimize also for the penalty term, which controls the personalized model $\theta$ of the client remaining close to the global model x. Mathematically the main objective is:
 $$\min_{x\in \mathbb{R}^d} { F(x) := \frac{1}{n} \sum_{i=1}^n F_i(x) }$$
-$$ \text{where} \quad F_i(x) := \min_{\theta _i\in \mathbb{R}^d}\Bigl\{ f_i(\theta_i)+ \frac{\lambda}{2} \big\|\theta_i - x \big\|^2 \Bigr\} $$
+$$ \text{where} \quad F_i(x) := \min_{\theta _i\in \mathbb{R}^d} { f_i(\theta_i)+ \frac{\lambda}{2} \big\|\theta_i - x \big\|^2 } $$
 
 So pFedme algorithm is outlined as follows:
 
