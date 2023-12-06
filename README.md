@@ -15,18 +15,18 @@ $$\min_{x\in \mathbb{R}^d} { F(x) := \frac{1}{n} \sum_{i=1}^n F_i(x) }$$
 $$F_i(x) := \min_{\theta_i \in \mathbb{R}^d} { f_i(\theta_i) + \frac{\lambda}{2} \||\theta_i - x \||^2 }$$
 
 
-$$\tilde{f}_i(\theta_i;\mathcal{D}_i) + \frac{\lambda}{2} || \theta _i -  x _{i,r}^t||^2$$
+
 
 
 So pFedme algorithm is outlined as follows:
 
 
 *  At a global round $t= 0,\ldots, T-1$ server broadcasts the global model $x_t$ to each client $i$
-*  At local round, the local model is set $r=0$ $x_{i,0}^t=x_t$
+*  At the first local round, the local model is set $r=0$ $x_{i,0}^t=x_t$
 
 
 
-*  At a local round $r=0,\ldots, R-1$ the client samples a batch $D_i$ and takes for $k=0, \ldots, K-1$ steps using some  optimizer:
+*  At a local round $r=0,\ldots, R-1$ the client samples a batch $D_i$ and takes it for $k=0, \ldots, K-1$ steps using some  optimizer:
 
 
 $$\tilde{f}_i(\theta_i;\mathcal{D}_i) + \frac{\lambda}{2} || \theta _i -  x _{i,r}^t||^2$$
@@ -40,7 +40,7 @@ $$\tilde{f}_i(\theta_i;\mathcal{D}_i) + \frac{\lambda}{2} || \theta _i -  x _{i,
 
 *    Server updates the global model: $x_{t+1}=(1-\beta)x_t + \beta \sum_{i \in \mathcal{S}^t} \frac{x_{i,R}^t}{S}$
 
-The difference between pFedMe and pFedMe_new is in local iterations & batch sampling. pFedMe_new takes a new batch every inner iteration, while pFedMe takes a batch and performs iterations on it.
+The difference between pFedMe and pFedMe_new is in local iterations & batch sampling. pFedMe_new takes a new batch every inner k iteration, while pFedMe takes a batch and performs K iterations on it.
 
 In this experimentation, there are 10 different clients. Each client has its dataset, and its client.py.  Each client was trained on a CUDA partition node, this is specified in client.sh while the main,access node of the cluster hosted the server. The setup of client.sh files is tailored based on Faculty of Sciences, computer cluster Axiom, and its CUDA nodes.
 
