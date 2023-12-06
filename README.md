@@ -33,7 +33,7 @@ $$\tilde{f}_i(\theta_i;\mathcal{D}_i) + \frac{\lambda}{2} || \theta _i -  x _{i,
 
 *   After K iterations obtains $\tilde{\theta}_ i(x_{i,r}^t)$ the personliazed model approximate
 *   Computes the new local model which signifies the end of one local round!
-   $$x_{i,r+1}^t=x_{i,r}^t-\eta\underbrace{\lambda(x_{i,r}^t-\tilde{\theta}_i(x_{i,r}^t)}_{:=\nabla F_i(x_{i,r}^t)}$$
+   $$x_{i,r+1}^t = x_{i,r}^t-\eta\underbrace{\lambda(x_{i,r}^t-\tilde{\theta}_ i(x_{i,r}^t)}_ {:=\nabla F_i(x_{i,r}^t)}$$
 
 * Server uniformly samples a subset of clients $\mathcal{S}^t$ with size $S$, each of the sampled client sends the \textbf{local} model $x_{i,R}^t$ to the server
 
