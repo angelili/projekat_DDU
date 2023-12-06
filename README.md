@@ -15,6 +15,7 @@ $$\min_{x\in \mathbb{R}^d} { F(x) := \frac{1}{n} \sum_{i=1}^n F_i(x) }$$
 $$F_i(x) := \min_{\theta_i \in \mathbb{R}^d} { f_i(\theta_i) + \frac{\lambda}{2} \||\theta_i - x \||^2 }$$
 
 
+$$\tilde{f}_i(\theta_i;\mathcal{D}_i) + \frac{\lambda}{2} \big\| \theta     _{i,r}^t\big\|^2$$
 
 
 So pFedme algorithm is outlined as follows:
@@ -27,7 +28,9 @@ So pFedme algorithm is outlined as follows:
 
 *  At a local round $r=0,\ldots, R-1$ the client samples a batch $D_i$ and takes for $k=0, \ldots, K-1$ steps using some  optimizer:
 
-$$\tilde{f}_i(\theta_i;\mathcal{D}_i)+  \frac{\lambda}{2} \big\|\theta_i - x_{i,r}^t\big\|^2 $$
+$$\tilde{f}_i(\theta_i;\mathcal{D}_i)+  \frac\lambda}{2} \big\|\theta_i - x_{i,r}^t\big\|^2 $$
+$$\tilde{f}_i(\theta_i;\mathcal{D}_i) + \frac{\lambda}{2} \big\| \theta_i - x_{i,r}^t \big\|^2$$
+
 *   After K iterations obtains $\tilde{\theta}_i(x_{i,r}^t)$ the personliazed model approximate
 *   Computes the new local model which signifies the end of one local round!
    $$x_{i,r+1}^t=x_{i,r}^t-\eta\underbrace{\lambda(x_{i,r}^t-\tilde{\theta}_i(x_{i,r}^t)}_{:=\nabla F_i(x_{i,r}^t)}$$
