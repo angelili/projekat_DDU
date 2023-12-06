@@ -83,5 +83,5 @@ This project includes code from the [Flower project](https://github.com/adap/flo
 
 ### Disclaimer
 
-[Projekat_DDU](https://github.com/angelili/projekat_DDU) is endorsed by the [Marvel project](https://www.marvel-project.eu/). This project has received funding from the European Union’s Horizon 2020 Research and Innovation program under grant agreement No 957337. [Projekat_DDU](https://github.com/angelili/projekat_DDU) was used as a part of the [TaRDIS](https://www.project-tardis.eu/), which has received funding under granta agreement No 101093006, by the Swiss State Secretariat for Education, Research and Innovation (SERI).
+[Projekat_DDU](https://github.com/angelili/projekat_DDU) is endorsed by the [Marvel project](https://www.marvel-project.eu/). This project has received funding from the European Union’s Horizon 2020 Research and Innovation program under grant agreement No 957337. [Projekat_DDU](https://github.com/angelili/projekat_DDU) was used as a part of the [TaRDIS project](https://www.project-tardis.eu/), which has received funding under granta agreement No 101093006, by the Swiss State Secretariat for Education, Research and Innovation (SERI).
 
