@@ -26,7 +26,7 @@ So pFedme algorithm is outlined as follows:
 
 
 
-*  At a local round $r=0,\ldots, R-1$ the client samples a batch $D_i$ and takes it for $k=0, \ldots, K-1$ steps using some  optimizer:
+*  At a local round $r=0,\ldots, R-1$ the client samples a batch $D_i$ and optimizes it for $k=0, \ldots, K-1$ steps using some  optimizer:
 
 
 $$\tilde{f}_i(\theta_i;\mathcal{D}_i) + \frac{\lambda}{2} || \theta _i -  x _{i,r}^t||^2$$
