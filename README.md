@@ -16,6 +16,7 @@ $$F_i(x) := \min_{\theta_i \in \mathbb{R}^d} \left\{ f_i(\theta_i) + \frac{\lamb
 
 
 
+
 So pFedme algorithm is outlined as follows:
 
 
