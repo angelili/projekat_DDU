@@ -15,7 +15,7 @@ $$\min_{x\in \mathbb{R}^d} { F(x) := \frac{1}{n} \sum_{i=1}^n F_i(x) }$$
 $$F_i(x) := \min_{\theta_i \in \mathbb{R}^d} { f_i(\theta_i) + \frac{\lambda}{2} \||\theta_i - x \||^2 }$$
 
 
-$$\tilde{f}_i(\theta_i;\mathcal{D}_i) + \frac{\lambda}{2} \big\| \theta     _{i,r}^t\big\|^2$$
+$$\tilde{f}_i(\theta_i;\mathcal{D}_i) + \frac{\lambda}{2} || \theta _i -  x _{i,r}^t||^2$$
 
 
 So pFedme algorithm is outlined as follows:
