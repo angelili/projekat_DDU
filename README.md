@@ -28,10 +28,10 @@ So pFedme algorithm is outlined as follows:
 
 *  At a local round $r=0,\ldots, R-1$ the client samples a batch $D_i$ and takes for $k=0, \ldots, K-1$ steps using some  optimizer:
 
-$$\tilde{f}_i(\theta_i;\mathcal{D}_i)+  \frac\lambda}{2} \big\|\theta_i - x_{i,r}^t\big\|^2 $$
-$$\tilde{f}_i(\theta_i;\mathcal{D}_i) + \frac{\lambda}{2} \big\| \theta_i - x_{i,r}^t \big\|^2$$
 
-*   After K iterations obtains $\tilde{\theta}_i(x_{i,r}^t)$ the personliazed model approximate
+$$\tilde{f}_i(\theta_i;\mathcal{D}_i) + \frac{\lambda}{2} || \theta _i -  x _{i,r}^t||^2$$
+
+*   After K iterations obtains $\tilde{\theta}_ i(x_{i,r}^t)$ the personliazed model approximate
 *   Computes the new local model which signifies the end of one local round!
    $$x_{i,r+1}^t=x_{i,r}^t-\eta\underbrace{\lambda(x_{i,r}^t-\tilde{\theta}_i(x_{i,r}^t)}_{:=\nabla F_i(x_{i,r}^t)}$$
 
@@ -40,7 +40,7 @@ $$\tilde{f}_i(\theta_i;\mathcal{D}_i) + \frac{\lambda}{2} \big\| \theta_i - x_{i
 
 *    Server updates the global model: $x_{t+1}=(1-\beta)x_t + \beta \sum_{i \in \mathcal{S}^t} \frac{x_{i,R}^t}{S}$
 
-The difference between pFedMe and pFedMe_new is in local iterations & batch sampling. pFedMe takes a new batch every inner iteration, while pFedMe_new takes a batch and performs iterations on it.
+The difference between pFedMe and pFedMe_new is in local iterations & batch sampling. pFedMe_new takes a new batch every inner iteration, while pFedMe takes a batch and performs iterations on it.
 
 In this experimentation, there are 10 different clients. Each client has its dataset, and its client.py.  Each client was trained on a CUDA partition node, this is specified in client.sh while the main,access node of the cluster hosted the server. The setup of client.sh files is tailored based on Faculty of Sciences, computer cluster Axiom, and its CUDA nodes.
 
